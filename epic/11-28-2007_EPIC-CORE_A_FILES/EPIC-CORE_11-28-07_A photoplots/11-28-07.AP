@@ -1,0 +1,331 @@
+
+
+    Aperture Information                                        11-28-07.PCB
+
+                           EPIC CORE 03-28-2007  REV.A
+
+                         Aperture and Tool Descriptions
+    ========================================================================
+
+    Code   Shape    X    Y     Hole  Type   Comment
+    ------------------------------------------------------------------------
+    D10    Ellipse  002  002   000   Both   Ellipse  X_002 Y_002 H_000 FD
+    D11    Ellipse  004  004   000   Both   Ellipse  X_004 Y_004 H_000 FD
+    D12    Ellipse  006  006   000   Both   Ellipse  X_006 Y_006 H_000 FD
+    D13    Ellipse  008  008   000   Both   Ellipse  X_008 Y_008 H_000 FD
+    D14    Ellipse  010  010   000   Both   Ellipse  X_010 Y_010 H_000 FD
+    D15    Ellipse  012  012   000   Both   Ellipse  X_012 Y_012 H_000 FD
+    D16    Ellipse  016  016   000   Both   Ellipse  X_016 Y_016 H_000 FD
+    D17    Ellipse  018  018   000   Both   Ellipse  X_018 Y_018 H_000 FD
+    D18    Ellipse  020  020   000   Both   Ellipse  X_020 Y_020 H_000 FD
+    D19    Ellipse  024  024   000   Both   Ellipse  X_024 Y_024 H_000 FD
+    D20    Ellipse  030  030   000   Both   Ellipse  X_030 Y_030 H_000 FD
+    D21    Ellipse  050  050   000   Both   Ellipse  X_050 Y_050 H_000 FD
+    D22    Ellipse  036  036   000   Flash  Ellipse  X_036 Y_036 H_000 FL
+    D23    Ellipse  032  032   000   Flash  Ellipse  X_032 Y_032 H_000 FL
+    D24    Thermal  040  040   020   Flash  Thermal  O_040 I_030       FL
+    D25    Ellipse  052  052   000   Flash  Ellipse  X_052 Y_052 H_000 FL
+    D26    Mt Hole  014  014   000   Flash  Mt Hole  X_014 Y_014 H_000 FL
+    D27    Mt Hole  126  126   000   Flash  Mt Hole  X_126 Y_126 H_000 FL
+    D28    Ellipse  141  141   000   Flash  Ellipse  X_141 Y_141 H_000 FL
+    D29    Oval     010  030   000   Flash  Oval     X_010 Y_030 H_000 FL
+    D30    Oval     012  032   000   Flash  Oval     X_012 Y_032 H_000 FL
+    D31    Oval     010  034   000   Flash  Oval     X_010 Y_034 H_000 FL
+    D32    Oval     012  036   000   Flash  Oval     X_012 Y_036 H_000 FL
+    D33    Oval     020  050   000   Flash  Oval     X_020 Y_050 H_000 FL
+    D34    Oval     022  052   000   Flash  Oval     X_022 Y_052 H_000 FL
+    D35    Oval     030  010   000   Flash  Oval     X_030 Y_010 H_000 FL
+    D36    Oval     032  012   000   Flash  Oval     X_032 Y_012 H_000 FL
+    D37    Oval     034  010   000   Flash  Oval     X_034 Y_010 H_000 FL
+    D38    Oval     036  012   000   Flash  Oval     X_036 Y_012 H_000 FL
+    D39    Sq Rect  020  022   000   Flash  Sq Rect  X_020 Y_022 H_000 FL
+    D40    Sq Rect  022  024   000   Flash  Sq Rect  X_022 Y_024 H_000 FL
+    D41    Sq Rect  022  020   000   Flash  Sq Rect  X_022 Y_020 H_000 FL
+    D42    Sq Rect  024  022   000   Flash  Sq Rect  X_024 Y_022 H_000 FL
+    D43    Sq Rect  030  040   000   Flash  Sq Rect  X_030 Y_040 H_000 FL
+    D44    Sq Rect  032  042   000   Flash  Sq Rect  X_032 Y_042 H_000 FL
+    D45    Sq Rect  036  036   000   Flash  Sq Rect  X_036 Y_036 H_000 FL
+    D46    Sq Rect  038  038   000   Flash  Sq Rect  X_038 Y_038 H_000 FL
+    D47    Sq Rect  040  030   000   Flash  Sq Rect  X_040 Y_030 H_000 FL
+    D48    Sq Rect  042  032   000   Flash  Sq Rect  X_042 Y_032 H_000 FL
+    D49    Sq Rect  040  040   000   Flash  Sq Rect  X_040 Y_040 H_000 FL
+    D50    Sq Rect  042  042   000   Flash  Sq Rect  X_042 Y_042 H_000 FL
+
+                                  U.C. BERKELEY
+
+    20-Nov-07  20:46                                                 Page  1
+
+    Aperture Information                                        11-28-07.PCB
+
+                           EPIC CORE 03-28-2007  REV.A
+
+                         Aperture and Tool Descriptions
+    ========================================================================
+
+    Code   Shape    X    Y     Hole  Type   Comment
+    ------------------------------------------------------------------------
+    D51    Sq Rect  040  090   000   Flash  Sq Rect  X_040 Y_090 H_000 FL
+    D52    Sq Rect  042  092   000   Flash  Sq Rect  X_042 Y_092 H_000 FL
+    D53    Sq Rect  046  050   000   Flash  Sq Rect  X_046 Y_050 H_000 FL
+    D54    Sq Rect  048  052   000   Flash  Sq Rect  X_048 Y_052 H_000 FL
+    D55    Sq Rect  050  036   000   Flash  Sq Rect  X_050 Y_036 H_000 FL
+    D56    Sq Rect  052  038   000   Flash  Sq Rect  X_052 Y_038 H_000 FL
+    D57    Sq Rect  050  050   000   Flash  Sq Rect  X_050 Y_050 H_000 FL
+    D58    Sq Rect  052  052   000   Flash  Sq Rect  X_052 Y_052 H_000 FL
+    D59    Sq Rect  054  074   000   Flash  Sq Rect  X_054 Y_074 H_000 FL
+    D60    Sq Rect  056  076   000   Flash  Sq Rect  X_056 Y_076 H_000 FL
+    D61    Sq Rect  070  040   000   Flash  Sq Rect  X_070 Y_040 H_000 FL
+    D62    Sq Rect  072  042   000   Flash  Sq Rect  X_072 Y_042 H_000 FL
+    D63    Sq Rect  200  200   000   Flash  Sq Rect  X_200 Y_200 H_000 FL
+    D64    Sq Rect  202  202   000   Flash  Sq Rect  X_202 Y_202 H_000 FL
+    D65    Ellipse  014  014   000   Flash  Ellipse  X_014 Y_014 H_000 FL
+    D66    Thermal  016  016   008   Flash  Thermal  O_016 I_012       FL
+    D67    Ellipse  028  028   000   Flash  Ellipse  X_028 Y_028 H_000 FL
+    D68    Ellipse  022  022   000   Flash  Ellipse  X_022 Y_022 H_000 FL
+    D69    Thermal  024  024   012   Flash  Thermal  O_024 I_018       FL
+    D70    Drl Sym  030  030   008   Flash  Drl Sym  X_030 Y_030 H_008 FL
+    D71    Drl Sym  030  030   012   Flash  Drl Sym  X_030 Y_030 H_012 FL
+    D72    Drl Sym  030  030   014   Flash  Drl Sym  X_030 Y_030 H_014 FL
+    D73    Drl Sym  030  030   020   Flash  Drl Sym  X_030 Y_030 H_020 FL
+    D74    Drl Sym  030  030   125   Flash  Drl Sym  X_030 Y_030 H_125 FL
+    
+
+
+    Code   Hole Diameter
+    --------------------
+    T01    008
+    T02    012
+    T03    014
+    T04    020
+    T05    125
+
+
+
+
+
+
+
+
+                                  U.C. BERKELEY
+
+    20-Nov-07  20:46                                                 Page  2
+
+    Aperture Information                                        11-28-07.PCB
+
+                           EPIC CORE 03-28-2007  REV.A
+
+                          Aperture and Tool Assignments
+    ========================================================================
+
+    Item                     Normal  S Mask   Plane   Thermal  Drl Sym  Tool
+    ------------------------------------------------------------------------
+    DRAW APERTURE            D10      -        -       -        -        -
+    LINE_002                 D10      -        -       -        -        -
+    LINE_004                 D11      -        -       -        -        -
+    LINE_006                 D12      -        -       -        -        -
+    LINE_008                 D13      -        -       -        -        -
+    LINE_010                 D14      -        -       -        -        -
+    LINE_012                 D15      -        -       -        -        -
+    LINE_016                 D16      -        -       -        -        -
+    LINE_018                 D17      -        -       -        -        -
+    LINE_020                 D18      -        -       -        -        -
+    LINE_024                 D19      -        -       -        -        -
+    LINE_030                 D20      -        -       -        -        -
+    LINE_050                 D21      -        -       -        -        -
+    P_EL_0030_0030_020_AL    D20     D23      D22     D24       -        -
+    P_EL_0050_0050_000_TL    D21     D25       -       -        -        -
+    P_MH_0014_0014_014_AL    D26      -       D20      -        -        -
+    P_MH_0126_0126_125_AL    D27      -       D28      -        -        -
+    P_OV_0010_0030_000_TL    D29     D30       -       -        -        -
+    P_OV_0010_0034_000_TL    D31     D32       -       -        -        -
+    P_OV_0020_0050_000_TL    D33     D34       -       -        -        -
+    P_OV_0030_0010_000_TL    D35     D36       -       -        -        -
+    P_OV_0034_0010_000_TL    D37     D38       -       -        -        -
+    P_SQ_0020_0022_000_TL    D39     D40       -       -        -        -
+    P_SQ_0022_0020_000_TL    D41     D42       -       -        -        -
+    P_SQ_0030_0040_000_BL    D43     D44       -       -        -        -
+    P_SQ_0030_0040_020_AL    D43     D44      D22     D24       -        -
+    P_SQ_0036_0036_000_TL    D45     D46       -       -        -        -
+    P_SQ_0040_0030_000_BL    D47     D48       -       -        -        -
+    P_SQ_0040_0030_020_AL    D47     D48      D22     D24       -        -
+    P_SQ_0040_0040_000_TL    D49     D50       -       -        -        -
+    P_SQ_0040_0090_000_TL    D51     D52       -       -        -        -
+    P_SQ_0046_0050_000_TL    D53     D54       -       -        -        -
+    P_SQ_0050_0036_000_TL    D55     D56       -       -        -        -
+    P_SQ_0050_0050_000_TL    D57     D58       -       -        -        -
+    P_SQ_0054_0074_000_TL    D59     D60       -       -        -        -
+    P_SQ_0070_0040_000_TL    D61     D62       -       -        -        -
+    P_SQ_0200_0200_000_TL    D63     D64       -       -        -        -
+    V_CR_012_008             D15     D65      D19     D66       -        -
+    V_CR_020_012             D18     D68      D67     D69       -        -
+    HOLE_008                  -       -        -       -       D70      T01
+    HOLE_012                  -       -        -       -       D71      T02
+
+                                  U.C. BERKELEY
+
+    20-Nov-07  20:46                                                 Page  3
+
+    Aperture Information                                        11-28-07.PCB
+
+                           EPIC CORE 03-28-2007  REV.A
+
+                          Aperture and Tool Assignments
+    ========================================================================
+
+    Item                     Normal  S Mask   Plane   Thermal  Drl Sym  Tool
+    ------------------------------------------------------------------------
+    HOLE_014                  -       -        -       -       D72      T03
+    HOLE_020                  -       -        -       -       D73      T04
+    HOLE_125                  -       -        -       -       D74      T05
+    
+
+    - : Not applicable.                   * : Aperture/tool is not assigned.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                  U.C. BERKELEY
+
+    20-Nov-07  20:46                                                 Page  4
+
+    PCB Statistics                                              11-28-07.PCB
+
+                           EPIC CORE 03-28-2007  REV.A
+
+    ========================================================================
+
+    Arcs:    281     Components:     481     Pads:  3275     Polygons:    38
+    Lines: 15107     Text strings:  1161     Vias:  1602     Holes:     2254
+
+    ------------------------------------------------------------------------
+
+    Text Summary -        T_0024_006_0:   378
+                          T_0024_006_1:    90
+                          T_0024_006_2:   162
+                          T_0024_006_3:   279
+                          T_0032_008_0:    18
+                          T_0032_010_0:     9
+                          T_0032_010_1:     9
+                          T_0032_010_3:     9
+                          T_0052_010_4:    45
+                          T_0060_008_0:     1
+                          T_0060_010_0:     1
+                          T_0080_010_0:    53
+                          T_0080_010_3:    19
+                          T_0080_010_4:     1
+                          T_0108_010_0:    53
+                          T_0120_010_0:    12
+                          T_0148_010_0:    18
+                          T_0180_010_0:     4
+    
+    Line Summary -        L_002:   684
+                          L_004:  7029
+                          L_006:  2196
+                          L_008:   729
+                          L_010:  3027
+                          L_012:   972
+                          L_016:     9
+                          L_018:    36
+                          L_020:   423
+                          L_024:   225
+                          L_030:    45
+                          L_050:    13
+    
+    Pad Summary  -        P_EL_0030_0030_020_AL:   585
+                          P_EL_0050_0050_000_TL:    13
+                          P_MH_0014_0014_014_AL:    36
+                          P_MH_0126_0126_125_AL:     4
+                          P_OV_0010_0030_000_TL:   288
+                          P_OV_0010_0034_000_TL:   216
+                          P_OV_0020_0050_000_TL:    72
+
+                                  U.C. BERKELEY
+
+    20-Nov-07  20:46                                                 Page  1
+
+    PCB Statistics                                              11-28-07.PCB
+
+                           EPIC CORE 03-28-2007  REV.A
+
+    ========================================================================
+
+                          P_OV_0030_0010_000_TL:   288
+                          P_OV_0034_0010_000_TL:   216
+                          P_SQ_0020_0022_000_TL:   432
+                          P_SQ_0022_0020_000_TL:   270
+                          P_SQ_0030_0040_000_BL:   306
+                          P_SQ_0030_0040_020_AL:     9
+                          P_SQ_0036_0036_000_TL:    18
+                          P_SQ_0040_0030_000_BL:   306
+                          P_SQ_0040_0030_020_AL:    18
+                          P_SQ_0040_0040_000_TL:     9
+                          P_SQ_0040_0090_000_TL:    18
+                          P_SQ_0046_0050_000_TL:    18
+                          P_SQ_0050_0036_000_TL:     9
+                          P_SQ_0050_0050_000_TL:    81
+                          P_SQ_0054_0074_000_TL:    36
+                          P_SQ_0070_0040_000_TL:    18
+                          P_SQ_0200_0200_000_TL:     9
+    
+    Via Summary  -        V_CR_012_008:  1512
+                          V_CR_020_012:    90
+    
+    Hole Summary -        H_008:  1512
+                          H_012:    90
+                          H_014:    36
+                          H_020:   612
+                          H_125:     4
+    
+    Plane Connections -   Power Thermals:      0
+                          Power Directs:       0
+                          Ground Thermals:     0
+                          Ground Directs:    657
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                  U.C. BERKELEY
+
+    20-Nov-07  20:46                                                 Page  2

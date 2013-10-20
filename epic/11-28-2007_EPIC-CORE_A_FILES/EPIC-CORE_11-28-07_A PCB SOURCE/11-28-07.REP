@@ -1,0 +1,57 @@
+
+
+    Design Rule Check Report                                    11-28-07.PCB
+
+                           EPIC CORE 03-28-2007  REV.A
+
+    ========================================================================
+
+    DRC Clearances (in mils)
+    ------------------------
+
+                   Top   Bot  Mid1  Mid2  Mid3  Mid4  Mid5  Mid6  Mid7  Mid8
+
+      Pad-to-Pad     5     5     5     5     5     5     5     5     5     5
+     Pad-to-Line     4     4     4     4     4     4     4     4     4     4
+    Line-to-Line     4     4     4     4     4     4     4     4     4     4
+    
+    Hole-to-Hole    10
+    
+
+    DRC Report Options
+    ------------------
+
+    Clearance Violations:             enabled
+    Text Violations:                  disabled
+    Net List Violations:              enabled
+    Single Node Routes:               disabled
+    Unconnected Pins:                 disabled
+    Unplaced Nodes:                   enabled
+    
+
+    DRC Errors
+    ----------
+
+    
+
+    WARNING:  Multiple nets are connected to the power and/or ground planes.
+    DRC may be invalid.  The design file may not route properly in Tango
+    RoutePRO or TangoPRO Route.
+
+
+    
+    Unplaced Nodes
+    -------------
+
+       No unplaced nodes detected.
+    
+    DRC Summary
+    -----------
+
+            0 errors detected
+            0 unplaced nodes detected
+
+
+                                  U.C. BERKELEY
+
+    20-Nov-07  20:47                                                 Page  1
