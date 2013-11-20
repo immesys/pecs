@@ -60,7 +60,7 @@ def launch_udp_server():
             data, addr = sock.recvfrom(1024)
             fan, heat, occupancy, uid = struct.unpack_from("<BBBL", data)
             uid = str(uid)
-            doc = {"uid":uid, "addr":addr, "fan":fan, "heat":heat, "sw":occupancy}
+            doc = {"uid":uid, "addr":addr, "fan":fan, "heat":heat, "sw":occupancy, "when":time.time()}
             db.packets.save(doc)
             
             heats = get_heat_stream(uid)
@@ -91,6 +91,9 @@ def main(global_config, **settings):
     config = Configurator(settings=settings)
     config.add_static_view('static', 'static', cache_max_age=3600)
     config.add_route('home', '/')
+    config.add_route('homeuid', '/{uid}')
+    config.add_route('apply_fan', '/{uid}/fan')
+    config.add_route('apply_heat','/{uid}/heat')
     config.scan()
     return config.make_wsgi_app()
     
