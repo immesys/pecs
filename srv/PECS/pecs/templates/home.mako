@@ -71,7 +71,7 @@
         <p><a href="#about" class="btn btn-primary btn-large">Learn more &raquo;</a></p>
       </div>
 
-      <h2>You are currently using chair: </h2>
+      <h2>You are currently using chair: ${uid}</h2>
 
       <!-- Example row of columns -->
       <div class="row">

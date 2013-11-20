@@ -23,7 +23,7 @@ PFLAGS += -DRPL_ROUTING -DRPL_STORING_MODE -I$(TOSDIR)/lib/net/rpl
 # you can log this information using the util/Listener.py script
 
 #PFLAGS += -DREPORT_DEST=\"2001:470:f4fe:1337::2\"
-PFLAGS += -DREPORT_DEST=\"2001:470:c:10c9::2\"
+PFLAGS += -DREPORT_DEST=\"2001:470:66:3e9::2\"
 # if you're using DHCP, set this to try and derive a 16-bit address
 # from the IA received from the server.  This will work if the server
 # gives out addresses from a /112 prefix.  If this is not set, blip
