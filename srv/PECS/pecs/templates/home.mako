@@ -52,7 +52,7 @@
               <li><a href="#contact">Trends</a></li>
             </ul>
             <form class="navbar-form pull-right">
-              <input class="span2" type="text" placeholder="Email">
+              <input class="span2" type="text" placeholder="User ID">
               <input class="span2" type="password" placeholder="Password">
               <button type="submit" class="btn">Sign in</button>
             </form>
@@ -65,11 +65,13 @@
 
       <!-- Main hero unit for a primary marketing message or call to action -->
       <div class="hero-unit">
-        <h1>Hello, INSERT PERSONS NAME!</h1>
+        <h1>Hello User</h1>
         <p></p>
         <p>Welcome to the Personal Environmental Control System or as we like to call it, PECS. On this page, you will have the ability to control the heating and cooling features of the chair, fan and footwarmer. </p>
         <p><a href="#about" class="btn btn-primary btn-large">Learn more &raquo;</a></p>
       </div>
+
+      <h2>You are currently using chair: </h2>
 
       <!-- Example row of columns -->
       <div class="row">
@@ -97,7 +99,7 @@
         </div>
       </div>
 
-      <ul class="nav nav-pills">
+      <ul class="nav nav-tabs">
         <li class="active"><a href="#chair">Chair</a></li>
         <li><a href="#fan">Fan</a></li>
         <li><a href="#footwarmer">Footwarmer</a></li>
@@ -124,8 +126,6 @@
           orientation: "horizontal",
           min:"0",
           max:"7",
-          backgroundColor: "#0000FF",
-          animate: true,
           slide: function( event, ui ) {
             $( "#chaircoolvalue" ).html("Cooling level: "+ ui.value );
           }
