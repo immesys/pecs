@@ -1,23 +1,29 @@
 from pyramid.view import view_config
 import pymongo
+import socket
 client = pymongo.MongoClient()
 db = client.pecs
 
 def sendmsg(uid, command, value):
+    uid = str(uid)
+    print "Searching for uid: ",uid
     curs = db.packets.find({'uid':uid}).sort([("when", pymongo.DESCENDING)])
     if curs.count() == 0:
         return {"error":"not found"}
-    destaddr = curs[0]["addr"]
+    destaddr = curs[0]["addr"][0]
     sock = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
-    sock.sendto(chr(command)+chr(value), (destaddr, 7001))
+    cmd = r"" + chr(command)+chr(value)
+    print "cmd is",cmd
+    print "destaddr is",repr(destaddr)
+    sock.sendto(cmd, (destaddr, 7001))
     return {"success":"True","address":destaddr}
     
-@view_config(route_name='home', renderer='templates/mytemplate.pt')
-def home(request):
+@view_config(route_name='home', renderer='pecs:templates/home.mako')
+def my_view(request):
     return {'project': 'PECS'}
     
     
-@view_config(route_name='homeuid', renderer='templates/mytemplate.pt')
+@view_config(route_name='homeuid', renderer='pecs:templates/home.mako')
 def home_uid(request):
     return {'project': 'PECS', 'uid':request.matchdict['uid']}
     

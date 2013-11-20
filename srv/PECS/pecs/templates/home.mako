@@ -49,19 +49,7 @@
             <ul class="nav">
               <li class="active"><a href="#">Home</a></li>
               <li><a href="#about">About</a></li>
-              <li><a href="#contact">Contact</a></li>
-              <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                  <li><a href="#">Action</a></li>
-                  <li><a href="#">Another action</a></li>
-                  <li><a href="#">Something else here</a></li>
-                  <li class="divider"></li>
-                  <li class="nav-header">Nav header</li>
-                  <li><a href="#">Separated link</a></li>
-                  <li><a href="#">One more separated link</a></li>
-                </ul>
-              </li>
+              <li><a href="#contact">Trends</a></li>
             </ul>
             <form class="navbar-form pull-right">
               <input class="span2" type="text" placeholder="Email">
@@ -80,36 +68,40 @@
         <h1>Hello, INSERT PERSONS NAME!</h1>
         <p></p>
         <p>Welcome to the Personal Environmental Control System or as we like to call it, PECS. On this page, you will have the ability to control the heating and cooling features of the chair, fan and footwarmer. </p>
-        <p><a href="#" class="btn btn-primary btn-large">Learn more &raquo;</a></p>
+        <p><a href="#about" class="btn btn-primary btn-large">Learn more &raquo;</a></p>
       </div>
 
       <!-- Example row of columns -->
       <div class="row">
         <div class="span4">
           <h2>Chair</h2>
-          <p>Your chair is equipped with 3 fans and 2 two heating strips. You can adjust the sliders below to change the level of heating and cooling within the chair </p>
-          <h4 id="amount">
-          </h4>
-
-          <div id="slider"></div>
-          <h4 id="amount2"></h4>
-          <div id="slider2"></div>
-
-          
+          <p>Your chair is equipped with 3 fans and 2 two heating strips. You can adjust the sliders below to change the level of heating and cooling within the chair </p>  
+          <h4 id="chaircoolvalue"></h4>
+          <div id="chaircoolslider"></div>
+          <h4 id="chairheatvalue"></h4>
+          <div id="chairheatslider"></div> 
         </div>
         <div class="span4">
           <h2>Fan</h2>
           <p>The fan that is residing on your desk is capable of three speeds and has a heating lamp built in for warmth. If you wish, you can have both at the same time. Just toggle the controls below. </p>
-            Cooling Level <input type="number" name="chairtemp" min="0" max="4" value="0">
-            Heating Level <input type="number" name="chairtemp" min="0" max="1" value="0">
-          <p><a class="btn" href="#">View details &raquo;</a></p>
+          <h4 id="fancoolvalue"></h4>
+          <div id="fancoolslider"></div>
+          <h4 id="fanheatvalue"></h4>
+          <div id="fanheatslider"></div>
        </div>
         <div class="span4">
           <h2>Footwarmer</h2>
-          <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
-          <p><a class="btn" href="#">View details &raquo;</a></p>
+          <p>The footwarmer is only capable of providing heat. It is located underneath your desk.</p>
+          <h4 id="fwheatvalue"></h4>
+          <div id="fwheatslider"></div>
         </div>
       </div>
+
+      <ul class="nav nav-pills">
+        <li class="active"><a href="#chair">Chair</a></li>
+        <li><a href="#fan">Fan</a></li>
+        <li><a href="#footwarmer">Footwarmer</a></li>
+      </ul>
 
       <hr>
 
@@ -127,7 +119,7 @@
     <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
     <script>
       $(function() { 
-        $( "#slider" ).slider({
+        $( "#chaircoolslider" ).slider({
           value: 4,
           orientation: "horizontal",
           min:"0",
@@ -135,15 +127,19 @@
           backgroundColor: "#0000FF",
           animate: true,
           slide: function( event, ui ) {
-            $( "#amount" ).html("Cooling level: "+ ui.value );
+            $.getJSON(${uid}+"/fan",{"v":ui.value},function(data, stat)
+            {
+                console.log("dat",data, "stat",stat);
+            });
+            $( "#chaircoolvalue" ).html("Cooling level: "+ ui.value );
           }
         });
-        $( "#amount" ).html("Cooling level: "+ $( "#slider" ).slider( "value" ) );
+        $( "#chaircoolvalue" ).html("Cooling level: "+ $( "#chaircoolslider" ).slider( "value" ) );
       });
     </script>
-       <script>
+    <script>
       $(function() { 
-        $( "#slider2" ).slider({
+        $( "#chairheatslider" ).slider({
           value: 0,
           orientation: "horizontal",
           min:"0",
@@ -151,12 +147,65 @@
           backgroundColor: "#0000FF",
           animate: true,
           slide: function( event, ui ) {
-            $( "#amount2" ).html("Heating level: "+ ui.value );
+            $.getJSON(${uid}+"/heat",{"v":ui.value},function(data, stat)
+            {
+                console.log("dat",data, "stat",stat);
+            });
+            $( "#chairheatvalue" ).html("Heating level: "+ ui.value );
           }
         });
-        $( "#amount2" ).html("Heating level: "+ $( "#slider2" ).slider( "value" ) );
+        $( "#chairheatvalue" ).html("Heating level: "+ $( "#chairheatslider" ).slider( "value" ) );
       });
     </script>
+    <script>
+      $(function() { 
+        $( "#fancoolslider" ).slider({
+          value: 4,
+          orientation: "horizontal",
+          min:"0",
+          max:"7",
+          backgroundColor: "#0000FF",
+          animate: true,
+          slide: function( event, ui ) {
+            $( "#fancoolvalue" ).html("Cooling level: "+ ui.value );
+          }
+        });
+        $( "#fancoolvalue" ).html("Cooling level: "+ $( "#fancoolslider" ).slider( "value" ) );
+      });
+    </script>
+    <script>
+      $(function() { 
+        $( "#fanheatslider" ).slider({
+          value: 0,
+          orientation: "horizontal",
+          min:"0",
+          max:"1",
+          backgroundColor: "#0000FF",
+          animate: true,
+          slide: function( event, ui ) {
+            $( "#fanheatvalue" ).html("Heating level: "+ ui.value );
+          }
+        });
+        $( "#fanheatvalue" ).html("Heating level: "+ $( "#fanheatslider" ).slider( "value" ) );
+      });
+    </script>
+    <script>
+      $(function() { 
+        $( "#fwheatslider" ).slider({
+          value: 0,
+          orientation: "horizontal",
+          min:"0",
+          max:"1",
+          backgroundColor: "#0000FF",
+          animate: true,
+          slide: function( event, ui ) {
+            $( "#fwheatvalue" ).html("Heating level: "+ ui.value );
+          }
+        });
+        $( "#fwheatvalue" ).html("Heating level: "+ $( "#fwheatslider" ).slider( "value" ) );
+      });
+    </script>
+
 
   </body>
 </html>

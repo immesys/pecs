@@ -13,6 +13,7 @@ PECS.egg-info/not-zip-safe
 PECS.egg-info/requires.txt
 PECS.egg-info/top_level.txt
 pecs/__init__.py
+pecs/ssmap.py
 pecs/tests.py
 pecs/views.py
 pecs/static/favicon.ico
@@ -24,4 +25,5 @@ pecs/static/pylons.css
 pecs/static/pyramid-small.png
 pecs/static/pyramid.png
 pecs/static/transparent.gif
+pecs/templates/home.mako
 pecs/templates/mytemplate.pt
