@@ -1,0 +1,1 @@
+ifconfig ppp0 add 2001:470:f4fe:1337::2/64

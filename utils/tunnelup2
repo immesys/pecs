@@ -1,0 +1,5 @@
+ip tunnel add he-ipv6 mode sit remote 66.220.18.42 local 128.32.37.230 ttl 255
+ip link set he-ipv6 up
+ip addr add 2001:470:c:10c9::2/64 dev he-ipv6
+ip route add ::/0 dev he-ipv6
+ip -f inet6 addr
