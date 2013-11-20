@@ -55,7 +55,7 @@ def get_occupancy_stream(uid):
 def launch_udp_server():
     def t():
         sock = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
-        sock.bind(("::", 7000))
+        sock.bind(("::", 7005))
         while True:
             data, addr = sock.recvfrom(1024)
             fan, heat, occupancy, uid = struct.unpack_from("<BBBL", data)

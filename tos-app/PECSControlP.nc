@@ -48,13 +48,14 @@ implementation
 
   uint8_t st_fan;
   uint8_t st_heat;
-
+  bool bl;
+  
   event void Boot.booted() 
   {
     call RadioControl.start();
     timerStarted = FALSE;
 
-    route_dest.sin6_port = htons(7000);
+    route_dest.sin6_port = htons(7005);
     inet_pton6(REPORT_DEST, &route_dest.sin6_addr);
     call ReportTimer.startOneShot(call Random.rand16() % (1024 * REPORT_PERIOD));
 
@@ -76,7 +77,8 @@ implementation
         st_fan = 0;
         st_heat = 0;
     }
-    call contacti.edge(FALSE);
+    bl = FALSE;
+    call contacti.edge(bl);
     call contacti.enable();
   }
   
