@@ -9,6 +9,8 @@
 #include <stdlib.h>
 #include "global.h"
 
+extern void g_fill_rgb();
+extern void delay_ms(uint16_t v);
 int main()
 {
     init_hw();
@@ -17,10 +19,15 @@ int main()
     DBG2 = 0;
     DBG2 = 1;
     DBG2 = 0;
-    printf("Starting event loop\n");
+    lcd_init();
+    g_fill_rgb();
+    //printf("Starting event loop\n");
     while(1)
     {
-
+        DBG2 = 0;
+        DBG2 = 1;
+        DBG2 = 0;
+   //     wave_test();
     }
 }
 

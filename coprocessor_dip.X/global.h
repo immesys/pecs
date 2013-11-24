@@ -11,16 +11,49 @@
 #include <xc.h>
 #include <stdint.h>
 
+
+
+#define LCD_X  240
+#define LCD_Y  320
+
+
+
+inline void lcd_select(void);
+inline void lcd_deselect(void);
+inline void lcd_write_index(uint8_t idx);
+inline void lcd_write_data_start(void);
+inline void lcd_write_data_word(uint16_t w);
+inline void lcd_write_data_body(uint16_t w);
+inline void lcd_write_reg(uint16_t addr, uint16_t value);
+inline uint16_t lcd_read_data(void);
+inline uint16_t lcd_read_reg(uint16_t addr);
+inline void lcd_set_cursor(uint16_t x, uint16_t y);
+
+/**
+ * Delay in units of half a microsecond
+ * @param x number of half microseconds to delay
+ */
+void delay_hus(uint16_t x);
+
+
+/**
+ * Delay for X milliseconds.
+ * @param x the number of milliseconds to delay for
+ */
+void delay_ms(uint16_t x);
+
+
 //config.c
 void init_hw(void);
 
 //uart.c
 inline void uart1_wb(uint8_t v);
 int write(int handle, void *buffer, unsigned int len);
+inline void tc(uint16_t v);
 
 //spi.c
 void delay_ms(uint16_t x);
-
+void lcd_init(void);
 
 //Pins
 #define LCD_MOSI_RPO    _RP3R
@@ -48,6 +81,8 @@ void delay_ms(uint16_t x);
 #define TP_SS           _LATB15
 #define DBG2_TRIS       _TRISB5
 #define DBG2            _LATB5
+
+#define LCD_BL          OC1R
 
 #endif	/* GLOBAL_H */
 

@@ -2,6 +2,15 @@
 #include "global.h"
 #include <stdio.h>
 
+#define MAX_X  240
+#define MAX_Y  320
+
+#define SPI_START   (0x70)  /* Start byte for SPI transfer        */
+#define SPI_RD      (0x01)  /* WR bit 1 within start              */
+#define SPI_WR      (0x00)  /* WR bit 0 within start              */
+#define SPI_DATA    (0x02)  /* RS bit 1 within start byte         */
+#define SPI_INDEX   (0x00)  /* RS bit 0 within start byte         */
+
 /**
  * Flush the TX fifo and discard RX bytes
  */
@@ -11,6 +20,9 @@ void spi1_flush_tx()
 
     //Flush TX operations
     while(SPI1STATbits.SPIBEC);
+
+    //Flush shift register
+    while(!SPI1STATbits.SRMPT);
 
     //Discard RX FIFO
     while(!SPI1STATbits.SRXMPT) discard = SPI1BUF;
@@ -26,11 +38,13 @@ void spi1_flush_tx()
  */
 inline uint8_t spi1_rw_b(uint8_t b)
 {
+    uint8_t rv;
     spi1_flush_tx();
     SPI1BUF = b;
     //Wait for response byte
     while(SPI1STATbits.SRXMPT);
-    return SPI1BUF;
+    rv = SPI1BUF;
+    return rv;
 }
 
 /**
@@ -60,33 +74,92 @@ inline void spi1_w_b_fast(uint8_t b)
     SPI1BUF = b;
 }
 
+/**
+ * Write a byte, one RX, check for space
+ * @param b
+ */
+inline void spi1_w_b(uint8_t b)
+{
+    uint8_t discard;
+    //Wait for TX space
+    while(SPI1STATbits.SPITBF);
+
+    //Discard some RX space
+    discard = SPI1BUF;
+    SPI1BUF = b;
+}
+
+inline void lcd_select(void)
+{
+    LCD_SS = 0;
+}
+
+inline void lcd_deselect(void)
+{
+    LCD_SS = 1;
+}
+
 inline void lcd_write_index(uint8_t idx)
 {
-
+    lcd_select();
+    spi1_w_b_xdiscard(SPI_START | SPI_WR | SPI_INDEX);
+    spi1_w_b(0);
+    spi1_rw_b(idx); //The read ensures it is fully flushed through
+    lcd_deselect();
 }
 
-inline void lcd_write_data(uint16_t data)
+inline void lcd_write_data_start(void)
 {
-
+    spi1_w_b_xdiscard(SPI_START | SPI_WR | SPI_DATA);
 }
 
-inline uint16_t lcd_read_data(void)
+inline void lcd_write_data_word(uint16_t w)
 {
-
+    lcd_select();
+    spi1_w_b_xdiscard(SPI_START | SPI_WR | SPI_DATA);
+    spi1_w_b(w >> 8);
+    spi1_rw_b(w & 0xFF);
+    lcd_deselect();
 }
 
+inline void lcd_write_data_body(uint16_t w)
+{
+    spi1_w_b(w >> 8);
+    spi1_w_b(w & 0xFF);
+}
 inline void lcd_write_reg(uint16_t addr, uint16_t value)
 {
-
+    lcd_write_index(addr);
+    lcd_write_data_word(value);
+}
+inline uint16_t lcd_read_data(void)
+{
+    uint16_t rv;
+    lcd_select();
+    spi1_w_b_xdiscard(SPI_START | SPI_RD | SPI_DATA);
+    spi1_w_b(0);
+    rv = spi1_rw_b(0);
+    rv <<= 8;
+    rv |= spi1_rw_b(0);
+    lcd_deselect();
+    return rv;
 }
 
 inline uint16_t lcd_read_reg(uint16_t addr)
 {
+    uint16_t rv;
+    lcd_write_index(addr);
+    rv = lcd_read_data();
+    return rv;
 }
 
 inline void lcd_set_cursor(uint16_t x, uint16_t y)
 {
+    lcd_write_reg(0x0020, x);
+    lcd_write_reg(0x0021, y);
 }
+
+
 
 /**
  * Delay in units of half a microsecond
@@ -117,6 +190,11 @@ void delay_ms(uint16_t x)
     } while((now - then) < hmicros);
 }
 
+void wave_test(void)
+{
+    lcd_read_reg(0x0000);
+
+}
 /**
  * This magic incantation for screen initialisation was translated from the
  * example source code given by the vendor: powermcu.com / hotmcu.com
@@ -125,8 +203,15 @@ void delay_ms(uint16_t x)
 void lcd_init(void)
 {
     uint16_t dev_code;
+
+    lcd_deselect();
+    LCD_RST = 0;
+    delay_ms(50);
+    LCD_RST = 1;
+    delay_ms(50);
     dev_code = lcd_read_reg(0x0000);
-    printf("Screen detected as %04x\n",dev_code);
+    tc(0x10FF);
+    tc(dev_code);
 
     /* Different driver IC initialization */
     if( dev_code == 0x9320 || dev_code == 0x9300 )
@@ -179,6 +264,7 @@ void lcd_init(void)
     }
     else
     {
-        printf("Screen initialisation aborted: not recognised\n");
+        tc(0xDD01);
     }
+
 }

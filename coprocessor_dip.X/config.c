@@ -49,8 +49,9 @@ void init_hw()
     LCD_RST_TRIS = 0;
     LCD_RST = 1;
     DBG2_TRIS = 0;
+    LCD_SS_TRIS = 0;
+    TP_SS_TRIS = 0;
     
-
     //Set oscillator and unlock RP
     __builtin_write_OSCCONH(0b001); //FRC wth PLL
     __builtin_write_OSCCONL(0b00000100); //Disable lock, don't osc switch
@@ -72,23 +73,23 @@ void init_hw()
     _SDI2R = TP_MISO_RPI;
     _INT2R = TP_IRQ_RPI;
 
- /*   //Configure SPI1 module
+    //Configure SPI1 module
     _SPI1IF = 0;
     _SPI1IP = 5;
     SPI1STATbits.SISEL = 0b100; //Interrupt when there is space in TX
     SPI1CON1bits.DISSCK = 0; //Use clock
     SPI1CON1bits.DISSDO = 0; //Enable SDO
     SPI1CON1bits.MODE16 = 0; //8 bit
-    SPI1CON1bits.SMP = 0; //Sample in the middle of the bit
+    SPI1CON1bits.SMP = 0; ////INVALID:Sample in the middle of the bit
     SPI1CON1bits.CKE = 0; //0= Mode 3, clock is idle high, and
     SPI1CON1bits.CKP = 1; //1= data changes on falling edge, sample on rising
     SPI1CON1bits.MSTEN = 1; //Master
-    SPI1CON1bits.SPRE = 0b110; //2:1 = 8Mhz probably
-    SPI1CON1bits.PPRE = 0b11; //1:1
+    SPI1CON1bits.SPRE = 0b101; //2:1 = 8Mhz probably
+    SPI1CON1bits.PPRE = 0b11; //0b11 = 1:1
     SPI1CON2bits.FRMEN = 0; //No framing
     SPI1CON2bits.SPIBEN = 1; //Enable enhanced buffer FIFO
     SPI1STATbits.SPIEN = 1;
-    _SPI1IE = 0;*/
+    _SPI1IE = 0;
 
     //Configure UART module (debug)
     U1MODEbits.UEN = 00;
@@ -108,5 +109,14 @@ void init_hw()
     T2CONbits.T32 = 1;
     T2CONbits.TCKPS = 0b01; //2Mhz
     T2CONbits.TON = 1;
+
+    //Configure a PWM output for the screen backlight
+    //PR1 = 0xFF;
+    OC1CON1bits.OCTSEL = 0b111; //sysclk 
+    OC1CON1bits.OCM = 0b110; //Edge aligned PWM
+    OC1CON2bits.OCTRIS = 0;
+    OC1CON2bits.SYNCSEL = 0x1F; 
+    OC1RS = 0xFF;
+    OC1R = 0xFF;
 
 }
