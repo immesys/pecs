@@ -1,0 +1,15 @@
+
+PINOUT
+
+LCD_CS      : 6 rp2
+LCD_MISO    : 5 rp1
+LCD_MOSI    : 7 rp3
+LCD_SCK     : 4 rp0
+
+TP_CS       : 26 rp15
+TP_MISO     : 18 rp9
+TP_MOSI     : 24 rp13
+TP_SCK      : 25 rp14
+TP_IRQ      : 17 rp8
+
+BL_CTL      : 16 rp7

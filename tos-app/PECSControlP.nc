@@ -48,6 +48,8 @@ implementation
 
   uint8_t st_fan;
   uint8_t st_heat;
+  uint8_t shadow_fan;
+  uint8_t shadow_heat;
   bool bl;
   
   event void Boot.booted() 
@@ -129,6 +131,7 @@ implementation
             atomic
             {
                 st_fan = pd[1];
+                shadow_fan = pd[1];
             }
             set_fan();
             post sendrep();
@@ -137,6 +140,7 @@ implementation
             atomic
             {
                 st_heat = pd[1];
+                shadow_heat = pd[1];
             }
             set_heat();
             post sendrep();
@@ -168,6 +172,20 @@ implementation
     {
       call ReportTimer.startPeriodic(1024 * REPORT_PERIOD);
       timerStarted = TRUE;
+    }
+    if (call contact.get())
+    { //Not occupied
+        st_heat = 0;
+        st_fan = 0;
+        set_heat();
+        set_fan();
+    }
+    else
+    {
+        st_heat = shadow_heat;
+        st_fan = shadow_fan;
+        set_heat();
+        set_fan();
     }
     post sendrep();
   }

@@ -1,0 +1,736 @@
+Disassembly Listing for coprocessor_dip
+Generated From:
+/home/immesys/w/pecs/coprocessor_dip.X/dist/default/production/coprocessor_dip.X.production.elf
+Nov 23, 2013 3:58:04 PM
+
+---  /home/immesys/w/pecs/coprocessor_dip.X/uart.c  -----------------------------------------------------
+1:                 
+2:                 
+3:                 #include <stdio.h>
+4:                 #include "global.h"
+5:                 
+6:                 inline void uart1_wb(uint8_t v)
+7:                 {
+00118E  FA0002     LNK #0x2
+001190  784F00     MOV.B W0, [W14]
+8:                     while(U1STAbits.UTXBF);
+001192  000000     NOP
+001194  801115     MOV U1STA, W5
+001196  202004     MOV #0x200, W4
+001198  628204     AND W5, W4, W4
+00119A  520FE0     SUB W4, #0x0, [W15]
+00119C  3AFFFB     BRA NZ, 0x1194
+9:                     U1TXREG = v;
+00119E  78429E     MOV.B [W14], W5
+0011A0  FB8205     ZE W5, W4
+0011A2  881124     MOV W4, U1TXREG
+10:                }
+0011A4  FA8000     ULNK
+0011A6  060000     RETURN
+11:                
+12:                int __attribute__((__weak__, __section__(".libc")))
+13:                write(int handle, void *buffer, unsigned int len) {
+000298  FA0008     LNK #0x8
+00029A  980710     MOV W0, [W14+2]
+00029C  980721     MOV W1, [W14+4]
+00029E  980732     MOV W2, [W14+6]
+14:                    int i;
+15:                
+16:                    switch (handle)
+0002A0  90021E     MOV [W14+2], W4
+0002A2  420260     ADD W4, #0x0, W4
+0002A4  520FE2     SUB W4, #0x2, [W15]
+0002A6  3E000F     BRA GTU, 0x2C6
+17:                    {
+18:                        case 0:
+19:                        case 1:
+20:                        case 2:
+21:                            for (i = len; i; --i) {
+0002A8  90023E     MOV [W14+6], W4
+0002AA  780F04     MOV W4, [W14]
+0002AC  370008     BRA 0x2BE
+0002BC  E90F1E     DEC [W14], [W14]
+0002BE  78021E     MOV [W14], W4
+0002C0  520FE0     SUB W4, #0x0, [W15]
+0002C2  3AFFF5     BRA NZ, 0x2AE
+22:                                uart1_wb(*(uint8_t*)buffer++);
+0002AE  90022E     MOV [W14+4], W4
+0002B0  784214     MOV.B [W4], W4
+0002B2  9002AE     MOV [W14+4], W5
+0002B4  E80285     INC W5, W5
+0002B6  980725     MOV W5, [W14+4]
+0002B8  784004     MOV.B W4, W0
+0002BA  070769     RCALL uart1_wb
+23:                            }
+24:                            break;
+0002C4  000000     NOP
+25:                    }
+26:                    return (len);
+0002C6  90023E     MOV [W14+6], W4
+27:                }
+0002C8  780004     MOV W4, W0
+0002CA  FA8000     ULNK
+0002CC  060000     RETURN
+---  /home/immesys/w/pecs/coprocessor_dip.X/spi.c  ------------------------------------------------------
+1:                 #include <stdint.h>
+2:                 #include "global.h"
+3:                 #include <stdio.h>
+4:                 
+5:                 /**
+6:                  * Flush the TX fifo and discard RX bytes
+7:                  */
+8:                 void spi1_flush_tx()
+9:                 {
+000E4A  FA0002     LNK #0x2
+10:                    uint8_t discard;
+11:                
+12:                    //Flush TX operations
+13:                    while(SPI1STATbits.SPIBEC);
+000E4C  000000     NOP
+000E4E  801205     MOV SPI1STAT, W5
+000E50  207004     MOV #0x700, W4
+000E52  628204     AND W5, W4, W4
+000E54  520FE0     SUB W4, #0x0, [W15]
+000E56  3AFFFB     BRA NZ, 0xE4E
+14:                
+15:                    //Discard RX FIFO
+16:                    while(!SPI1STATbits.SRXMPT) discard = SPI1BUF;
+000E58  370002     BRA 0xE5E
+000E5A  801244     MOV SPI1BUF, W4
+000E5C  784F04     MOV.B W4, [W14]
+000E5E  801205     MOV SPI1STAT, W5
+000E60  200204     MOV #0x20, W4
+000E62  628204     AND W5, W4, W4
+000E64  520FE0     SUB W4, #0x0, [W15]
+000E66  32FFF9     BRA Z, 0xE5A
+17:                }
+000E68  FA8000     ULNK
+000E6A  060000     RETURN
+18:                
+19:                /**
+20:                 * Write a byte to SPI and read the response.
+21:                 * This requires waiting for FIFO to flush before starting
+22:                 * (returned values are discarded)
+23:                 *
+24:                 * @param b The byte to write
+25:                 * @return  the read byte
+26:                 */
+27:                inline uint8_t spi1_rw_b(uint8_t b)
+28:                {
+000E6C  FA0002     LNK #0x2
+000E6E  784F00     MOV.B W0, [W14]
+29:                    spi1_flush_tx();
+000E70  07FFEC     RCALL spi1_flush_tx
+30:                    SPI1BUF = b;
+000E72  78429E     MOV.B [W14], W5
+000E74  FB8205     ZE W5, W4
+000E76  881244     MOV W4, SPI1BUF
+31:                    //Wait for response byte
+32:                    while(SPI1STATbits.SRXMPT);
+000E78  000000     NOP
+000E7A  801205     MOV SPI1STAT, W5
+000E7C  200204     MOV #0x20, W4
+000E7E  628204     AND W5, W4, W4
+000E80  520FE0     SUB W4, #0x0, [W15]
+000E82  3AFFFB     BRA NZ, 0xE7A
+33:                    return SPI1BUF;
+000E84  801244     MOV SPI1BUF, W4
+000E86  784204     MOV.B W4, W4
+34:                }
+000E88  784004     MOV.B W4, W0
+000E8A  FA8000     ULNK
+000E8C  060000     RETURN
+35:                
+36:                /**
+37:                 * Write a byte, discard all current RX fifo
+38:                 * @param b
+39:                 */
+40:                inline void spi1_w_b_xdiscard(uint8_t b)
+41:                {
+000E8E  FA0004     LNK #0x4
+000E90  984720     MOV.B W0, [W14+2]
+42:                    uint8_t discard;
+43:                    //Wait for TX space
+44:                    while(SPI1STATbits.SPITBF);
+000E92  000000     NOP
+000E94  801204     MOV SPI1STAT, W4
+000E96  620262     AND W4, #0x2, W4
+000E98  520FE0     SUB W4, #0x0, [W15]
+000E9A  3AFFFC     BRA NZ, 0xE94
+45:                    //Discard some RX space
+46:                    while(!SPI1STATbits.SRXMPT) discard = SPI1BUF;
+000E9C  370002     BRA 0xEA2
+000E9E  801244     MOV SPI1BUF, W4
+000EA0  784F04     MOV.B W4, [W14]
+000EA2  801205     MOV SPI1STAT, W5
+000EA4  200204     MOV #0x20, W4
+000EA6  628204     AND W5, W4, W4
+000EA8  520FE0     SUB W4, #0x0, [W15]
+000EAA  32FFF9     BRA Z, 0xE9E
+47:                
+48:                    SPI1BUF = b;
+000EAC  90422E     MOV.B [W14+2], W4
+000EAE  FB8204     ZE W4, W4
+000EB0  881244     MOV W4, SPI1BUF
+49:                }
+000EB2  FA8000     ULNK
+000EB4  060000     RETURN
+50:                
+51:                /**
+52:                 * Write a byte, discard one RX
+53:                 * @param b
+54:                 */
+55:                inline void spi1_w_b_fast(uint8_t b)
+56:                {
+000EB6  FA0004     LNK #0x4
+000EB8  984720     MOV.B W0, [W14+2]
+57:                    uint8_t discard;
+58:                    //Assume TX space,
+59:                    discard = SPI1BUF;
+000EBA  801244     MOV SPI1BUF, W4
+000EBC  784F04     MOV.B W4, [W14]
+60:                    SPI1BUF = b;
+000EBE  90422E     MOV.B [W14+2], W4
+000EC0  FB8204     ZE W4, W4
+000EC2  881244     MOV W4, SPI1BUF
+61:                }
+000EC4  FA8000     ULNK
+000EC6  060000     RETURN
+62:                
+63:                inline void lcd_write_index(uint8_t idx)
+64:                {
+000EC8  FA0002     LNK #0x2
+000ECA  784F00     MOV.B W0, [W14]
+65:                
+66:                }
+000ECC  FA8000     ULNK
+000ECE  060000     RETURN
+67:                
+68:                inline void lcd_write_data(uint16_t data)
+69:                {
+000ED0  FA0002     LNK #0x2
+000ED2  780F00     MOV W0, [W14]
+70:                
+71:                }
+000ED4  FA8000     ULNK
+000ED6  060000     RETURN
+72:                
+73:                inline uint16_t lcd_read_data(void)
+74:                {
+000ED8  FA0000     LNK #0x0
+75:                
+76:                }
+000EDA  780004     MOV W4, W0
+000EDC  FA8000     ULNK
+000EDE  060000     RETURN
+77:                
+78:                inline void lcd_write_reg(uint16_t addr, uint16_t value)
+79:                {
+000EE0  FA0004     LNK #0x4
+000EE2  780F00     MOV W0, [W14]
+000EE4  980711     MOV W1, [W14+2]
+80:                
+81:                }
+000EE6  FA8000     ULNK
+000EE8  060000     RETURN
+82:                
+83:                inline uint16_t lcd_read_reg(uint16_t addr)
+84:                {
+000EEA  FA0002     LNK #0x2
+000EEC  780F00     MOV W0, [W14]
+85:                }
+000EEE  780004     MOV W4, W0
+000EF0  FA8000     ULNK
+000EF2  060000     RETURN
+86:                
+87:                inline void lcd_set_cursor(uint16_t x, uint16_t y)
+88:                {
+000EF4  FA0004     LNK #0x4
+000EF6  780F00     MOV W0, [W14]
+000EF8  980711     MOV W1, [W14+2]
+89:                }
+000EFA  FA8000     ULNK
+000EFC  060000     RETURN
+90:                
+91:                /**
+92:                 * Delay in units of half a microsecond
+93:                 * @param x number of half microseconds to delay
+94:                 */
+95:                void delay_hus(uint16_t x)
+96:                {
+000EFE  FA0004     LNK #0x4
+000F00  980710     MOV W0, [W14+2]
+97:                    uint16_t then;
+98:                    then = TMR2;
+000F02  800834     MOV TMR2, W4
+000F04  780F04     MOV W4, [W14]
+99:                    while((uint16_t)(TMR2 - then) < x);
+000F06  000000     NOP
+000F08  800834     MOV TMR2, W4
+000F0A  52029E     SUB W4, [W14], W5
+000F0C  90021E     MOV [W14+2], W4
+000F0E  528F84     SUB W5, W4, [W15]
+000F10  39FFFB     BRA NC, 0xF08
+100:               }
+000F12  FA8000     ULNK
+000F14  060000     RETURN
+101:               
+102:               /**
+103:                * Delay for X milliseconds.
+104:                * @param x the number of milliseconds to delay for
+105:                */
+106:               void delay_ms(uint16_t x)
+107:               {
+000F16  FA000E     LNK #0xE
+000F18  980760     MOV W0, [W14+12]
+108:                   uint32_t hmicros = x*2000;
+000F1A  9002EE     MOV [W14+12], W5
+000F1C  207D04     MOV #0x7D0, W4
+000F1E  B9AA04     MUL.SS W5, W4, W4
+000F20  780204     MOV W4, W4
+000F22  200005     MOV #0x0, W5
+000F24  BE8F04     MOV.D W4, [W14]
+109:                   uint32_t then, now;
+110:                   ((uint16_t*)&then)[0] = TMR2;
+000F26  470264     ADD W14, #0x4, W4
+000F28  800835     MOV TMR2, W5
+000F2A  780A05     MOV W5, [W4]
+111:                   ((uint16_t*)&then)[1] = TMR3HLD;
+000F2C  470264     ADD W14, #0x4, W4
+000F2E  E88204     INC2 W4, W4
+000F30  800845     MOV TMR3HLD, W5
+000F32  780A05     MOV W5, [W4]
+112:                   do
+113:                   {
+114:                       ((uint16_t*)&now)[0] = TMR2;
+000F34  470268     ADD W14, #0x8, W4
+000F36  800835     MOV TMR2, W5
+000F38  780A05     MOV W5, [W4]
+115:                       ((uint16_t*)&now)[1] = TMR3HLD;
+000F3A  470268     ADD W14, #0x8, W4
+000F3C  E88204     INC2 W4, W4
+000F3E  800845     MOV TMR3HLD, W5
+000F40  780A05     MOV W5, [W4]
+116:                   } while((now - then) < hmicros);
+000F42  90034E     MOV [W14+8], W6
+000F44  9003DE     MOV [W14+10], W7
+000F46  90022E     MOV [W14+4], W4
+000F48  9002BE     MOV [W14+6], W5
+000F4A  530204     SUB W6, W4, W4
+000F4C  5B8285     SUBB W7, W5, W5
+000F4E  520FBE     SUB W4, [W14++], [W15]
+000F50  5A8FAE     SUBB W5, [W14--], [W15]
+000F52  39FFF0     BRA NC, 0xF34
+117:               }
+000F54  FA8000     ULNK
+000F56  060000     RETURN
+118:               
+119:               /**
+120:                * This magic incantation for screen initialisation was translated from the
+121:                * example source code given by the vendor: powermcu.com / hotmcu.com
+122:                * URL: http://www.haoyuelectronics.com/Attachment/HY28A/HY28A-LCDB%20example%20source%20code.rar
+123:                */
+124:               void lcd_init(void)
+125:               {
+000F58  FA0002     LNK #0x2
+126:                   uint16_t dev_code;
+127:                   dev_code = lcd_read_reg(0x0000);
+000F5A  EB0000     CLR W0
+000F5C  07FFC6     RCALL lcd_read_reg
+000F5E  780200     MOV W0, W4
+000F60  780F04     MOV W4, [W14]
+128:                   printf("Screen detected as %04x\n",dev_code);
+000F62  781F9E     MOV [W14], [W15++]
+000F64  28E024     MOV #0x8E02, W4
+000F66  781F84     MOV W4, [W15++]
+000F68  07F9CA     RCALL 0x2FE
+000F6A  5787E4     SUB W15, #0x4, W15
+129:               
+130:                   /* Different driver IC initialization */
+131:                   if( dev_code == 0x9320 || dev_code == 0x9300 )
+000F6C  293204     MOV #0x9320, W4
+000F6E  78029E     MOV [W14], W5
+000F70  528F84     SUB W5, W4, [W15]
+000F72  320004     BRA Z, 0xF7C
+000F74  293004     MOV #0x9300, W4
+000F76  78029E     MOV [W14], W5
+000F78  528F84     SUB W5, W4, [W15]
+000F7A  3A0079     BRA NZ, 0x106E
+132:                   {
+133:                       lcd_write_reg(0x00, 0x0000);
+000F7C  EB0080     CLR W1
+000F7E  EB0000     CLR W0
+000F80  07FFAF     RCALL lcd_write_reg
+134:                       lcd_write_reg(0x01, 0x0100); /* Driver Output Contral */
+000F82  201001     MOV #0x100, W1
+000F84  200010     MOV #0x1, W0
+000F86  07FFAC     RCALL lcd_write_reg
+135:                       lcd_write_reg(0x02, 0x0700); /* LCD Driver Waveform Contral */
+000F88  207001     MOV #0x700, W1
+000F8A  200020     MOV #0x2, W0
+000F8C  07FFA9     RCALL lcd_write_reg
+136:                       lcd_write_reg(0x03, 0x1038); /* Set the scan mode */
+000F8E  210381     MOV #0x1038, W1
+000F90  200030     MOV #0x3, W0
+000F92  07FFA6     RCALL lcd_write_reg
+137:                       lcd_write_reg(0x04, 0x0000); /* Scalling Contral */
+000F94  EB0080     CLR W1
+000F96  200040     MOV #0x4, W0
+000F98  07FFA3     RCALL lcd_write_reg
+138:                       lcd_write_reg(0x08, 0x0202); /* Display Contral 2 */
+000F9A  202021     MOV #0x202, W1
+000F9C  200080     MOV #0x8, W0
+000F9E  07FFA0     RCALL lcd_write_reg
+139:                       lcd_write_reg(0x09, 0x0000); /* Display Contral 3 */
+000FA0  EB0080     CLR W1
+000FA2  200090     MOV #0x9, W0
+000FA4  07FF9D     RCALL lcd_write_reg
+140:                       lcd_write_reg(0x0a, 0x0000); /* Frame Cycle Contal */
+000FA6  EB0080     CLR W1
+000FA8  2000A0     MOV #0xA, W0
+000FAA  07FF9A     RCALL lcd_write_reg
+141:                       lcd_write_reg(0x0c, (1<<0)); /* Extern Display Interface Contral 1 */
+000FAC  200011     MOV #0x1, W1
+000FAE  2000C0     MOV #0xC, W0
+000FB0  07FF97     RCALL lcd_write_reg
+142:                       lcd_write_reg(0x0d, 0x0000); /* Frame Maker Position */
+000FB2  EB0080     CLR W1
+000FB4  2000D0     MOV #0xD, W0
+000FB6  07FF94     RCALL lcd_write_reg
+143:                       lcd_write_reg(0x0f, 0x0000); /* Extern Display Interface Contral 2 */
+000FB8  EB0080     CLR W1
+000FBA  2000F0     MOV #0xF, W0
+000FBC  07FF91     RCALL lcd_write_reg
+144:                       delay_ms(50);
+000FBE  200320     MOV #0x32, W0
+000FC0  07FFAA     RCALL delay_ms
+145:                       lcd_write_reg(0x07, 0x0101); /* Display Contral */
+000FC2  201011     MOV #0x101, W1
+000FC4  200070     MOV #0x7, W0
+000FC6  07FF8C     RCALL lcd_write_reg
+146:                       delay_ms(50);
+000FC8  200320     MOV #0x32, W0
+000FCA  07FFA5     RCALL delay_ms
+147:                       lcd_write_reg(0x10, (1<<12)|(0<<8)|(1<<7)|(1<<6)|(0<<4)); /* Power Control 1 */
+000FCC  210C01     MOV #0x10C0, W1
+000FCE  200100     MOV #0x10, W0
+000FD0  07FF87     RCALL lcd_write_reg
+148:                       lcd_write_reg(0x11, 0x0007);                              /* Power Control 2 */
+000FD2  200071     MOV #0x7, W1
+000FD4  200110     MOV #0x11, W0
+000FD6  07FF84     RCALL lcd_write_reg
+149:                       lcd_write_reg(0x12, (1<<8)|(1<<4)|(0<<0));                /* Power Control 3 */
+000FD8  201101     MOV #0x110, W1
+000FDA  200120     MOV #0x12, W0
+000FDC  07FF81     RCALL lcd_write_reg
+150:                       lcd_write_reg(0x13, 0x0b00);                              /* Power Control 4 */
+000FDE  20B001     MOV #0xB00, W1
+000FE0  200130     MOV #0x13, W0
+000FE2  07FF7E     RCALL lcd_write_reg
+151:                       lcd_write_reg(0x29, 0x0000);                              /* Power Control 7 */
+000FE4  EB0080     CLR W1
+000FE6  200290     MOV #0x29, W0
+000FE8  07FF7B     RCALL lcd_write_reg
+152:                       lcd_write_reg(0x2b, (1<<14)|(1<<4));
+000FEA  240101     MOV #0x4010, W1
+000FEC  2002B0     MOV #0x2B, W0
+000FEE  07FF78     RCALL lcd_write_reg
+153:               
+154:                       lcd_write_reg(0x50, 0);       /* Set X Start */
+000FF0  EB0080     CLR W1
+000FF2  200500     MOV #0x50, W0
+000FF4  07FF75     RCALL lcd_write_reg
+155:                       lcd_write_reg(0x51, 239);     /* Set X End */
+000FF6  200EF1     MOV #0xEF, W1
+000FF8  200510     MOV #0x51, W0
+000FFA  07FF72     RCALL lcd_write_reg
+156:                       lcd_write_reg(0x52, 0);       /* Set Y Start */
+000FFC  EB0080     CLR W1
+000FFE  200520     MOV #0x52, W0
+001000  07FF6F     RCALL lcd_write_reg
+157:                       lcd_write_reg(0x53, 319);     /* Set Y End */
+001002  2013F1     MOV #0x13F, W1
+001004  200530     MOV #0x53, W0
+001006  07FF6C     RCALL lcd_write_reg
+158:                       delay_ms(50);
+001008  200320     MOV #0x32, W0
+00100A  07FF85     RCALL delay_ms
+159:               
+160:                       lcd_write_reg(0x60, 0x2700); /* Driver Output Control */
+00100C  227001     MOV #0x2700, W1
+00100E  200600     MOV #0x60, W0
+001010  07FF67     RCALL lcd_write_reg
+161:                       lcd_write_reg(0x61, 0x0001); /* Driver Output Control */
+001012  200011     MOV #0x1, W1
+001014  200610     MOV #0x61, W0
+001016  07FF64     RCALL lcd_write_reg
+162:                       lcd_write_reg(0x6a, 0x0000); /* Vertical Srcoll Control */
+001018  EB0080     CLR W1
+00101A  2006A0     MOV #0x6A, W0
+00101C  07FF61     RCALL lcd_write_reg
+163:               
+164:                       lcd_write_reg(0x80, 0x0000); /* Display Position? Partial Display 1 */
+00101E  EB0080     CLR W1
+001020  200800     MOV #0x80, W0
+001022  07FF5E     RCALL lcd_write_reg
+165:                       lcd_write_reg(0x81, 0x0000); /* RAM Address Start? Partial Display 1 */
+001024  EB0080     CLR W1
+001026  200810     MOV #0x81, W0
+001028  07FF5B     RCALL lcd_write_reg
+166:                       lcd_write_reg(0x82, 0x0000); /* RAM Address End-Partial Display 1 */
+00102A  EB0080     CLR W1
+00102C  200820     MOV #0x82, W0
+00102E  07FF58     RCALL lcd_write_reg
+167:                       lcd_write_reg(0x83, 0x0000); /* Displsy Position? Partial Display 2 */
+001030  EB0080     CLR W1
+001032  200830     MOV #0x83, W0
+001034  07FF55     RCALL lcd_write_reg
+168:                       lcd_write_reg(0x84, 0x0000); /* RAM Address Start? Partial Display 2 */
+001036  EB0080     CLR W1
+001038  200840     MOV #0x84, W0
+00103A  07FF52     RCALL lcd_write_reg
+169:                       lcd_write_reg(0x85, 0x0000); /* RAM Address End? Partial Display 2 */
+00103C  EB0080     CLR W1
+00103E  200850     MOV #0x85, W0
+001040  07FF4F     RCALL lcd_write_reg
+170:               
+171:                       lcd_write_reg(0x90, (0<<7)|(16<<0)); /* Frame Cycle Contral */
+001042  200101     MOV #0x10, W1
+001044  200900     MOV #0x90, W0
+001046  07FF4C     RCALL lcd_write_reg
+172:                       lcd_write_reg(0x92, 0x0000);         /* Panel Interface Contral 2 */
+001048  EB0080     CLR W1
+00104A  200920     MOV #0x92, W0
+00104C  07FF49     RCALL lcd_write_reg
+173:                       lcd_write_reg(0x93, 0x0001);         /* Panel Interface Contral 3 */
+00104E  200011     MOV #0x1, W1
+001050  200930     MOV #0x93, W0
+001052  07FF46     RCALL lcd_write_reg
+174:                       lcd_write_reg(0x95, 0x0110);         /* Frame Cycle Contral */
+001054  201101     MOV #0x110, W1
+001056  200950     MOV #0x95, W0
+001058  07FF43     RCALL lcd_write_reg
+175:                       lcd_write_reg(0x97, (0<<8));
+00105A  EB0080     CLR W1
+00105C  200970     MOV #0x97, W0
+00105E  07FF40     RCALL lcd_write_reg
+176:                       lcd_write_reg(0x98, 0x0000);         /* Frame Cycle Contral */
+001060  EB0080     CLR W1
+001062  200980     MOV #0x98, W0
+001064  07FF3D     RCALL lcd_write_reg
+177:                       lcd_write_reg(0x07, 0x0133);
+001066  201331     MOV #0x133, W1
+001068  200070     MOV #0x7, W0
+00106A  07FF3A     RCALL lcd_write_reg
+00106C  370002     BRA 0x1072
+178:                   }
+179:                   else
+180:                   {
+181:                       printf("Screen initialisation aborted: not recognised\n");
+00106E  28E1B0     MOV #0x8E1B, W0
+001070  07F93C     RCALL 0x2EA
+182:                   }
+183:               }
+001072  FA8000     ULNK
+001074  060000     RETURN
+---  /home/immesys/w/pecs/coprocessor_dip.X/main.c  -----------------------------------------------------
+1:                 /* 
+2:                  * File:   main.c
+3:                  * Author: immesys
+4:                  *
+5:                  * Created on November 22, 2013, 8:53 PM
+6:                  */
+7:                 
+8:                 #include <stdio.h>
+9:                 #include <stdlib.h>
+10:                #include "global.h"
+11:                
+12:                int main()
+13:                {
+001170  FA0000     LNK #0x0
+14:                    //Event loop
+15:                    DBG2_TRIS = 0;
+001172  A9A2C8     BCLR TRISB, #5
+16:                    while(1)
+17:                    {
+18:                        DBG2 = 1;
+001174  A8A2CC     BSET LATB, #5
+19:                        DBG2 = 0;
+001176  A9A2CC     BCLR LATB, #5
+20:                        DBG2 = 1;
+001178  A8A2CC     BSET LATB, #5
+21:                        DBG2 = 0;
+00117A  A9A2CC     BCLR LATB, #5
+22:                        DBG2 = 1;
+00117C  A8A2CC     BSET LATB, #5
+23:                        DBG2 = 0;
+00117E  A9A2CC     BCLR LATB, #5
+24:                        DBG2 = 1;
+001180  A8A2CC     BSET LATB, #5
+25:                        DBG2 = 0;
+001182  A9A2CC     BCLR LATB, #5
+26:                        DBG2 = 1;
+001184  A8A2CC     BSET LATB, #5
+27:                        DBG2 = 0;
+001186  A9A2CC     BCLR LATB, #5
+28:                        DBG2 = 1;
+001188  A8A2CC     BSET LATB, #5
+29:                        DBG2 = 0;
+00118A  A9A2CC     BCLR LATB, #5
+30:                    }
+00118C  37FFF3     BRA 0x1174
+31:                    init_hw();
+32:                    printf("Starting event loop\n");
+33:                    while(1)
+34:                    {
+35:                        DBG2 = 1;
+36:                        delay_ms(1);
+37:                        DBG2 = 0;
+38:                        delay_ms(5);
+39:                    }
+40:                }
+41:                
+---  /home/immesys/w/pecs/coprocessor_dip.X/config.c  ---------------------------------------------------
+1:                 #include <xc.h>
+2:                 
+3:                 // PIC24FJ64GB002 Configuration Bit Settings
+4:                 
+5:                 // CONFIG4
+6:                 #pragma config DSWDTPS = DSWDTPSF       // DSWDT Postscale Select (1:2,147,483,648 (25.7 days))
+7:                 #pragma config DSWDTOSC = LPRC          // Deep Sleep Watchdog Timer Oscillator Select (DSWDT uses Low Power RC Oscillator (LPRC))
+8:                 #pragma config RTCOSC = SOSC            // RTCC Reference Oscillator  Select (RTCC uses Secondary Oscillator (SOSC))
+9:                 #pragma config DSBOREN = ON             // Deep Sleep BOR Enable bit (BOR enabled in Deep Sleep)
+10:                #pragma config DSWDTEN = ON             // Deep Sleep Watchdog Timer (DSWDT enabled)
+11:                
+12:                // CONFIG3
+13:                #pragma config WPFP = WPFP63            // Write Protection Flash Page Segment Boundary (Highest Page (same as page 42))
+14:                #pragma config SOSCSEL = SOSC           // Secondary Oscillator Pin Mode Select (SOSC pins in Default (high drive-strength) Oscillator Mode)
+15:                #pragma config WUTSEL = LEG             // Voltage Regulator Wake-up Time Select (Default regulator start-up time used)
+16:                #pragma config WPDIS = WPDIS            // Segment Write Protection Disable (Segmented code protection disabled)
+17:                #pragma config WPCFG = WPCFGDIS         // Write Protect Configuration Page Select (Last page and Flash Configuration words are unprotected)
+18:                #pragma config WPEND = WPENDMEM         // Segment Write Protection End Page Select (Write Protect from WPFP to the last page of memory)
+19:                
+20:                // CONFIG2
+21:                #pragma config POSCMOD = NONE           // Primary Oscillator Select (Primary Oscillator disabled)
+22:                #pragma config I2C1SEL = PRI            // I2C1 Pin Select bit (Use default SCL1/SDA1 pins for I2C1 )
+23:                #pragma config IOL1WAY = OFF            // IOLOCK One-Way Set Enable (The IOLOCK bit can be set and cleared using the unlock sequence)
+24:                #pragma config OSCIOFNC = OFF           // OSCO Pin Configuration (OSCO pin functions as clock output (CLKO))
+25:                #pragma config FCKSM = CSDCMD           // Clock Switching and Fail-Safe Clock Monitor (Sw Disabled, Mon Disabled)
+26:                #pragma config FNOSC = FRCPLL           // Initial Oscillator Select (Fast RC Oscillator with Postscaler and PLL module (FRCPLL))
+27:                #pragma config PLL96MHZ = ON            // 96MHz PLL Startup Select (96 MHz PLL Startup is enabled automatically on start-up)
+28:                #pragma config PLLDIV = DIV2            // USB 96 MHz PLL Prescaler Select (Oscillator input divided by 2 (8 MHz input))
+29:                #pragma config IESO = OFF               // Internal External Switchover (IESO mode (Two-Speed Start-up) disabled)
+30:                
+31:                // CONFIG1
+32:                #pragma config WDTPS = PS32768          // Watchdog Timer Postscaler (1:32,768)
+33:                #pragma config FWPSA = PR128            // WDT Prescaler (Prescaler ratio of 1:128)
+34:                #pragma config WINDIS = OFF             // Windowed WDT (Standard Watchdog Timer enabled,(Windowed-mode is disabled))
+35:                #pragma config FWDTEN = OFF             // Watchdog Timer (Watchdog Timer is disabled)
+36:                #pragma config ICS = PGx2               // Emulator Pin Placement Select bits (Emulator functions are shared with PGEC2/PGED2)
+37:                #pragma config GWRP = OFF               // General Segment Write Protect (Writes to program memory are allowed)
+38:                #pragma config GCP = OFF                // General Segment Code Protect (Code protection is disabled)
+39:                #pragma config JTAGEN = OFF             // JTAG Port Enable (JTAG port is disabled)
+40:                
+41:                #include "global.h"
+42:                
+43:                void init_hw()
+44:                {
+001132  FA0000     LNK #0x0
+45:                    //Initialise all ANx pins to digital
+46:                    AD1PCFG = 0xFFFF;
+001134  EB8200     SETM W4
+001136  881964     MOV W4, AD1PCFG
+47:                
+48:                    //Config other pin directions
+49:                    LCD_RST_TRIS = 0;
+001138  A922C0     BCLR TRISA, #1
+50:                    LCD_RST = 1;
+00113A  A822C4     BSET LATA, #1
+51:                    DBG2_TRIS = 0;
+00113C  A9A2C8     BCLR TRISB, #5
+52:                    
+53:                
+54:                    //Set oscillator and unlock RP
+55:                    __builtin_write_OSCCONH(0b001); //FRC wth PLL
+00113E  200016     MOV #0x1, W6
+001140  200784     MOV #0x78, W4
+001142  2009A5     MOV #0x9A, W5
+001144  207437     MOV #0x743, W7
+001146  784B84     MOV.B W4, [W7]
+001148  784B85     MOV.B W5, [W7]
+00114A  784B86     MOV.B W6, [W7]
+56:                    __builtin_write_OSCCONL(0b00000100); //Disable lock, don't osc switch
+00114C  200046     MOV #0x4, W6
+00114E  200464     MOV #0x46, W4
+001150  200575     MOV #0x57, W5
+001152  207427     MOV #0x742, W7
+001154  784B84     MOV.B W4, [W7]
+001156  784B85     MOV.B W5, [W7]
+001158  784B86     MOV.B W6, [W7]
+57:                    _RCDIV = 0; //FRC divide by 1: 8Mhz
+00115A  803A24     MOV CLKDIV, W4
+00115C  A18004     BCLR W4, #8
+00115E  A19004     BCLR W4, #9
+001160  A1A004     BCLR W4, #10
+001162  883A24     MOV W4, CLKDIV
+58:                    _CPDIV = 00; //PLL divide by 1: Fsys = 32Mhz Fcy = 16 MIPS
+001164  803A24     MOV CLKDIV, W4
+001166  A16004     BCLR W4, #6
+001168  A17004     BCLR W4, #7
+00116A  883A24     MOV W4, CLKDIV
+59:                
+60:                    return;
+61:                    //Assign RP outputs
+62:                    LCD_MOSI_RPO  = 7;  //SDO1 output
+63:                    LCD_SCK_RPO   = 8;  //SCK1 output
+64:                   // LCD_CS_RPO    = 9;  //SS1 output
+65:                    TP_MOSI_RPO   = 10; //SDO2 output
+66:                    TP_SCK_RPO    = 11; //SCK2 output
+67:                   // TP_CS_RPO     = 12; //SS2 output
+68:                    TP_BL_CTL_RPO = 18; //OC1 output
+69:                    DEBUG_RPO     = 3; //U1TX
+70:                    
+71:                    //Assign RP inputs
+72:                    _SDI1R = LCD_MISO_RPI;
+73:                    _SDI2R = TP_MISO_RPI;
+74:                    _INT2R = TP_IRQ_RPI;
+75:                
+76:                    //Configure SPI1 module
+77:                    _SPI1IF = 0;
+78:                    _SPI1IP = 5;
+79:                    SPI1STATbits.SISEL = 0b100; //Interrupt when there is space in TX
+80:                    SPI1CON1bits.DISSCK = 0; //Use clock
+81:                    SPI1CON1bits.DISSDO = 0; //Enable SDO
+82:                    SPI1CON1bits.MODE16 = 0; //8 bit
+83:                    SPI1CON1bits.SMP = 0; //Sample in the middle of the bit
+84:                    SPI1CON1bits.CKE = 0; //0= Mode 3, clock is idle high, and
+85:                    SPI1CON1bits.CKP = 1; //1= data changes on falling edge, sample on rising
+86:                    SPI1CON1bits.MSTEN = 1; //Master
+87:                    SPI1CON1bits.SPRE = 0b110; //2:1 = 8Mhz probably
+88:                    SPI1CON1bits.PPRE = 0b11; //1:1
+89:                    SPI1CON2bits.FRMEN = 0; //No framing
+90:                    SPI1CON2bits.SPIBEN = 1; //Enable enhanced buffer FIFO
+91:                    SPI1STATbits.SPIEN = 1;
+92:                    _SPI1IE = 0;
+93:                
+94:                    //Configure UART module (debug)
+95:                    U1MODEbits.UEN = 00;
+96:                    U1BRG = 33; //115200
+97:                    U1MODEbits.BRGH = 1;
+98:                    U1MODEbits.PDSEL = 00;
+99:                    U1MODEbits.STSEL = 0; //one stop.
+100:                   U1STAbits.UTXEN = 1;
+101:                   U1MODEbits.UARTEN = 1;
+102:                   _U1TXIE = 0;
+103:                   _U1RXIE = 0;
+104:               
+105:                   //Configure a timer for general use (T2/T3)
+106:                   //This rolls over ~30 min so don't use it for too long
+107:                   //a period
+108:                   T2CONbits.T32 = 1;
+109:                   T2CONbits.TCKPS = 0b01; //2Mhz
+110:                   T2CONbits.TON = 1;
+111:               
+112:               }
+00116C  FA8000     ULNK
+00116E  060000     RETURN
