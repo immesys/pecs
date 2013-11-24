@@ -15,6 +15,10 @@
         padding-top: 60px;
         padding-bottom: 40px;
       }
+      .tab-content  
+    {
+    overflow:hidden;
+    }
     </style>
     <link href="static/css/bootstrap-responsive.css" rel="stylesheet">
 
@@ -78,10 +82,13 @@
         <div class="span4">
           <h2>Chair</h2>
           <p>Your chair is equipped with 3 fans and 2 two heating strips. You can adjust the sliders below to change the level of heating and cooling within the chair </p>  
+          <div style="text-align:center">
+          <div style="margin:10px 10px 10px 10px">
           <h4 id="chaircoolvalue"></h4>
-          <div id="chaircoolslider"></div>
-          <h4 id="chairheatvalue"></h4>
-          <div id="chairheatslider"></div> 
+          <div id="chaircoolslider" style="width:95%"></div>
+          <h4 id="chairheatvalue" style="width:95%"></h4>
+          <div id="chairheatslider" style="width:95%"></div> 
+          </div></div>
         </div>
         <div class="span4">
           <h2>Fan</h2>
@@ -108,11 +115,13 @@
         </ul>
         <div id="my-tab-content" class="tab-content">
           <div class="tab-pane active" id="chair">
-             <p>Your chair is equipped with 3 fans and 2 two heating strips. You can adjust the sliders below to change the level of heating and cooling within the chair </p>
-             <h4 id="chaircoolvalue"></h4>
-             <div id="chaircoolslider"></div>
-             <h4 id="chairheatvalue"></h4>
-             <div id="chairheatslider"></div> 
+             <div style="text-align:center">
+          <div style="margin:10px 10px 10px 10px">
+          <h4 id="chaircoolvalue"></h4>
+          <div id="chaircoolslider" style="width:100%"></div>
+          <h4 id="chairheatvalue" style="width:100%"></h4>
+          <div id="chairheatslider" style="width:100%"></div>
+          </div></div>
           </div>
           <div class="tab-pane" id="fan">
           <p>The fan that is residing on your desk is capable of three speeds and has a heating lamp built in for warmth. If you wish, you can have both at the same time. Just toggle the controls below. </p>
@@ -150,6 +159,7 @@
           orientation: "horizontal",
           min:"0",
           max:"7",
+          width:"95%",
           slide: function( event, ui ) {
             $.getJSON(${uid}+"/fan",{"v":ui.value},function(data, stat)
             {
@@ -168,6 +178,7 @@
           orientation: "horizontal",
           min:"0",
           max:"1",
+	  width:"95%",
           backgroundColor: "#0000FF",
           animate: true,
           slide: function( event, ui ) {
