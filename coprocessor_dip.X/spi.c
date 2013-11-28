@@ -63,6 +63,36 @@ inline void spi1_w_b_xdiscard(uint8_t b)
 }
 
 /**
+ * Write a byte, discard all current RX fifo
+ * @param b
+ */
+inline void spi2_w_b_xdiscard(uint8_t b)
+{
+    uint8_t discard;
+    //Wait for TX space
+    while(SPI2STATbits.SPITBF);
+    //Discard some RX space
+    while(!SPI2STATbits.SRXMPT) discard = SPI2BUF;
+
+    SPI2BUF = b;
+}
+
+/**
+ * Write a byte, one RX, check for space
+ * @param b
+ */
+inline void spi2_w_b(uint8_t b)
+{
+    uint8_t discard;
+    //Wait for TX space
+    while(SPI2STATbits.SPITBF);
+
+    //Discard some RX space
+    discard = SPI2BUF;
+    SPI2BUF = b;
+}
+
+/**
  * Write a byte, discard one RX
  * @param b
  */
@@ -97,6 +127,16 @@ inline void lcd_select(void)
 inline void lcd_deselect(void)
 {
     LCD_SS = 1;
+}
+
+inline void flash_select(void)
+{
+    todo
+}
+
+inline void flash_deselect(void)
+{
+    todo
 }
 
 inline void lcd_write_index(uint8_t idx)
@@ -159,7 +199,21 @@ inline void lcd_set_cursor(uint16_t x, uint16_t y)
     lcd_write_reg(0x0021, y);
 }
 
+inline void lcd_start_gfx()
+{
+    lcd_select();
+    spi1_w_b_xdiscard(SPI_START | SPI_WR | SPI_INDEX);
+    spi1_w_b(0);
+    spi1_rw_b(0x22); //The read ensures it is fully flushed through
+    lcd_deselect();
+    lcd_select();
+    spi1_w_b_xdiscard(SPI_START | SPI_WR | SPI_DATA);
+}
 
+inline void lcd_end_gfx()
+{
+    lcd_deselect();
+}
 
 /**
  * Delay in units of half a microsecond
