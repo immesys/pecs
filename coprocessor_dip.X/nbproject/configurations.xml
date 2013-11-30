@@ -98,6 +98,7 @@
         <property key="scalar-model" value="default"/>
         <property key="use-cci" value="false"/>
         <property key="use-iar" value="false"/>
+        <appendMe value="-Wall"/>
       </C30>
       <C30-AS>
       </C30-AS>

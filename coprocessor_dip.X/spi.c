@@ -18,6 +18,9 @@ void spi1_flush_tx()
 {
     uint8_t discard;
 
+    //Discard RX FIFO
+    while(!SPI1STATbits.SRXMPT) discard = SPI1BUF;
+
     //Flush TX operations
     while(SPI1STATbits.SPIBEC);
 
@@ -271,6 +274,7 @@ inline void lcd_start_gfx()
 
 inline void lcd_end_gfx()
 {
+    spi1_flush_tx();
     lcd_deselect();
 }
 

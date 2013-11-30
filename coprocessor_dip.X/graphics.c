@@ -29,7 +29,7 @@ void g_fill_rgb()
             lcd_write_data_body((x << 8) | y);
         }
     }
-    lcd_deselect();
+    lcd_end_gfx();
 }
 
 
@@ -128,7 +128,8 @@ inline void check_flash_window_blit()
         flash_begin_read(flash_base_address + (uint32_t)flash_rowstride*flash_pix_row);
     }
     if (flash_pix_left_in_row > 0)
-    {
+    {   while (GFX_TX_FULL);
+        while (FL_TX_FULL);
         FL_REG = 0xdb;
 
         flash_pix_left_in_row--;
@@ -151,8 +152,8 @@ inline void check_flash_window_blit()
         lcd_start_gfx();
     }
 
-    //while (GFX_TX_FULL);
-    //while (FL_RX_EMPTY);
+    while (GFX_TX_FULL);
+    while (FL_RX_EMPTY);
     while (!GFX_RX_EMPTY) b = GFX_REG;
     col++;
     b = FL_REG;

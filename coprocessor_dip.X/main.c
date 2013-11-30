@@ -22,7 +22,7 @@
 #define ASSET_UP2_WIDTH  200
 #define ASSET_UP2_HEIGHT 100
 
-
+void speedtest();
 extern void g_fill_rgb();
 extern void delay_ms(uint16_t v);
 extern flashstate_t flashstate;

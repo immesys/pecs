@@ -1,7 +1,7 @@
 Disassembly Listing for coprocessor_dip
 Generated From:
 /home/immesys/w/pecs/coprocessor_dip.X/dist/default/production/coprocessor_dip.X.production.elf
-Nov 29, 2013 5:22:56 PM
+Nov 29, 2013 6:12:28 PM
 
 ---  /home/immesys/w/pecs/coprocessor_dip.X/uart.c  -----------------------------------------------------
 1:                 
@@ -11,86 +11,65 @@ Nov 29, 2013 5:22:56 PM
 5:                 
 6:                 inline void uart1_wb(uint8_t v)
 7:                 {
-000C2A  FA0002     LNK #0x2
-000C2C  784F00     MOV.B W0, [W14]
 8:                     while(U1STAbits.UTXBF);
-000C2E  000000     NOP
-000C30  801115     MOV U1STA, W5
-000C32  202004     MOV #0x200, W4
-000C34  628204     AND W5, W4, W4
-000C36  520FE0     SUB W4, #0x0, [W15]
-000C38  3AFFFB     BRA NZ, 0xC30
+0009C4  202005     MOV #0x200, W5
+0009C6  801114     MOV U1STA, W4
+0009C8  620205     AND W4, W5, W4
+0009CA  3AFFFD     BRA NZ, 0x9C6
 9:                     U1TXREG = v;
-000C3A  78429E     MOV.B [W14], W5
-000C3C  FB8205     ZE W5, W4
-000C3E  881124     MOV W4, U1TXREG
+0009CC  FB8000     ZE W0, W0
+0009CE  881120     MOV W0, U1TXREG
 10:                }
-000C40  FA8000     ULNK
-000C42  060000     RETURN
+0009D0  060000     RETURN
 11:                
 12:                //Write out a trace code to the uart that can be read on the logic analyser
 13:                inline void tc(uint16_t v)
 14:                {
-000C44  FA0002     LNK #0x2
-000C46  780F00     MOV W0, [W14]
+0009D2  781F88     MOV W8, [W15++]
+0009D4  780400     MOV W0, W8
 15:                    //big endian so it's easier to read
 16:                    uart1_wb (v >> 8);
-000C48  78021E     MOV [W14], W4
-000C4A  DE2248     LSR W4, #8, W4
-000C4C  784204     MOV.B W4, W4
-000C4E  784004     MOV.B W4, W0
-000C50  07FFEC     RCALL uart1_wb
+0009D6  DE4048     LSR W8, #8, W0
+0009D8  07FFF5     RCALL uart1_wb
 17:                    uart1_wb (v & 0xFF);
-000C52  78021E     MOV [W14], W4
-000C54  784204     MOV.B W4, W4
-000C56  784004     MOV.B W4, W0
-000C58  07FFE8     RCALL uart1_wb
+0009DA  784008     MOV.B W8, W0
+0009DC  07FFF3     RCALL uart1_wb
 18:                }
-000C5A  FA8000     ULNK
-000C5C  060000     RETURN
+0009DE  78044F     MOV [--W15], W8
+0009E0  060000     RETURN
 19:                int __attribute__((__weak__, __section__(".libc")))
 20:                write(int handle, void *buffer, unsigned int len) {
-00029C  FA0008     LNK #0x8
-00029E  980710     MOV W0, [W14+2]
-0002A0  980721     MOV W1, [W14+4]
-0002A2  980732     MOV W2, [W14+6]
+000298  BE9F88     MOV.D W8, [W15++]
+00029A  781F8A     MOV W10, [W15++]
+00029C  780481     MOV W1, W9
+00029E  780502     MOV W2, W10
 21:                    int i;
 22:                
 23:                    switch (handle)
-0002A4  90021E     MOV [W14+2], W4
-0002A6  420260     ADD W4, #0x0, W4
-0002A8  520FE2     SUB W4, #0x2, [W15]
-0002AA  3E000F     BRA GTU, 0x2CA
+0002A0  500FE2     SUB W0, #0x2, [W15]
+0002A2  3E0007     BRA GTU, 0x2B2
 24:                    {
 25:                        case 0:
 26:                        case 1:
 27:                        case 2:
 28:                            for (i = len; i; --i) {
-0002AC  90023E     MOV [W14+6], W4
-0002AE  780F04     MOV W4, [W14]
-0002B0  370008     BRA 0x2C2
-0002C0  E90F1E     DEC [W14], [W14]
-0002C2  78021E     MOV [W14], W4
-0002C4  520FE0     SUB W4, #0x0, [W15]
-0002C6  3AFFF5     BRA NZ, 0x2B2
+0002A4  78040A     MOV W10, W8
+0002A6  550FE0     SUB W10, #0x0, [W15]
+0002A8  320004     BRA Z, 0x2B2
+0002AE  E90408     DEC W8, W8
+0002B0  3AFFFC     BRA NZ, 0x2AA
 29:                                uart1_wb(*(uint8_t*)buffer++);
-0002B2  90022E     MOV [W14+4], W4
-0002B4  784214     MOV.B [W4], W4
-0002B6  9002AE     MOV [W14+4], W5
-0002B8  E80285     INC W5, W5
-0002BA  980725     MOV W5, [W14+4]
-0002BC  784004     MOV.B W4, W0
-0002BE  0704B5     RCALL uart1_wb
+0002AA  784039     MOV.B [W9++], W0
+0002AC  07038B     RCALL uart1_wb
 30:                            }
 31:                            break;
-0002C8  000000     NOP
 32:                    }
 33:                    return (len);
-0002CA  90023E     MOV [W14+6], W4
 34:                }
-0002CC  780004     MOV W4, W0
-0002CE  FA8000     ULNK
-0002D0  060000     RETURN
+0002B2  78000A     MOV W10, W0
+0002B4  78054F     MOV [--W15], W10
+0002B6  BE044F     MOV.D [--W15], W8
+0002B8  060000     RETURN
 ---  /home/immesys/w/pecs/coprocessor_dip.X/spi.c  ------------------------------------------------------
 1:                 #include <stdint.h>
 2:                 #include "global.h"
@@ -110,919 +89,804 @@ Nov 29, 2013 5:22:56 PM
 16:                 */
 17:                void spi1_flush_tx()
 18:                {
-0002D2  FA0002     LNK #0x2
 19:                    uint8_t discard;
 20:                
-21:                    //Flush TX operations
-22:                    while(SPI1STATbits.SPIBEC);
-0002D4  000000     NOP
-0002D6  801205     MOV SPI1STAT, W5
-0002D8  207004     MOV #0x700, W4
-0002DA  628204     AND W5, W4, W4
-0002DC  520FE0     SUB W4, #0x0, [W15]
-0002DE  3AFFFB     BRA NZ, 0x2D6
+21:                    //Discard RX FIFO
+22:                    while(!SPI1STATbits.SRXMPT) discard = SPI1BUF;
+0002BA  ABA240     BTST SPI1STAT, #5
+0002BC  3A0005     BRA NZ, 0x2C8
+0002BE  200205     MOV #0x20, W5
+0002C0  801244     MOV SPI1BUF, W4
+0002C2  801204     MOV SPI1STAT, W4
+0002C4  620205     AND W4, W5, W4
+0002C6  32FFFC     BRA Z, 0x2C0
 23:                
-24:                    //Flush shift register
-25:                    while(!SPI1STATbits.SRMPT);
-0002E0  000000     NOP
-0002E2  801205     MOV SPI1STAT, W5
-0002E4  200804     MOV #0x80, W4
-0002E6  628204     AND W5, W4, W4
-0002E8  520FE0     SUB W4, #0x0, [W15]
-0002EA  32FFFB     BRA Z, 0x2E2
+24:                    //Flush TX operations
+25:                    while(SPI1STATbits.SPIBEC);
+0002C8  207005     MOV #0x700, W5
+0002CA  801204     MOV SPI1STAT, W4
+0002CC  620205     AND W4, W5, W4
+0002CE  3AFFFD     BRA NZ, 0x2CA
 26:                
-27:                    //Discard RX FIFO
-28:                    while(!SPI1STATbits.SRXMPT) discard = SPI1BUF;
-0002EC  370002     BRA 0x2F2
-0002EE  801244     MOV SPI1BUF, W4
-0002F0  784F04     MOV.B W4, [W14]
-0002F2  801205     MOV SPI1STAT, W5
-0002F4  200204     MOV #0x20, W4
-0002F6  628204     AND W5, W4, W4
-0002F8  520FE0     SUB W4, #0x0, [W15]
-0002FA  32FFF9     BRA Z, 0x2EE
-29:                }
-0002FC  FA8000     ULNK
-0002FE  060000     RETURN
-30:                
-31:                /**
-32:                 * Flush the TX fifo and discard RX bytes
-33:                 */
-34:                void spi2_flush_tx()
-35:                {
-000300  FA0002     LNK #0x2
-36:                    uint8_t discard;
-37:                
-38:                    //Flush TX operations
-39:                    while(SPI2STATbits.SPIBEC);
-000302  000000     NOP
-000304  801305     MOV SPI2STAT, W5
-000306  207004     MOV #0x700, W4
-000308  628204     AND W5, W4, W4
-00030A  520FE0     SUB W4, #0x0, [W15]
-00030C  3AFFFB     BRA NZ, 0x304
+27:                    //Flush shift register
+28:                    while(!SPI1STATbits.SRMPT);
+0002D0  200805     MOV #0x80, W5
+0002D2  801204     MOV SPI1STAT, W4
+0002D4  620205     AND W4, W5, W4
+0002D6  32FFFD     BRA Z, 0x2D2
+29:                
+30:                    //Discard RX FIFO
+31:                    while(!SPI1STATbits.SRXMPT) discard = SPI1BUF;
+0002D8  ABA240     BTST SPI1STAT, #5
+0002DA  3A0005     BRA NZ, 0x2E6
+0002DC  200205     MOV #0x20, W5
+0002DE  801244     MOV SPI1BUF, W4
+0002E0  801204     MOV SPI1STAT, W4
+0002E2  620205     AND W4, W5, W4
+0002E4  32FFFC     BRA Z, 0x2DE
+32:                }
+0002E6  060000     RETURN
+33:                
+34:                /**
+35:                 * Flush the TX fifo and discard RX bytes
+36:                 */
+37:                void spi2_flush_tx()
+38:                {
+39:                    uint8_t discard;
 40:                
-41:                    //Flush shift register
-42:                    while(!SPI2STATbits.SRMPT);
-00030E  000000     NOP
-000310  801305     MOV SPI2STAT, W5
-000312  200804     MOV #0x80, W4
-000314  628204     AND W5, W4, W4
-000316  520FE0     SUB W4, #0x0, [W15]
-000318  32FFFB     BRA Z, 0x310
+41:                    //Flush TX operations
+42:                    while(SPI2STATbits.SPIBEC);
+0002E8  207005     MOV #0x700, W5
+0002EA  801304     MOV SPI2STAT, W4
+0002EC  620205     AND W4, W5, W4
+0002EE  3AFFFD     BRA NZ, 0x2EA
 43:                
-44:                    //Discard RX FIFO
-45:                    while(!SPI2STATbits.SRXMPT) discard = SPI2BUF;
-00031A  370002     BRA 0x320
-00031C  801344     MOV SPI2BUF, W4
-00031E  784F04     MOV.B W4, [W14]
-000320  801305     MOV SPI2STAT, W5
-000322  200204     MOV #0x20, W4
-000324  628204     AND W5, W4, W4
-000326  520FE0     SUB W4, #0x0, [W15]
-000328  32FFF9     BRA Z, 0x31C
-46:                }
-00032A  FA8000     ULNK
-00032C  060000     RETURN
-47:                
-48:                /**
-49:                 * Write a byte to SPI and read the response.
-50:                 * This requires waiting for FIFO to flush before starting
-51:                 * (returned values are discarded)
-52:                 *
-53:                 * @param b The byte to write
-54:                 * @return  the read byte
-55:                 */
-56:                inline uint8_t spi1_rw_b(uint8_t b)
-57:                {
-00032E  FA0004     LNK #0x4
-000330  984720     MOV.B W0, [W14+2]
-58:                    uint8_t rv;
-59:                    spi1_flush_tx();
-000332  07FFCF     RCALL spi1_flush_tx
-60:                    SPI1BUF = b;
-000334  90422E     MOV.B [W14+2], W4
-000336  FB8204     ZE W4, W4
-000338  881244     MOV W4, SPI1BUF
-61:                    //Wait for response byte
-62:                    while(SPI1STATbits.SRXMPT);
-00033A  000000     NOP
-00033C  801205     MOV SPI1STAT, W5
-00033E  200204     MOV #0x20, W4
-000340  628204     AND W5, W4, W4
-000342  520FE0     SUB W4, #0x0, [W15]
-000344  3AFFFB     BRA NZ, 0x33C
-63:                    rv = SPI1BUF;
-000346  801244     MOV SPI1BUF, W4
-000348  784F04     MOV.B W4, [W14]
-64:                    return rv;
-00034A  78421E     MOV.B [W14], W4
-65:                }
-00034C  784004     MOV.B W4, W0
-00034E  FA8000     ULNK
-000350  060000     RETURN
-66:                
-67:                /**
-68:                 * Write a byte, discard all current RX fifo
-69:                 * @param b
-70:                 */
-71:                inline void spi1_w_b_xdiscard(uint8_t b)
-72:                {
-000352  FA0004     LNK #0x4
-000354  984720     MOV.B W0, [W14+2]
-73:                    uint8_t discard;
-74:                    //Wait for TX space
-75:                    while(SPI1STATbits.SPITBF);
-000356  000000     NOP
-000358  801204     MOV SPI1STAT, W4
-00035A  620262     AND W4, #0x2, W4
-00035C  520FE0     SUB W4, #0x0, [W15]
-00035E  3AFFFC     BRA NZ, 0x358
-76:                    //Discard some RX space
-77:                    while(!SPI1STATbits.SRXMPT) discard = SPI1BUF;
-000360  370002     BRA 0x366
-000362  801244     MOV SPI1BUF, W4
-000364  784F04     MOV.B W4, [W14]
-000366  801205     MOV SPI1STAT, W5
-000368  200204     MOV #0x20, W4
-00036A  628204     AND W5, W4, W4
-00036C  520FE0     SUB W4, #0x0, [W15]
-00036E  32FFF9     BRA Z, 0x362
-78:                
-79:                    SPI1BUF = b;
-000370  90422E     MOV.B [W14+2], W4
-000372  FB8204     ZE W4, W4
-000374  881244     MOV W4, SPI1BUF
-80:                }
-000376  FA8000     ULNK
-000378  060000     RETURN
+44:                    //Flush shift register
+45:                    while(!SPI2STATbits.SRMPT);
+0002F0  200805     MOV #0x80, W5
+0002F2  801304     MOV SPI2STAT, W4
+0002F4  620205     AND W4, W5, W4
+0002F6  32FFFD     BRA Z, 0x2F2
+46:                
+47:                    //Discard RX FIFO
+48:                    while(!SPI2STATbits.SRXMPT) discard = SPI2BUF;
+0002F8  ABA260     BTST SPI2STAT, #5
+0002FA  3A0005     BRA NZ, 0x306
+0002FC  200205     MOV #0x20, W5
+0002FE  801344     MOV SPI2BUF, W4
+000300  801304     MOV SPI2STAT, W4
+000302  620205     AND W4, W5, W4
+000304  32FFFC     BRA Z, 0x2FE
+49:                }
+000306  060000     RETURN
+50:                
+51:                /**
+52:                 * Write a byte to SPI and read the response.
+53:                 * This requires waiting for FIFO to flush before starting
+54:                 * (returned values are discarded)
+55:                 *
+56:                 * @param b The byte to write
+57:                 * @return  the read byte
+58:                 */
+59:                inline uint8_t spi1_rw_b(uint8_t b)
+60:                {
+000308  781F88     MOV W8, [W15++]
+00030A  784400     MOV.B W0, W8
+61:                    uint8_t rv;
+62:                    spi1_flush_tx();
+00030C  07FFD6     RCALL spi1_flush_tx
+63:                    SPI1BUF = b;
+00030E  FB8408     ZE W8, W8
+000310  881248     MOV W8, SPI1BUF
+64:                    //Wait for response byte
+65:                    while(SPI1STATbits.SRXMPT);
+000312  200205     MOV #0x20, W5
+000314  801204     MOV SPI1STAT, W4
+000316  620205     AND W4, W5, W4
+000318  3AFFFD     BRA NZ, 0x314
+66:                    rv = SPI1BUF;
+00031A  801240     MOV SPI1BUF, W0
+67:                    return rv;
+68:                }
+00031C  78044F     MOV [--W15], W8
+00031E  060000     RETURN
+69:                
+70:                /**
+71:                 * Write a byte, discard all current RX fifo
+72:                 * @param b
+73:                 */
+74:                inline void spi1_w_b_xdiscard(uint8_t b)
+75:                {
+76:                    uint8_t discard;
+77:                    //Wait for TX space
+78:                    while(SPI1STATbits.SPITBF);
+000320  AB2240     BTST SPI1STAT, #1
+000322  3AFFFE     BRA NZ, spi1_w_b_xdiscard
+79:                    //Discard some RX space
+80:                    while(!SPI1STATbits.SRXMPT) discard = SPI1BUF;
+000324  ABA240     BTST SPI1STAT, #5
+000326  3A0005     BRA NZ, 0x332
+000328  200205     MOV #0x20, W5
+00032A  801244     MOV SPI1BUF, W4
+00032C  801204     MOV SPI1STAT, W4
+00032E  620205     AND W4, W5, W4
+000330  32FFFC     BRA Z, 0x32A
 81:                
-82:                /**
-83:                 * Write a byte, discard all current RX fifo
-84:                 * @param b
-85:                 */
-86:                inline void spi2_w_b_xdiscard(uint8_t b)
-87:                {
-00037A  FA0004     LNK #0x4
-00037C  984720     MOV.B W0, [W14+2]
-88:                    uint8_t discard;
-89:                    //Wait for TX space
-90:                    while(SPI2STATbits.SPITBF);
-00037E  000000     NOP
-000380  801304     MOV SPI2STAT, W4
-000382  620262     AND W4, #0x2, W4
-000384  520FE0     SUB W4, #0x0, [W15]
-000386  3AFFFC     BRA NZ, 0x380
-91:                    //Discard some RX space
-92:                    while(!SPI2STATbits.SRXMPT) discard = SPI2BUF;
-000388  370002     BRA 0x38E
-00038A  801344     MOV SPI2BUF, W4
-00038C  784F04     MOV.B W4, [W14]
-00038E  801305     MOV SPI2STAT, W5
-000390  200204     MOV #0x20, W4
-000392  628204     AND W5, W4, W4
-000394  520FE0     SUB W4, #0x0, [W15]
-000396  32FFF9     BRA Z, 0x38A
-93:                
-94:                    SPI2BUF = b;
-000398  90422E     MOV.B [W14+2], W4
-00039A  FB8204     ZE W4, W4
-00039C  881344     MOV W4, SPI2BUF
-95:                }
-00039E  FA8000     ULNK
-0003A0  060000     RETURN
+82:                    SPI1BUF = b;
+000332  FB8000     ZE W0, W0
+000334  881240     MOV W0, SPI1BUF
+83:                }
+000336  060000     RETURN
+84:                
+85:                /**
+86:                 * Write a byte, discard all current RX fifo
+87:                 * @param b
+88:                 */
+89:                inline void spi2_w_b_xdiscard(uint8_t b)
+90:                {
+91:                    uint8_t discard;
+92:                    //Wait for TX space
+93:                    while(SPI2STATbits.SPITBF);
+000338  AB2260     BTST SPI2STAT, #1
+00033A  3AFFFE     BRA NZ, spi2_w_b_xdiscard
+94:                    //Discard some RX space
+95:                    while(!SPI2STATbits.SRXMPT) discard = SPI2BUF;
+00033C  ABA260     BTST SPI2STAT, #5
+00033E  3A0005     BRA NZ, 0x34A
+000340  200205     MOV #0x20, W5
+000342  801344     MOV SPI2BUF, W4
+000344  801304     MOV SPI2STAT, W4
+000346  620205     AND W4, W5, W4
+000348  32FFFC     BRA Z, 0x342
 96:                
-97:                
-98:                /**
-99:                 * Write a byte to SPI and read the response.
-100:                * This requires waiting for FIFO to flush before starting
-101:                * (returned values are discarded)
-102:                *
-103:                * @param b The byte to write
-104:                * @return  the read byte
-105:                */
-106:               inline uint8_t spi2_rw_b(uint8_t b)
-107:               {
-0003A2  FA0004     LNK #0x4
-0003A4  984720     MOV.B W0, [W14+2]
-108:                   uint8_t rv;
-109:                   spi2_flush_tx();
-0003A6  07FFAC     RCALL spi2_flush_tx
-110:                   SPI2BUF = b;
-0003A8  90422E     MOV.B [W14+2], W4
-0003AA  FB8204     ZE W4, W4
-0003AC  881344     MOV W4, SPI2BUF
-111:                   //Wait for response byte
-112:                   while(SPI2STATbits.SRXMPT);
-0003AE  000000     NOP
-0003B0  801305     MOV SPI2STAT, W5
-0003B2  200204     MOV #0x20, W4
-0003B4  628204     AND W5, W4, W4
-0003B6  520FE0     SUB W4, #0x0, [W15]
-0003B8  3AFFFB     BRA NZ, 0x3B0
-113:                   rv = SPI2BUF;
-0003BA  801344     MOV SPI2BUF, W4
-0003BC  784F04     MOV.B W4, [W14]
-114:                   return rv;
-0003BE  78421E     MOV.B [W14], W4
-115:               }
-0003C0  784004     MOV.B W4, W0
-0003C2  FA8000     ULNK
-0003C4  060000     RETURN
-116:               
-117:               /**
-118:                * Write a byte, one RX, check for space
-119:                * @param b
-120:                */
-121:               inline void spi2_w_b(uint8_t b)
-122:               {
-0003C6  FA0004     LNK #0x4
-0003C8  984720     MOV.B W0, [W14+2]
-123:                   uint8_t discard;
-124:                   //Wait for TX space
-125:                   while(SPI2STATbits.SPITBF);
-0003CA  000000     NOP
-0003CC  801304     MOV SPI2STAT, W4
-0003CE  620262     AND W4, #0x2, W4
-0003D0  520FE0     SUB W4, #0x0, [W15]
-0003D2  3AFFFC     BRA NZ, 0x3CC
-126:               
-127:                   //Discard some RX space
-128:                   discard = SPI2BUF;
-0003D4  801344     MOV SPI2BUF, W4
-0003D6  784F04     MOV.B W4, [W14]
-129:                   SPI2BUF = b;
-0003D8  90422E     MOV.B [W14+2], W4
-0003DA  FB8204     ZE W4, W4
-0003DC  881344     MOV W4, SPI2BUF
-130:               }
-0003DE  FA8000     ULNK
-0003E0  060000     RETURN
-131:               
-132:               /**
-133:                * Write a byte, discard one RX
-134:                * @param b
-135:                */
-136:               inline void spi1_w_b_fast(uint8_t b)
-137:               {
-0003E2  FA0004     LNK #0x4
-0003E4  984720     MOV.B W0, [W14+2]
-138:                   uint8_t discard;
-139:                   //Assume TX space,
-140:                   discard = SPI1BUF;
-0003E6  801244     MOV SPI1BUF, W4
-0003E8  784F04     MOV.B W4, [W14]
-141:                   SPI1BUF = b;
-0003EA  90422E     MOV.B [W14+2], W4
-0003EC  FB8204     ZE W4, W4
-0003EE  881244     MOV W4, SPI1BUF
-142:               }
-0003F0  FA8000     ULNK
-0003F2  060000     RETURN
-143:               
-144:               /**
-145:                * Write a byte, one RX, check for space
-146:                * @param b
-147:                */
-148:               inline void spi1_w_b(uint8_t b)
-149:               {
-0003F4  FA0004     LNK #0x4
-0003F6  984720     MOV.B W0, [W14+2]
-150:                   uint8_t discard;
-151:                   //Wait for TX space
-152:                   while(SPI1STATbits.SPITBF);
-0003F8  000000     NOP
-0003FA  801204     MOV SPI1STAT, W4
-0003FC  620262     AND W4, #0x2, W4
-0003FE  520FE0     SUB W4, #0x0, [W15]
-000400  3AFFFC     BRA NZ, 0x3FA
-153:               
-154:                   //Discard some RX space
-155:                   discard = SPI1BUF;
-000402  801244     MOV SPI1BUF, W4
-000404  784F04     MOV.B W4, [W14]
-156:                   SPI1BUF = b;
-000406  90422E     MOV.B [W14+2], W4
-000408  FB8204     ZE W4, W4
-00040A  881244     MOV W4, SPI1BUF
-157:               }
-00040C  FA8000     ULNK
-00040E  060000     RETURN
-158:               
-159:               inline void lcd_select(void)
-160:               {
-000410  FA0000     LNK #0x0
-161:                   LCD_SS = 0;
-000412  A942CC     BCLR LATB, #2
-162:               }
-000414  FA8000     ULNK
-000416  060000     RETURN
-163:               
-164:               inline void lcd_deselect(void)
-165:               {
-000418  FA0000     LNK #0x0
-166:                   LCD_SS = 1;
-00041A  A842CC     BSET LATB, #2
-167:               }
-00041C  FA8000     ULNK
-00041E  060000     RETURN
-168:               
-169:               inline void flash_select(void)
-170:               {
-000420  FA0000     LNK #0x0
-171:                   FL_SS = 0;
-000422  A982CC     BCLR LATB, #4
-172:               }
-000424  FA8000     ULNK
-000426  060000     RETURN
-173:               
-174:               inline void flash_deselect(void)
-175:               {
-000428  FA0000     LNK #0x0
-176:                   FL_SS = 1;
-00042A  A882CC     BSET LATB, #4
-177:               }
-00042C  FA8000     ULNK
-00042E  060000     RETURN
-178:               
-179:               inline void flash_begin_read(uint32_t address)
-180:               {
-000430  FA0004     LNK #0x4
-000432  BE8F00     MOV.D W0, [W14]
-181:                   flash_deselect();
-000434  07FFF9     RCALL flash_deselect
-182:                   flash_select();
-000436  07FFF4     RCALL flash_select
-183:                   spi2_w_b_xdiscard(0x0B);
-000438  B3C0B0     MOV #0xB, W0
-00043A  07FF9F     RCALL spi2_w_b_xdiscard
-184:                   spi2_w_b((address >> 16) & 0xFF );
-00043C  BE021E     MOV.D [W14], W4
-00043E  DE2A40     LSR W5, #0, W4
-000440  200005     MOV #0x0, W5
-000442  784204     MOV.B W4, W4
-000444  784004     MOV.B W4, W0
-000446  07FFBF     RCALL spi2_w_b
-185:                   spi2_w_b((address >> 8 ) & 0xFF );
-000448  BE021E     MOV.D [W14], W4
-00044A  DD2B48     SL W5, #8, W6
-00044C  DE2248     LSR W4, #8, W4
-00044E  730204     IOR W6, W4, W4
-000450  DE2AC8     LSR W5, #8, W5
-000452  784204     MOV.B W4, W4
-000454  784004     MOV.B W4, W0
-000456  07FFB7     RCALL spi2_w_b
-186:                   spi2_w_b((address) & 0xFF );
-000458  78021E     MOV [W14], W4
-00045A  784204     MOV.B W4, W4
-00045C  784004     MOV.B W4, W0
-00045E  07FFB3     RCALL spi2_w_b
-187:                   //We need the RW here so that we make sure that the first character
-188:                   //that appears in the RX fifo is in fact from this read
-189:                   spi2_rw_b(0xd0); //First dummy byte
-000460  B3CD00     MOV #0xD0, W0
-000462  07FF9F     RCALL spi2_rw_b
-190:               }
-000464  FA8000     ULNK
-000466  060000     RETURN
-191:               inline void tp_select(void)
-192:               {
-000468  FA0000     LNK #0x0
-193:                   TP_SS = 0;
-00046A  A9E2CD     BCLR 0x2CD, #7
-194:               }
-00046C  FA8000     ULNK
-00046E  060000     RETURN
-195:               
-196:               inline void tp_deselect(void)
-197:               {
-000470  FA0000     LNK #0x0
-198:                   TP_SS = 1;
-000472  A8E2CD     BSET 0x2CD, #7
-199:               }
-000474  FA8000     ULNK
-000476  060000     RETURN
-200:               
-201:               inline void lcd_write_index(uint8_t idx)
-202:               {
-000478  FA0002     LNK #0x2
-00047A  784F00     MOV.B W0, [W14]
-203:                   lcd_select();
-00047C  07FFC9     RCALL lcd_select
-204:                   spi1_w_b_xdiscard(SPI_START | SPI_WR | SPI_INDEX);
-00047E  B3C700     MOV #0x70, W0
-000480  07FF68     RCALL spi1_w_b_xdiscard
-205:                   spi1_w_b(0);
-000482  EB4000     CLR.B W0
-000484  07FFB7     RCALL spi1_w_b
-206:                   spi1_rw_b(idx); //The read ensures it is fully flushed through
-000486  78401E     MOV.B [W14], W0
-000488  07FF52     RCALL spi1_rw_b
-207:                   lcd_deselect();
-00048A  07FFC6     RCALL lcd_deselect
-208:               }
-00048C  FA8000     ULNK
-00048E  060000     RETURN
-209:               
-210:               inline void lcd_write_data_start(void)
-211:               {
-000490  FA0000     LNK #0x0
-212:                   spi1_w_b_xdiscard(SPI_START | SPI_WR | SPI_DATA);
-000492  B3C720     MOV #0x72, W0
-000494  07FF5E     RCALL spi1_w_b_xdiscard
-213:               }
-000496  FA8000     ULNK
-000498  060000     RETURN
-214:               
-215:               inline void lcd_write_data_word(uint16_t w)
-216:               {
-00049A  FA0002     LNK #0x2
-00049C  780F00     MOV W0, [W14]
-217:                   lcd_select();
-00049E  07FFB8     RCALL lcd_select
-218:                   spi1_w_b_xdiscard(SPI_START | SPI_WR | SPI_DATA);
-0004A0  B3C720     MOV #0x72, W0
-0004A2  07FF57     RCALL spi1_w_b_xdiscard
-219:                   spi1_w_b(w >> 8);
-0004A4  78021E     MOV [W14], W4
-0004A6  DE2248     LSR W4, #8, W4
-0004A8  784204     MOV.B W4, W4
-0004AA  784004     MOV.B W4, W0
-0004AC  07FFA3     RCALL spi1_w_b
-220:                   spi1_rw_b(w & 0xFF);
-0004AE  78021E     MOV [W14], W4
-0004B0  784204     MOV.B W4, W4
-0004B2  784004     MOV.B W4, W0
-0004B4  07FF3C     RCALL spi1_rw_b
-221:                   lcd_deselect();
-0004B6  07FFB0     RCALL lcd_deselect
-222:               }
-0004B8  FA8000     ULNK
-0004BA  060000     RETURN
-223:               
-224:               inline void lcd_write_data_body(uint16_t w)
-225:               {
-0004BC  FA0002     LNK #0x2
-0004BE  780F00     MOV W0, [W14]
-226:                   spi1_w_b(w >> 8);
-0004C0  78021E     MOV [W14], W4
-0004C2  DE2248     LSR W4, #8, W4
-0004C4  784204     MOV.B W4, W4
-0004C6  784004     MOV.B W4, W0
-0004C8  07FF95     RCALL spi1_w_b
-227:                   spi1_w_b(w & 0xFF);
-0004CA  78021E     MOV [W14], W4
-0004CC  784204     MOV.B W4, W4
-0004CE  784004     MOV.B W4, W0
-0004D0  07FF91     RCALL spi1_w_b
-228:               }
-0004D2  FA8000     ULNK
-0004D4  060000     RETURN
-229:               inline void lcd_write_reg(uint16_t addr, uint16_t value)
-230:               {
-0004D6  FA0004     LNK #0x4
-0004D8  780F00     MOV W0, [W14]
-0004DA  980711     MOV W1, [W14+2]
-231:                   lcd_write_index(addr);
-0004DC  78021E     MOV [W14], W4
-0004DE  784204     MOV.B W4, W4
-0004E0  784004     MOV.B W4, W0
-0004E2  07FFCA     RCALL lcd_write_index
-232:                   lcd_write_data_word(value);
-0004E4  90001E     MOV [W14+2], W0
-0004E6  07FFD9     RCALL lcd_write_data_word
+97:                    SPI2BUF = b;
+00034A  FB8000     ZE W0, W0
+00034C  881340     MOV W0, SPI2BUF
+98:                }
+00034E  060000     RETURN
+99:                
+100:               
+101:               /**
+102:                * Write a byte to SPI and read the response.
+103:                * This requires waiting for FIFO to flush before starting
+104:                * (returned values are discarded)
+105:                *
+106:                * @param b The byte to write
+107:                * @return  the read byte
+108:                */
+109:               inline uint8_t spi2_rw_b(uint8_t b)
+110:               {
+000350  781F88     MOV W8, [W15++]
+000352  784400     MOV.B W0, W8
+111:                   uint8_t rv;
+112:                   spi2_flush_tx();
+000354  07FFC9     RCALL spi2_flush_tx
+113:                   SPI2BUF = b;
+000356  FB8408     ZE W8, W8
+000358  881348     MOV W8, SPI2BUF
+114:                   //Wait for response byte
+115:                   while(SPI2STATbits.SRXMPT);
+00035A  200205     MOV #0x20, W5
+00035C  801304     MOV SPI2STAT, W4
+00035E  620205     AND W4, W5, W4
+000360  3AFFFD     BRA NZ, 0x35C
+116:                   rv = SPI2BUF;
+000362  801340     MOV SPI2BUF, W0
+117:                   return rv;
+118:               }
+000364  78044F     MOV [--W15], W8
+000366  060000     RETURN
+119:               
+120:               /**
+121:                * Write a byte, one RX, check for space
+122:                * @param b
+123:                */
+124:               inline void spi2_w_b(uint8_t b)
+125:               {
+126:                   uint8_t discard;
+127:                   //Wait for TX space
+128:                   while(SPI2STATbits.SPITBF);
+000368  AB2260     BTST SPI2STAT, #1
+00036A  3AFFFE     BRA NZ, spi2_w_b
+129:               
+130:                   //Discard some RX space
+131:                   discard = SPI2BUF;
+00036C  801344     MOV SPI2BUF, W4
+132:                   SPI2BUF = b;
+00036E  FB8000     ZE W0, W0
+000370  881340     MOV W0, SPI2BUF
+133:               }
+000372  060000     RETURN
+134:               
+135:               /**
+136:                * Write a byte, discard one RX
+137:                * @param b
+138:                */
+139:               inline void spi1_w_b_fast(uint8_t b)
+140:               {
+141:                   uint8_t discard;
+142:                   //Assume TX space,
+143:                   discard = SPI1BUF;
+000374  801244     MOV SPI1BUF, W4
+144:                   SPI1BUF = b;
+000376  FB8000     ZE W0, W0
+000378  881240     MOV W0, SPI1BUF
+145:               }
+00037A  060000     RETURN
+146:               
+147:               /**
+148:                * Write a byte, one RX, check for space
+149:                * @param b
+150:                */
+151:               inline void spi1_w_b(uint8_t b)
+152:               {
+153:                   uint8_t discard;
+154:                   //Wait for TX space
+155:                   while(SPI1STATbits.SPITBF);
+00037C  AB2240     BTST SPI1STAT, #1
+00037E  3AFFFE     BRA NZ, spi1_w_b
+156:               
+157:                   //Discard some RX space
+158:                   discard = SPI1BUF;
+000380  801244     MOV SPI1BUF, W4
+159:                   SPI1BUF = b;
+000382  FB8000     ZE W0, W0
+000384  881240     MOV W0, SPI1BUF
+160:               }
+000386  060000     RETURN
+161:               
+162:               inline void lcd_select(void)
+163:               {
+164:                   LCD_SS = 0;
+000388  A942CC     BCLR LATB, #2
+165:               }
+00038A  060000     RETURN
+166:               
+167:               inline void lcd_deselect(void)
+168:               {
+169:                   LCD_SS = 1;
+00038C  A842CC     BSET LATB, #2
+170:               }
+00038E  060000     RETURN
+171:               
+172:               inline void flash_select(void)
+173:               {
+174:                   FL_SS = 0;
+000390  A982CC     BCLR LATB, #4
+175:               }
+000392  060000     RETURN
+176:               
+177:               inline void flash_deselect(void)
+178:               {
+179:                   FL_SS = 1;
+000394  A882CC     BSET LATB, #4
+180:               }
+000396  060000     RETURN
+181:               
+182:               inline void flash_begin_read(uint32_t address)
+183:               {
+000398  BE9F88     MOV.D W8, [W15++]
+00039A  BE0400     MOV.D W0, W8
+184:                   flash_deselect();
+00039C  07FFFB     RCALL flash_deselect
+185:                   flash_select();
+00039E  07FFF8     RCALL flash_select
+186:                   spi2_w_b_xdiscard(0x0B);
+0003A0  B3C0B0     MOV #0xB, W0
+0003A2  07FFCA     RCALL spi2_w_b_xdiscard
+187:                   spi2_w_b((address >> 16) & 0xFF );
+0003A4  DE4840     LSR W9, #0, W0
+0003A6  200001     MOV #0x0, W1
+0003A8  07FFDF     RCALL spi2_w_b
+188:                   spi2_w_b((address >> 8 ) & 0xFF );
+0003AA  DD4A48     SL W9, #8, W4
+0003AC  DE4048     LSR W8, #8, W0
+0003AE  720000     IOR W4, W0, W0
+0003B0  DE48C8     LSR W9, #8, W1
+0003B2  07FFDA     RCALL spi2_w_b
+189:                   spi2_w_b((address) & 0xFF );
+0003B4  784008     MOV.B W8, W0
+0003B6  07FFD8     RCALL spi2_w_b
+190:                   //We need the RW here so that we make sure that the first character
+191:                   //that appears in the RX fifo is in fact from this read
+192:                   spi2_rw_b(0xd0); //First dummy byte
+0003B8  B3CD00     MOV #0xD0, W0
+0003BA  07FFCA     RCALL spi2_rw_b
+193:               }
+0003BC  BE044F     MOV.D [--W15], W8
+0003BE  060000     RETURN
+194:               inline void tp_select(void)
+195:               {
+196:                   TP_SS = 0;
+0003C0  A9E2CD     BCLR 0x2CD, #7
+197:               }
+0003C2  060000     RETURN
+198:               
+199:               inline void tp_deselect(void)
+200:               {
+201:                   TP_SS = 1;
+0003C4  A8E2CD     BSET 0x2CD, #7
+202:               }
+0003C6  060000     RETURN
+203:               
+204:               inline void lcd_write_index(uint8_t idx)
+205:               {
+0003C8  781F88     MOV W8, [W15++]
+0003CA  784400     MOV.B W0, W8
+206:                   if (SPI1STATbits.SPIROV)
+0003CC  ABC240     BTST SPI1STAT, #6
+0003CE  320003     BRA Z, 0x3D6
+207:                   {
+208:                       while(1)
+209:                       {
+210:                           DBG2 = 1;
+0003D0  A8A2CC     BSET LATB, #5
+211:                           DBG2 = 0;
+0003D2  A9A2CC     BCLR LATB, #5
+0003D4  37FFFD     BRA 0x3D0
+212:                       }
+213:                   }
+214:                   lcd_select();
+0003D6  07FFD8     RCALL lcd_select
+215:                   spi1_w_b_xdiscard(SPI_START | SPI_WR | SPI_INDEX);
+0003D8  B3C700     MOV #0x70, W0
+0003DA  07FFA2     RCALL spi1_w_b_xdiscard
+216:                   spi1_w_b(0);
+0003DC  EB4000     CLR.B W0
+0003DE  07FFCE     RCALL spi1_w_b
+217:                   spi1_rw_b(idx); //The read ensures it is fully flushed through
+0003E0  784008     MOV.B W8, W0
+0003E2  07FF92     RCALL spi1_rw_b
+218:                   lcd_deselect();
+0003E4  07FFD3     RCALL lcd_deselect
+219:               }
+0003E6  78044F     MOV [--W15], W8
+0003E8  060000     RETURN
+220:               
+221:               inline void lcd_write_data_start(void)
+222:               {
+223:                   spi1_w_b_xdiscard(SPI_START | SPI_WR | SPI_DATA);
+0003EA  B3C720     MOV #0x72, W0
+0003EC  07FF99     RCALL spi1_w_b_xdiscard
+224:               }
+0003EE  060000     RETURN
+225:               
+226:               inline void lcd_write_data_word(uint16_t w)
+227:               {
+0003F0  781F88     MOV W8, [W15++]
+0003F2  780400     MOV W0, W8
+228:                   lcd_select();
+0003F4  07FFC9     RCALL lcd_select
+229:                   spi1_w_b_xdiscard(SPI_START | SPI_WR | SPI_DATA);
+0003F6  B3C720     MOV #0x72, W0
+0003F8  07FF93     RCALL spi1_w_b_xdiscard
+230:                   spi1_w_b(w >> 8);
+0003FA  DE4048     LSR W8, #8, W0
+0003FC  07FFBF     RCALL spi1_w_b
+231:                   spi1_rw_b(w & 0xFF);
+0003FE  784008     MOV.B W8, W0
+000400  07FF83     RCALL spi1_rw_b
+232:                   lcd_deselect();
+000402  07FFC4     RCALL lcd_deselect
 233:               }
-0004E8  FA8000     ULNK
-0004EA  060000     RETURN
-234:               inline uint16_t lcd_read_data(void)
-235:               {
-0004EC  FA0002     LNK #0x2
-236:                   uint16_t rv;
-237:                   lcd_select();
-0004EE  07FF90     RCALL lcd_select
-238:                   spi1_w_b_xdiscard(SPI_START | SPI_RD | SPI_DATA);
-0004F0  B3C730     MOV #0x73, W0
-0004F2  07FF2F     RCALL spi1_w_b_xdiscard
-239:                   spi1_w_b(0);
-0004F4  EB4000     CLR.B W0
-0004F6  07FF7E     RCALL spi1_w_b
-240:                   rv = spi1_rw_b(0);
-0004F8  EB4000     CLR.B W0
-0004FA  07FF19     RCALL spi1_rw_b
-0004FC  784200     MOV.B W0, W4
-0004FE  FB8204     ZE W4, W4
-000500  780F04     MOV W4, [W14]
-241:                   rv <<= 8;
-000502  78021E     MOV [W14], W4
-000504  DD2248     SL W4, #8, W4
-000506  780F04     MOV W4, [W14]
-242:                   rv |= spi1_rw_b(0);
-000508  EB4000     CLR.B W0
-00050A  07FF11     RCALL spi1_rw_b
-00050C  784200     MOV.B W0, W4
-00050E  FB8204     ZE W4, W4
-000510  720F1E     IOR W4, [W14], [W14]
-243:                   lcd_deselect();
-000512  07FF82     RCALL lcd_deselect
-244:                   return rv;
-000514  78021E     MOV [W14], W4
-245:               }
-000516  780004     MOV W4, W0
-000518  FA8000     ULNK
-00051A  060000     RETURN
-246:               
-247:               inline uint16_t lcd_read_reg(uint16_t addr)
-248:               {
-00051C  FA0004     LNK #0x4
-00051E  980710     MOV W0, [W14+2]
-249:                   uint16_t rv;
-250:                   lcd_write_index(addr);
-000520  90021E     MOV [W14+2], W4
-000522  784204     MOV.B W4, W4
-000524  784004     MOV.B W4, W0
-000526  07FFA8     RCALL lcd_write_index
-251:                   rv = lcd_read_data();
-000528  07FFE1     RCALL lcd_read_data
-00052A  780200     MOV W0, W4
-00052C  780F04     MOV W4, [W14]
-252:                   return rv;
-00052E  78021E     MOV [W14], W4
-253:               }
-000530  780004     MOV W4, W0
-000532  FA8000     ULNK
-000534  060000     RETURN
-254:               
-255:               inline void lcd_set_cursor(uint16_t x, uint16_t y)
-256:               {
-000536  FA0004     LNK #0x4
-000538  780F00     MOV W0, [W14]
-00053A  980711     MOV W1, [W14+2]
-257:                   lcd_write_reg(0x0020, x);
-00053C  78009E     MOV [W14], W1
-00053E  200200     MOV #0x20, W0
-000540  07FFCA     RCALL lcd_write_reg
-258:                   lcd_write_reg(0x0021, y);
-000542  90009E     MOV [W14+2], W1
-000544  200210     MOV #0x21, W0
-000546  07FFC7     RCALL lcd_write_reg
-259:               }
-000548  FA8000     ULNK
-00054A  060000     RETURN
-260:               
-261:               inline void lcd_start_gfx()
-262:               {
-00054C  FA0000     LNK #0x0
-263:                   lcd_select();
-00054E  07FF60     RCALL lcd_select
-264:                   spi1_w_b_xdiscard(SPI_START | SPI_WR | SPI_INDEX);
-000550  B3C700     MOV #0x70, W0
-000552  07FEFF     RCALL spi1_w_b_xdiscard
-265:                   spi1_w_b(0);
-000554  EB4000     CLR.B W0
-000556  07FF4E     RCALL spi1_w_b
-266:                   spi1_rw_b(0x22); //The read ensures it is fully flushed through
-000558  B3C220     MOV #0x22, W0
-00055A  07FEE9     RCALL spi1_rw_b
-267:                   lcd_deselect();
-00055C  07FF5D     RCALL lcd_deselect
-268:                   lcd_select();
-00055E  07FF58     RCALL lcd_select
-269:                   spi1_w_b_xdiscard(SPI_START | SPI_WR | SPI_DATA);
-000560  B3C720     MOV #0x72, W0
-000562  07FEF7     RCALL spi1_w_b_xdiscard
+000404  78044F     MOV [--W15], W8
+000406  060000     RETURN
+234:               
+235:               inline void lcd_write_data_body(uint16_t w)
+236:               {
+000408  781F88     MOV W8, [W15++]
+00040A  780400     MOV W0, W8
+237:                   spi1_w_b(w >> 8);
+00040C  DE4048     LSR W8, #8, W0
+00040E  07FFB6     RCALL spi1_w_b
+238:                   spi1_w_b(w & 0xFF);
+000410  784008     MOV.B W8, W0
+000412  07FFB4     RCALL spi1_w_b
+239:               }
+000414  78044F     MOV [--W15], W8
+000416  060000     RETURN
+240:               inline void lcd_write_reg(uint16_t addr, uint16_t value)
+241:               {
+000418  781F88     MOV W8, [W15++]
+00041A  780401     MOV W1, W8
+242:                   lcd_write_index(addr);
+00041C  07FFD5     RCALL lcd_write_index
+243:                   lcd_write_data_word(value);
+00041E  780008     MOV W8, W0
+000420  07FFE7     RCALL lcd_write_data_word
+244:               }
+000422  78044F     MOV [--W15], W8
+000424  060000     RETURN
+245:               inline uint16_t lcd_read_data(void)
+246:               {
+000426  BE9F88     MOV.D W8, [W15++]
+247:                   uint16_t rv;
+248:                   lcd_select();
+000428  07FFAF     RCALL lcd_select
+249:                   spi1_w_b_xdiscard(SPI_START | SPI_RD | SPI_DATA);
+00042A  B3C730     MOV #0x73, W0
+00042C  07FF79     RCALL spi1_w_b_xdiscard
+250:                   spi1_w_b(0);
+00042E  EB4000     CLR.B W0
+000430  07FFA5     RCALL spi1_w_b
+251:                   rv = spi1_rw_b(0);
+000432  EB4000     CLR.B W0
+000434  07FF69     RCALL spi1_rw_b
+252:                   rv <<= 8;
+000436  DD04C8     SL W0, #8, W9
+253:                   rv |= spi1_rw_b(0);
+000438  EB4000     CLR.B W0
+00043A  07FF66     RCALL spi1_rw_b
+00043C  784400     MOV.B W0, W8
+000440  FB8008     ZE W8, W0
+000442  748000     IOR W9, W0, W0
+254:                   lcd_deselect();
+00043E  07FFA6     RCALL lcd_deselect
+255:                   return rv;
+256:               }
+000444  BE044F     MOV.D [--W15], W8
+000446  060000     RETURN
+257:               
+258:               inline uint16_t lcd_read_reg(uint16_t addr)
+259:               {
+260:                   uint16_t rv;
+261:                   lcd_write_index(addr);
+000448  07FFBF     RCALL lcd_write_index
+262:                   rv = lcd_read_data();
+00044A  07FFED     RCALL lcd_read_data
+263:                   return rv;
+264:               }
+00044C  060000     RETURN
+265:               
+266:               inline void lcd_set_cursor(uint16_t x, uint16_t y)
+267:               {
+00044E  781F88     MOV W8, [W15++]
+000450  780401     MOV W1, W8
+268:                   lcd_write_reg(0x0020, x);
+000452  780080     MOV W0, W1
+000454  200200     MOV #0x20, W0
+000456  07FFE0     RCALL lcd_write_reg
+269:                   lcd_write_reg(0x0021, y);
+000458  780088     MOV W8, W1
+00045A  200210     MOV #0x21, W0
+00045C  07FFDD     RCALL lcd_write_reg
 270:               }
-000564  FA8000     ULNK
-000566  060000     RETURN
+00045E  78044F     MOV [--W15], W8
+000460  060000     RETURN
 271:               
-272:               inline void lcd_end_gfx()
+272:               inline void lcd_start_gfx()
 273:               {
-000568  FA0000     LNK #0x0
-274:                   lcd_deselect();
-00056A  07FF56     RCALL lcd_deselect
-275:               }
-00056C  FA8000     ULNK
-00056E  060000     RETURN
-276:               
-277:               /**
-278:                * Delay in units of half a microsecond
-279:                * @param x number of half microseconds to delay
-280:                */
-281:               void delay_hus(uint16_t x)
-282:               {
-000570  FA0004     LNK #0x4
-000572  980710     MOV W0, [W14+2]
-283:                   uint16_t then;
-284:                   then = TMR2;
-000574  800834     MOV TMR2, W4
-000576  780F04     MOV W4, [W14]
-285:                   while((uint16_t)(TMR2 - then) < x);
-000578  000000     NOP
-00057A  800834     MOV TMR2, W4
-00057C  52029E     SUB W4, [W14], W5
-00057E  90021E     MOV [W14+2], W4
-000580  528F84     SUB W5, W4, [W15]
-000582  39FFFB     BRA NC, 0x57A
-286:               }
-000584  FA8000     ULNK
-000586  060000     RETURN
-287:               
-288:               /**
-289:                * Delay for X milliseconds.
-290:                * @param x the number of milliseconds to delay for
-291:                */
-292:               void delay_ms(uint16_t x)
-293:               {
-000588  FA000E     LNK #0xE
-00058A  980760     MOV W0, [W14+12]
-294:                   uint32_t hmicros = x;
-00058C  90026E     MOV [W14+12], W4
-00058E  200005     MOV #0x0, W5
-000590  BE8F04     MOV.D W4, [W14]
-295:                   hmicros*=2000;
-000592  90029E     MOV [W14+2], W5
-000594  207D04     MOV #0x7D0, W4
-000596  B9AA04     MUL.SS W5, W4, W4
-000598  780304     MOV W4, W6
-00059A  78021E     MOV [W14], W4
-00059C  B92260     MUL.SU W4, #0, W4
-00059E  780204     MOV W4, W4
-0005A0  430304     ADD W6, W4, W6
-0005A2  78029E     MOV [W14], W5
-0005A4  207D04     MOV #0x7D0, W4
-0005A6  B82A04     MUL.UU W5, W4, W4
-0005A8  430305     ADD W6, W5, W6
-0005AA  780286     MOV W6, W5
-0005AC  BE8F04     MOV.D W4, [W14]
-0005AE  BE8F04     MOV.D W4, [W14]
-296:                   uint32_t then, now;
-297:                   ((uint16_t*)&then)[0] = TMR2;
-0005B0  470264     ADD W14, #0x4, W4
-0005B2  800835     MOV TMR2, W5
-0005B4  780A05     MOV W5, [W4]
-298:                   ((uint16_t*)&then)[1] = TMR3HLD;
-0005B6  470264     ADD W14, #0x4, W4
-0005B8  E88204     INC2 W4, W4
-0005BA  800845     MOV TMR3HLD, W5
-0005BC  780A05     MOV W5, [W4]
-299:                   do
-300:                   {
-301:                       ((uint16_t*)&now)[0] = TMR2;
-0005BE  470268     ADD W14, #0x8, W4
-0005C0  800835     MOV TMR2, W5
-0005C2  780A05     MOV W5, [W4]
-302:                       ((uint16_t*)&now)[1] = TMR3HLD;
-0005C4  470268     ADD W14, #0x8, W4
-0005C6  E88204     INC2 W4, W4
-0005C8  800845     MOV TMR3HLD, W5
-0005CA  780A05     MOV W5, [W4]
-303:                   } while((now - then) < hmicros);
-0005CC  90034E     MOV [W14+8], W6
-0005CE  9003DE     MOV [W14+10], W7
-0005D0  90022E     MOV [W14+4], W4
-0005D2  9002BE     MOV [W14+6], W5
-0005D4  530204     SUB W6, W4, W4
-0005D6  5B8285     SUBB W7, W5, W5
-0005D8  520FBE     SUB W4, [W14++], [W15]
-0005DA  5A8FAE     SUBB W5, [W14--], [W15]
-0005DC  39FFF0     BRA NC, 0x5BE
-304:               }
-0005DE  FA8000     ULNK
-0005E0  060000     RETURN
-305:               
-306:               void wave_test(void)
-307:               {
-0005E2  FA0000     LNK #0x0
-308:                   lcd_read_reg(0x0000);
-0005E4  EB0000     CLR W0
-0005E6  07FF9A     RCALL lcd_read_reg
-309:               
-310:               }
-0005E8  FA8000     ULNK
-0005EA  060000     RETURN
-311:               /**
-312:                * This magic incantation for screen initialisation was translated from the
-313:                * example source code given by the vendor: powermcu.com / hotmcu.com
-314:                * URL: http://www.haoyuelectronics.com/Attachment/HY28A/HY28A-LCDB%20example%20source%20code.rar
-315:                */
-316:               void lcd_init(void)
-317:               {
-0005EC  FA0002     LNK #0x2
-318:                   uint16_t dev_code;
-319:               
-320:                   lcd_deselect();
-0005EE  07FF14     RCALL lcd_deselect
-321:                   tp_deselect();
-0005F0  07FF3F     RCALL tp_deselect
-322:                   LCD_RST = 0;
-0005F2  A922C4     BCLR LATA, #1
-323:                   delay_ms(50);
-0005F4  200320     MOV #0x32, W0
-0005F6  07FFC8     RCALL delay_ms
-324:                   LCD_RST = 1;
-0005F8  A822C4     BSET LATA, #1
-325:                   delay_ms(50);
-0005FA  200320     MOV #0x32, W0
-0005FC  07FFC5     RCALL delay_ms
-326:                   dev_code = lcd_read_reg(0x0000);
-0005FE  EB0000     CLR W0
-000600  07FF8D     RCALL lcd_read_reg
-000602  780200     MOV W0, W4
-000604  780F04     MOV W4, [W14]
-327:                   tc(0x10FF);
-000606  210FF0     MOV #0x10FF, W0
-000608  07031D     RCALL tc
-328:                   tc(dev_code);
-00060A  78001E     MOV [W14], W0
-00060C  07031B     RCALL tc
+274:                   lcd_select();
+000462  07FF92     RCALL lcd_select
+275:                   spi1_w_b_xdiscard(SPI_START | SPI_WR | SPI_INDEX);
+000464  B3C700     MOV #0x70, W0
+000466  07FF5C     RCALL spi1_w_b_xdiscard
+276:                   spi1_w_b(0);
+000468  EB4000     CLR.B W0
+00046A  07FF88     RCALL spi1_w_b
+277:                   spi1_rw_b(0x22); //The read ensures it is fully flushed through
+00046C  B3C220     MOV #0x22, W0
+00046E  07FF4C     RCALL spi1_rw_b
+278:                   lcd_deselect();
+000470  07FF8D     RCALL lcd_deselect
+279:                   lcd_select();
+000472  07FF8A     RCALL lcd_select
+280:                   spi1_w_b_xdiscard(SPI_START | SPI_WR | SPI_DATA);
+000474  B3C720     MOV #0x72, W0
+000476  07FF54     RCALL spi1_w_b_xdiscard
+281:               }
+000478  060000     RETURN
+282:               
+283:               inline void lcd_end_gfx()
+284:               {
+285:                   spi1_flush_tx();
+00047A  07FF1F     RCALL spi1_flush_tx
+286:                       if (SPI1STATbits.SPIROV)
+00047C  ABC240     BTST SPI1STAT, #6
+00047E  320003     BRA Z, 0x486
+287:                   {
+288:                       while(1)
+289:                       {
+290:                           DBG2 = 1;
+000480  A8A2CC     BSET LATB, #5
+291:                           DBG2 = 0;
+000482  A9A2CC     BCLR LATB, #5
+000484  37FFFD     BRA 0x480
+292:                       }
+293:                   }
+294:                   lcd_deselect();
+000486  07FF82     RCALL lcd_deselect
+295:               }
+000488  060000     RETURN
+296:               
+297:               /**
+298:                * Delay in units of half a microsecond
+299:                * @param x number of half microseconds to delay
+300:                */
+301:               void delay_hus(uint16_t x)
+302:               {
+303:                   uint16_t then;
+304:                   then = TMR2;
+00048A  800835     MOV TMR2, W5
+305:                   while((uint16_t)(TMR2 - then) < x);
+00048C  800836     MOV TMR2, W6
+00048E  530205     SUB W6, W5, W4
+000490  520F80     SUB W4, W0, [W15]
+000492  39FFFC     BRA NC, 0x48C
+306:               }
+000494  060000     RETURN
+307:               
+308:               /**
+309:                * Delay for X milliseconds.
+310:                * @param x the number of milliseconds to delay for
+311:                */
+312:               void delay_ms(uint16_t x)
+313:               {
+000496  4787EA     ADD W15, #0xA, W15
+000498  781F8E     MOV W14, [W15++]
+314:                   uint32_t hmicros = x;
+315:                   hmicros*=2000;
+00049A  207D04     MOV #0x7D0, W4
+00049C  B80004     MUL.UU W0, W4, W0
+316:                   uint32_t then, now;
+317:                   ((uint16_t*)&then)[0] = TMR2;
+00049E  800834     MOV TMR2, W4
+0004A0  9FBFB4     MOV W4, [W15-10]
+318:                   ((uint16_t*)&then)[1] = TMR3HLD;
+0004A2  800844     MOV TMR3HLD, W4
+0004A4  9FBFC4     MOV W4, [W15-8]
+319:                   do
+320:                   {
+321:                       ((uint16_t*)&now)[0] = TMR2;
+0004AA  800834     MOV TMR2, W4
+0004AC  780F04     MOV W4, [W14]
+322:                       ((uint16_t*)&now)[1] = TMR3HLD;
+0004AE  800844     MOV TMR3HLD, W4
+0004B0  980714     MOV W4, [W14+2]
+323:                   } while((now - then) < hmicros);
+0004A6  57876A     SUB W15, #0xA, W14
+0004A8  BE033E     MOV.D [W14++], W6
+0004B2  97BA5F     MOV [W15-6], W4
+0004B4  97BAEF     MOV [W15-4], W5
+0004B6  520206     SUB W4, W6, W4
+0004B8  5A8287     SUBB W5, W7, W5
+0004BA  500F84     SUB W0, W4, [W15]
+0004BC  588F85     SUBB W1, W5, [W15]
+0004BE  3EFFF5     BRA GTU, 0x4AA
+324:               }
+0004C0  78074F     MOV [--W15], W14
+0004C2  B100AF     SUB #0xA, W15
+0004C4  060000     RETURN
+325:               
+326:               void wave_test(void)
+327:               {
+328:                   lcd_read_reg(0x0000);
+0004C6  EB0000     CLR W0
+0004C8  07FFBF     RCALL lcd_read_reg
 329:               
-330:                   /* Different driver IC initialization */
-331:                   if( dev_code == 0x9320 || dev_code == 0x9300 )
-00060E  293204     MOV #0x9320, W4
-000610  78029E     MOV [W14], W5
-000612  528F84     SUB W5, W4, [W15]
-000614  320004     BRA Z, 0x61E
-000616  293004     MOV #0x9300, W4
-000618  78029E     MOV [W14], W5
-00061A  528F84     SUB W5, W4, [W15]
-00061C  3A007A     BRA NZ, 0x712
-332:                   {
-333:                       lcd_write_reg(0x00, 0x0000);
-00061E  EB0080     CLR W1
-000620  EB0000     CLR W0
-000622  07FF59     RCALL lcd_write_reg
-334:                       lcd_write_reg(0x01, 0x0100); /* Driver Output Contral */
-000624  201001     MOV #0x100, W1
-000626  200010     MOV #0x1, W0
-000628  07FF56     RCALL lcd_write_reg
-335:                       lcd_write_reg(0x02, 0x0700); /* LCD Driver Waveform Contral */
-00062A  207001     MOV #0x700, W1
-00062C  200020     MOV #0x2, W0
-00062E  07FF53     RCALL lcd_write_reg
-336:                       lcd_write_reg(0x03, 0x1038); /* Set the scan mode */
-000630  210381     MOV #0x1038, W1
-000632  200030     MOV #0x3, W0
-000634  07FF50     RCALL lcd_write_reg
-337:                       lcd_write_reg(0x04, 0x0000); /* Scalling Contral */
-000636  EB0080     CLR W1
-000638  200040     MOV #0x4, W0
-00063A  07FF4D     RCALL lcd_write_reg
-338:                       lcd_write_reg(0x08, 0x0202); /* Display Contral 2 */
-00063C  202021     MOV #0x202, W1
-00063E  200080     MOV #0x8, W0
-000640  07FF4A     RCALL lcd_write_reg
-339:                       lcd_write_reg(0x09, 0x0000); /* Display Contral 3 */
-000642  EB0080     CLR W1
-000644  200090     MOV #0x9, W0
-000646  07FF47     RCALL lcd_write_reg
-340:                       lcd_write_reg(0x0a, 0x0000); /* Frame Cycle Contal */
-000648  EB0080     CLR W1
-00064A  2000A0     MOV #0xA, W0
-00064C  07FF44     RCALL lcd_write_reg
-341:                       lcd_write_reg(0x0c, (1<<0)); /* Extern Display Interface Contral 1 */
-00064E  200011     MOV #0x1, W1
-000650  2000C0     MOV #0xC, W0
-000652  07FF41     RCALL lcd_write_reg
-342:                       lcd_write_reg(0x0d, 0x0000); /* Frame Maker Position */
-000654  EB0080     CLR W1
-000656  2000D0     MOV #0xD, W0
-000658  07FF3E     RCALL lcd_write_reg
-343:                       lcd_write_reg(0x0f, 0x0000); /* Extern Display Interface Contral 2 */
-00065A  EB0080     CLR W1
-00065C  2000F0     MOV #0xF, W0
-00065E  07FF3B     RCALL lcd_write_reg
-344:                       delay_ms(50);
-000660  200320     MOV #0x32, W0
-000662  07FF92     RCALL delay_ms
-345:                       lcd_write_reg(0x07, 0x0101); /* Display Contral */
-000664  201011     MOV #0x101, W1
-000666  200070     MOV #0x7, W0
-000668  07FF36     RCALL lcd_write_reg
-346:                       delay_ms(50);
-00066A  200320     MOV #0x32, W0
-00066C  07FF8D     RCALL delay_ms
-347:                       lcd_write_reg(0x10, (1<<12)|(0<<8)|(1<<7)|(1<<6)|(0<<4)); /* Power Control 1 */
-00066E  210C01     MOV #0x10C0, W1
-000670  200100     MOV #0x10, W0
-000672  07FF31     RCALL lcd_write_reg
-348:                       lcd_write_reg(0x11, 0x0007);                              /* Power Control 2 */
-000674  200071     MOV #0x7, W1
-000676  200110     MOV #0x11, W0
-000678  07FF2E     RCALL lcd_write_reg
-349:                       lcd_write_reg(0x12, (1<<8)|(1<<4)|(0<<0));                /* Power Control 3 */
-00067A  201101     MOV #0x110, W1
-00067C  200120     MOV #0x12, W0
-00067E  07FF2B     RCALL lcd_write_reg
-350:                       lcd_write_reg(0x13, 0x0b00);                              /* Power Control 4 */
-000680  20B001     MOV #0xB00, W1
-000682  200130     MOV #0x13, W0
-000684  07FF28     RCALL lcd_write_reg
-351:                       lcd_write_reg(0x29, 0x0000);                              /* Power Control 7 */
-000686  EB0080     CLR W1
-000688  200290     MOV #0x29, W0
-00068A  07FF25     RCALL lcd_write_reg
-352:                       lcd_write_reg(0x2b, (1<<14)|(1<<4));
-00068C  240101     MOV #0x4010, W1
-00068E  2002B0     MOV #0x2B, W0
-000690  07FF22     RCALL lcd_write_reg
-353:               
-354:                       lcd_write_reg(0x50, 0);       /* Set X Start */
-000692  EB0080     CLR W1
-000694  200500     MOV #0x50, W0
-000696  07FF1F     RCALL lcd_write_reg
-355:                       lcd_write_reg(0x51, 239);     /* Set X End */
-000698  200EF1     MOV #0xEF, W1
-00069A  200510     MOV #0x51, W0
-00069C  07FF1C     RCALL lcd_write_reg
-356:                       lcd_write_reg(0x52, 0);       /* Set Y Start */
-00069E  EB0080     CLR W1
-0006A0  200520     MOV #0x52, W0
-0006A2  07FF19     RCALL lcd_write_reg
-357:                       lcd_write_reg(0x53, 319);     /* Set Y End */
-0006A4  2013F1     MOV #0x13F, W1
-0006A6  200530     MOV #0x53, W0
-0006A8  07FF16     RCALL lcd_write_reg
-358:                       delay_ms(50);
-0006AA  200320     MOV #0x32, W0
-0006AC  07FF6D     RCALL delay_ms
-359:               
-360:                       lcd_write_reg(0x60, 0x2700); /* Driver Output Control */
-0006AE  227001     MOV #0x2700, W1
-0006B0  200600     MOV #0x60, W0
-0006B2  07FF11     RCALL lcd_write_reg
-361:                       lcd_write_reg(0x61, 0x0001); /* Driver Output Control */
-0006B4  200011     MOV #0x1, W1
-0006B6  200610     MOV #0x61, W0
-0006B8  07FF0E     RCALL lcd_write_reg
-362:                       lcd_write_reg(0x6a, 0x0000); /* Vertical Srcoll Control */
-0006BA  EB0080     CLR W1
-0006BC  2006A0     MOV #0x6A, W0
-0006BE  07FF0B     RCALL lcd_write_reg
-363:               
-364:                       lcd_write_reg(0x80, 0x0000); /* Display Position? Partial Display 1 */
-0006C0  EB0080     CLR W1
-0006C2  200800     MOV #0x80, W0
-0006C4  07FF08     RCALL lcd_write_reg
-365:                       lcd_write_reg(0x81, 0x0000); /* RAM Address Start? Partial Display 1 */
-0006C6  EB0080     CLR W1
-0006C8  200810     MOV #0x81, W0
-0006CA  07FF05     RCALL lcd_write_reg
-366:                       lcd_write_reg(0x82, 0x0000); /* RAM Address End-Partial Display 1 */
-0006CC  EB0080     CLR W1
-0006CE  200820     MOV #0x82, W0
-0006D0  07FF02     RCALL lcd_write_reg
-367:                       lcd_write_reg(0x83, 0x0000); /* Displsy Position? Partial Display 2 */
-0006D2  EB0080     CLR W1
-0006D4  200830     MOV #0x83, W0
-0006D6  07FEFF     RCALL lcd_write_reg
-368:                       lcd_write_reg(0x84, 0x0000); /* RAM Address Start? Partial Display 2 */
-0006D8  EB0080     CLR W1
-0006DA  200840     MOV #0x84, W0
-0006DC  07FEFC     RCALL lcd_write_reg
-369:                       lcd_write_reg(0x85, 0x0000); /* RAM Address End? Partial Display 2 */
-0006DE  EB0080     CLR W1
-0006E0  200850     MOV #0x85, W0
-0006E2  07FEF9     RCALL lcd_write_reg
-370:               
-371:                       lcd_write_reg(0x90, (0<<7)|(16<<0)); /* Frame Cycle Contral */
-0006E4  200101     MOV #0x10, W1
-0006E6  200900     MOV #0x90, W0
-0006E8  07FEF6     RCALL lcd_write_reg
-372:                       lcd_write_reg(0x92, 0x0000);         /* Panel Interface Contral 2 */
-0006EA  EB0080     CLR W1
-0006EC  200920     MOV #0x92, W0
-0006EE  07FEF3     RCALL lcd_write_reg
-373:                       lcd_write_reg(0x93, 0x0001);         /* Panel Interface Contral 3 */
-0006F0  200011     MOV #0x1, W1
-0006F2  200930     MOV #0x93, W0
-0006F4  07FEF0     RCALL lcd_write_reg
-374:                       lcd_write_reg(0x95, 0x0110);         /* Frame Cycle Contral */
-0006F6  201101     MOV #0x110, W1
-0006F8  200950     MOV #0x95, W0
-0006FA  07FEED     RCALL lcd_write_reg
-375:                       lcd_write_reg(0x97, (0<<8));
-0006FC  EB0080     CLR W1
-0006FE  200970     MOV #0x97, W0
-000700  07FEEA     RCALL lcd_write_reg
-376:                       lcd_write_reg(0x98, 0x0000);         /* Frame Cycle Contral */
-000702  EB0080     CLR W1
-000704  200980     MOV #0x98, W0
-000706  07FEE7     RCALL lcd_write_reg
-377:                       lcd_write_reg(0x07, 0x0133);
-000708  201331     MOV #0x133, W1
-00070A  200070     MOV #0x7, W0
-00070C  07FEE4     RCALL lcd_write_reg
-378:                   }
-379:                   else
-380:                   {
-381:                       while(1) tc(0xDD01);
-000712  2DD010     MOV #0xDD01, W0
-000714  070297     RCALL tc
-000716  37FFFD     BRA 0x712
-382:                   }
+330:               }
+0004CA  060000     RETURN
+331:               /**
+332:                * This magic incantation for screen initialisation was translated from the
+333:                * example source code given by the vendor: powermcu.com / hotmcu.com
+334:                * URL: http://www.haoyuelectronics.com/Attachment/HY28A/HY28A-LCDB%20example%20source%20code.rar
+335:                */
+336:               void lcd_init(void)
+337:               {
+0004CC  BE9F88     MOV.D W8, [W15++]
+338:                   uint16_t dev_code;
+339:               
+340:                   lcd_deselect();
+0004CE  07FF5E     RCALL lcd_deselect
+341:                   tp_deselect();
+0004D0  07FF79     RCALL tp_deselect
+342:                   LCD_RST = 0;
+0004D2  A922C4     BCLR LATA, #1
+343:                   delay_ms(50);
+0004D4  200320     MOV #0x32, W0
+0004D6  07FFDF     RCALL delay_ms
+344:                   LCD_RST = 1;
+0004D8  A822C4     BSET LATA, #1
+345:                   delay_ms(50);
+0004DA  200320     MOV #0x32, W0
+0004DC  07FFDC     RCALL delay_ms
+346:                   dev_code = lcd_read_reg(0x0000);
+0004DE  EB0000     CLR W0
+0004E0  07FFB3     RCALL lcd_read_reg
+0004E2  780480     MOV W0, W9
+347:                   tc(0x10FF);
+0004E4  210FF0     MOV #0x10FF, W0
+0004E6  070275     RCALL tc
+348:                   tc(dev_code);
+0004E8  780009     MOV W9, W0
+0004EA  070273     RCALL tc
+349:               
+350:                   /* Different driver IC initialization */
+351:                   if( dev_code == 0x9320 || dev_code == 0x9300 )
+0004EC  293204     MOV #0x9320, W4
+0004EE  548F84     SUB W9, W4, [W15]
+0004F0  320004     BRA Z, 0x4FA
+0004F4  B10204     SUB #0x20, W4
+0004F6  548F84     SUB W9, W4, [W15]
+0004F8  3A0079     BRA NZ, 0x5EC
+352:                   {
+353:                       lcd_write_reg(0x00, 0x0000);
+0004FA  B80060     MUL.UU W0, #0, W0
+0004FC  07FF8D     RCALL lcd_write_reg
+354:                       lcd_write_reg(0x01, 0x0100); /* Driver Output Contral */
+0004FE  201001     MOV #0x100, W1
+000500  200010     MOV #0x1, W0
+000502  07FF8A     RCALL lcd_write_reg
+355:                       lcd_write_reg(0x02, 0x0700); /* LCD Driver Waveform Contral */
+000504  207001     MOV #0x700, W1
+000506  200020     MOV #0x2, W0
+000508  07FF87     RCALL lcd_write_reg
+356:                       lcd_write_reg(0x03, 0x1038); /* Set the scan mode */
+00050A  210381     MOV #0x1038, W1
+00050C  200030     MOV #0x3, W0
+00050E  07FF84     RCALL lcd_write_reg
+357:                       lcd_write_reg(0x04, 0x0000); /* Scalling Contral */
+000510  EB0080     CLR W1
+000512  200040     MOV #0x4, W0
+000514  07FF81     RCALL lcd_write_reg
+358:                       lcd_write_reg(0x08, 0x0202); /* Display Contral 2 */
+000516  202021     MOV #0x202, W1
+000518  200080     MOV #0x8, W0
+00051A  07FF7E     RCALL lcd_write_reg
+359:                       lcd_write_reg(0x09, 0x0000); /* Display Contral 3 */
+00051C  EB0080     CLR W1
+00051E  200090     MOV #0x9, W0
+000520  07FF7B     RCALL lcd_write_reg
+360:                       lcd_write_reg(0x0a, 0x0000); /* Frame Cycle Contal */
+000522  EB0080     CLR W1
+000524  2000A0     MOV #0xA, W0
+000526  07FF78     RCALL lcd_write_reg
+361:                       lcd_write_reg(0x0c, (1<<0)); /* Extern Display Interface Contral 1 */
+000528  200011     MOV #0x1, W1
+00052A  2000C0     MOV #0xC, W0
+00052C  07FF75     RCALL lcd_write_reg
+362:                       lcd_write_reg(0x0d, 0x0000); /* Frame Maker Position */
+00052E  EB0080     CLR W1
+000530  2000D0     MOV #0xD, W0
+000532  07FF72     RCALL lcd_write_reg
+363:                       lcd_write_reg(0x0f, 0x0000); /* Extern Display Interface Contral 2 */
+000534  EB0080     CLR W1
+000536  2000F0     MOV #0xF, W0
+000538  07FF6F     RCALL lcd_write_reg
+364:                       delay_ms(50);
+00053A  200320     MOV #0x32, W0
+00053C  07FFAC     RCALL delay_ms
+365:                       lcd_write_reg(0x07, 0x0101); /* Display Contral */
+00053E  201011     MOV #0x101, W1
+000540  200070     MOV #0x7, W0
+000542  07FF6A     RCALL lcd_write_reg
+366:                       delay_ms(50);
+000544  200320     MOV #0x32, W0
+000546  07FFA7     RCALL delay_ms
+367:                       lcd_write_reg(0x10, (1<<12)|(0<<8)|(1<<7)|(1<<6)|(0<<4)); /* Power Control 1 */
+000548  210C01     MOV #0x10C0, W1
+00054A  200100     MOV #0x10, W0
+00054C  07FF65     RCALL lcd_write_reg
+368:                       lcd_write_reg(0x11, 0x0007);                              /* Power Control 2 */
+00054E  200071     MOV #0x7, W1
+000550  200110     MOV #0x11, W0
+000552  07FF62     RCALL lcd_write_reg
+369:                       lcd_write_reg(0x12, (1<<8)|(1<<4)|(0<<0));                /* Power Control 3 */
+000554  201101     MOV #0x110, W1
+000556  200120     MOV #0x12, W0
+000558  07FF5F     RCALL lcd_write_reg
+370:                       lcd_write_reg(0x13, 0x0b00);                              /* Power Control 4 */
+00055A  20B001     MOV #0xB00, W1
+00055C  200130     MOV #0x13, W0
+00055E  07FF5C     RCALL lcd_write_reg
+371:                       lcd_write_reg(0x29, 0x0000);                              /* Power Control 7 */
+000560  EB0080     CLR W1
+000562  200290     MOV #0x29, W0
+000564  07FF59     RCALL lcd_write_reg
+372:                       lcd_write_reg(0x2b, (1<<14)|(1<<4));
+000566  240101     MOV #0x4010, W1
+000568  2002B0     MOV #0x2B, W0
+00056A  07FF56     RCALL lcd_write_reg
+373:               
+374:                       lcd_write_reg(0x50, 0);       /* Set X Start */
+00056C  EB0080     CLR W1
+00056E  200500     MOV #0x50, W0
+000570  07FF53     RCALL lcd_write_reg
+375:                       lcd_write_reg(0x51, 239);     /* Set X End */
+000572  200EF1     MOV #0xEF, W1
+000574  200510     MOV #0x51, W0
+000576  07FF50     RCALL lcd_write_reg
+376:                       lcd_write_reg(0x52, 0);       /* Set Y Start */
+000578  EB0080     CLR W1
+00057A  200520     MOV #0x52, W0
+00057C  07FF4D     RCALL lcd_write_reg
+377:                       lcd_write_reg(0x53, 319);     /* Set Y End */
+00057E  2013F1     MOV #0x13F, W1
+000580  200530     MOV #0x53, W0
+000582  07FF4A     RCALL lcd_write_reg
+378:                       delay_ms(50);
+000584  200320     MOV #0x32, W0
+000586  07FF87     RCALL delay_ms
+379:               
+380:                       lcd_write_reg(0x60, 0x2700); /* Driver Output Control */
+000588  227001     MOV #0x2700, W1
+00058A  200600     MOV #0x60, W0
+00058C  07FF45     RCALL lcd_write_reg
+381:                       lcd_write_reg(0x61, 0x0001); /* Driver Output Control */
+00058E  200011     MOV #0x1, W1
+000590  200610     MOV #0x61, W0
+000592  07FF42     RCALL lcd_write_reg
+382:                       lcd_write_reg(0x6a, 0x0000); /* Vertical Srcoll Control */
+000594  EB0080     CLR W1
+000596  2006A0     MOV #0x6A, W0
+000598  07FF3F     RCALL lcd_write_reg
 383:               
-384:               }
-00070E  FA8000     ULNK
-000710  060000     RETURN
+384:                       lcd_write_reg(0x80, 0x0000); /* Display Position? Partial Display 1 */
+00059A  EB0080     CLR W1
+00059C  200800     MOV #0x80, W0
+00059E  07FF3C     RCALL lcd_write_reg
+385:                       lcd_write_reg(0x81, 0x0000); /* RAM Address Start? Partial Display 1 */
+0005A0  EB0080     CLR W1
+0005A2  200810     MOV #0x81, W0
+0005A4  07FF39     RCALL lcd_write_reg
+386:                       lcd_write_reg(0x82, 0x0000); /* RAM Address End-Partial Display 1 */
+0005A6  EB0080     CLR W1
+0005A8  200820     MOV #0x82, W0
+0005AA  07FF36     RCALL lcd_write_reg
+387:                       lcd_write_reg(0x83, 0x0000); /* Displsy Position? Partial Display 2 */
+0005AC  EB0080     CLR W1
+0005AE  200830     MOV #0x83, W0
+0005B0  07FF33     RCALL lcd_write_reg
+388:                       lcd_write_reg(0x84, 0x0000); /* RAM Address Start? Partial Display 2 */
+0005B2  EB0080     CLR W1
+0005B4  200840     MOV #0x84, W0
+0005B6  07FF30     RCALL lcd_write_reg
+389:                       lcd_write_reg(0x85, 0x0000); /* RAM Address End? Partial Display 2 */
+0005B8  EB0080     CLR W1
+0005BA  200850     MOV #0x85, W0
+0005BC  07FF2D     RCALL lcd_write_reg
+390:               
+391:                       lcd_write_reg(0x90, (0<<7)|(16<<0)); /* Frame Cycle Contral */
+0005BE  200101     MOV #0x10, W1
+0005C0  200900     MOV #0x90, W0
+0005C2  07FF2A     RCALL lcd_write_reg
+392:                       lcd_write_reg(0x92, 0x0000);         /* Panel Interface Contral 2 */
+0005C4  EB0080     CLR W1
+0005C6  200920     MOV #0x92, W0
+0005C8  07FF27     RCALL lcd_write_reg
+393:                       lcd_write_reg(0x93, 0x0001);         /* Panel Interface Contral 3 */
+0005CA  200011     MOV #0x1, W1
+0005CC  200930     MOV #0x93, W0
+0005CE  07FF24     RCALL lcd_write_reg
+394:                       lcd_write_reg(0x95, 0x0110);         /* Frame Cycle Contral */
+0005D0  201101     MOV #0x110, W1
+0005D2  200950     MOV #0x95, W0
+0005D4  07FF21     RCALL lcd_write_reg
+395:                       lcd_write_reg(0x97, (0<<8));
+0005D6  EB0080     CLR W1
+0005D8  200970     MOV #0x97, W0
+0005DA  07FF1E     RCALL lcd_write_reg
+396:                       lcd_write_reg(0x98, 0x0000);         /* Frame Cycle Contral */
+0005DC  EB0080     CLR W1
+0005DE  200980     MOV #0x98, W0
+0005E0  07FF1B     RCALL lcd_write_reg
+397:                       lcd_write_reg(0x07, 0x0133);
+0005E2  201331     MOV #0x133, W1
+0005E4  200070     MOV #0x7, W0
+0005E6  07FF18     RCALL lcd_write_reg
+398:                   }
+399:                   else
+400:                   {
+401:                       while(1) tc(0xDD01);
+0004F2  2DD018     MOV #0xDD01, W8
+0005EC  780008     MOV W8, W0
+0005EE  0701F1     RCALL tc
+0005F0  37FFFD     BRA 0x5EC
+402:                   }
+403:               
+404:               }
+0005E8  BE044F     MOV.D [--W15], W8
+0005EA  060000     RETURN
 ---  /home/immesys/w/pecs/coprocessor_dip.X/main.c  -----------------------------------------------------
 1:                 /* 
 2:                  * File:   main.c
@@ -1048,149 +912,142 @@ Nov 29, 2013 5:22:56 PM
 22:                #define ASSET_UP2_WIDTH  200
 23:                #define ASSET_UP2_HEIGHT 100
 24:                
-25:                
+25:                void speedtest();
 26:                extern void g_fill_rgb();
 27:                extern void delay_ms(uint16_t v);
 28:                extern flashstate_t flashstate;
 29:                int main()
 30:                {
-000B8C  FA0000     LNK #0x0
 31:                    init_hw();
-000B8E  07FF45     RCALL init_hw
+00099A  07FF2B     RCALL init_hw
 32:                
 33:                    //Event loop
 34:                    DBG2_TRIS = 0;
-000B90  A9A2C8     BCLR TRISB, #5
+00099C  A9A2C8     BCLR TRISB, #5
 35:                    DBG2 = 0;
-000B92  A9A2CC     BCLR LATB, #5
+00099E  A9A2CC     BCLR LATB, #5
 36:                    DBG2 = 1;
-000B94  A8A2CC     BSET LATB, #5
+0009A0  A8A2CC     BSET LATB, #5
 37:                    DBG2 = 0;
-000B96  A9A2CC     BCLR LATB, #5
+0009A2  A9A2CC     BCLR LATB, #5
 38:                    lcd_init();
-000B98  07FD29     RCALL lcd_init
+0009A4  07FD93     RCALL lcd_init
 39:                    g_fill_rgb();
-000B9A  07FDBE     RCALL g_fill_rgb
+0009A6  07FE25     RCALL g_fill_rgb
 40:                   // blit_rect(0,0,ASSET_UPARROW_WIDTH,ASSET_UPARROW_HEIGHT,ASSET_UPARROW_ADDR);
 41:                    //blit_rect(5,5,ASSET_UP2_WIDTH+5,ASSET_UP2_HEIGHT+5,ASSET_UP2_ADDR);
 42:                    //blit_rect(0,0,ASSET_FULLBARS_WIDTH,ASSET_FULLBARS_HEIGHT,ASSET_FULLBARS_ADDR);
 43:                    //blit_window(5, 5, 50, 50,
 44:                    //             133, 119, ASSET_FULLBARS_WIDTH, ASSET_FULLBARS_HEIGHT, ASSET_FULLBARS_ADDR);
 45:                    speedtest();
-000B9C  20BB64     MOV #0xBB6, W4
-000B9E  010004     CALL W4
+0009A8  07FFC6     RCALL speedtest
 46:                    //blit_window(0,0, 100, 100, 0, 0, ASSET_UPARROW_WIDTH, ASSET_UPARROW_HEIGHT, ASSET_UPARROW_ADDR);
 47:                    //printf("Starting event loop\n");
 48:                    DBG2 = 0;
-000BA0  A9A2CC     BCLR LATB, #5
+0009AA  A9A2CC     BCLR LATB, #5
 49:                    DBG2 = 1;
-000BA2  A8A2CC     BSET LATB, #5
+0009AC  A8A2CC     BSET LATB, #5
 50:                    DBG2 = 0;
-000BA4  A9A2CC     BCLR LATB, #5
+0009AE  A9A2CC     BCLR LATB, #5
 51:                    DBG2 = 1;
-000BA6  A8A2CC     BSET LATB, #5
+0009B0  A8A2CC     BSET LATB, #5
 52:                    while (flashstate != fs_idle)
-000BA8  370001     BRA 0xBAC
-000BAC  804004     MOV flashstate, W4
-000BAE  520FE0     SUB W4, #0x0, [W15]
-000BB0  3AFFFC     BRA NZ, 0xBAA
+0009B2  804004     MOV flashstate, W4
+0009B4  520FE0     SUB W4, #0x0, [W15]
+0009B6  320004     BRA Z, 0x9C0
+0009BA  804004     MOV flashstate, W4
+0009BC  520FE0     SUB W4, #0x0, [W15]
+0009BE  3AFFFC     BRA NZ, 0x9B8
 53:                    {
 54:                        //check_flash_full_blit();
 55:                        check_flash_window_blit();
-000BAA  07FE79     RCALL check_flash_window_blit
+0009B8  07FE91     RCALL check_flash_window_blit
 56:                    }
 57:                    DBG2 = 0;
-000BB2  A9A2CC     BCLR LATB, #5
+0009C0  A9A2CC     BCLR LATB, #5
+0009C2  37FFFF     BRA 0x9C2
 58:                    while(1)
 59:                    {
 60:                
 61:                        
 62:                   //     wave_test();
 63:                    }
-000BB4  37FFFF     BRA 0xBB4
 64:                }
 65:                
 66:                void speedtest()
 67:                {
-000BB6  FA0006     LNK #0x6
+000936  BE9F88     MOV.D W8, [W15++]
+000938  BE9F8A     MOV.D W10, [W15++]
+00093A  BE9F8C     MOV.D W12, [W15++]
+00093C  781F8E     MOV W14, [W15++]
 68:                    int16_t x = 5;
-000BB8  200054     MOV #0x5, W4
-000BBA  780F04     MOV W4, [W14]
+000942  200059     MOV #0x5, W9
 69:                    int16_t y = 10;
-000BBC  2000A4     MOV #0xA, W4
-000BBE  980714     MOV W4, [W14+2]
+000940  2000A8     MOV #0xA, W8
 70:                    int8_t xi = 1;
-000BC0  B3C014     MOV #0x1, W4
-000BC2  984744     MOV.B W4, [W14+4]
+000944  78458A     MOV.B W10, W11
 71:                    int8_t yi = 1;
-000BC4  B3C014     MOV #0x1, W4
-000BC6  984754     MOV.B W4, [W14+5]
+00093E  B3C01A     MOV #0x1, W10
 72:                    while(1)
 73:                    {
 74:                        if(x <= 0) xi = 1;
-000BC8  78021E     MOV [W14], W4
-000BCA  520FE0     SUB W4, #0x0, [W15]
-000BCC  3C0002     BRA GT, 0xBD2
-000BCE  B3C014     MOV #0x1, W4
-000BD0  984744     MOV.B W4, [W14+4]
+00094E  B3C01B     MOV #0x1, W11
+000994  A94042     BCLR SR, #2
+000996  3CFFDC     BRA GT, 0x950
+000998  37FFDA     BRA 0x94E
 75:                        if(x >= 320 - ASSET_UPARROW_WIDTH) xi = -1;
-000BD2  200DB4     MOV #0xDB, W4
-000BD4  78029E     MOV [W14], W5
-000BD6  528F84     SUB W5, W4, [W15]
-000BD8  340002     BRA LE, 0xBDE
-000BDA  EBC200     SETM.B W4
-000BDC  984744     MOV.B W4, [W14+4]
+000946  200DBE     MOV #0xDB, W14
+000954  548F8E     SUB W9, W14, [W15]
+000956  340001     BRA LE, 0x95A
+000958  EBC580     SETM.B W11
 76:                        if(y <= 0) yi = 1;
-000BDE  90021E     MOV [W14+2], W4
-000BE0  520FE0     SUB W4, #0x0, [W15]
-000BE2  3C0002     BRA GT, 0xBE8
-000BE4  B3C014     MOV #0x1, W4
-000BE6  984754     MOV.B W4, [W14+5]
+00095A  540FE0     SUB W8, #0x0, [W15]
+00095C  3C0001     BRA GT, 0x960
+00095E  B3C01A     MOV #0x1, W10
 77:                        if(y >= 240 - ASSET_UPARROW_HEIGHT) yi = -1;
-000BE8  90029E     MOV [W14+2], W5
-000BEA  2008B4     MOV #0x8B, W4
-000BEC  528F84     SUB W5, W4, [W15]
-000BEE  340002     BRA LE, 0xBF4
-000BF0  EBC200     SETM.B W4
-000BF2  984754     MOV.B W4, [W14+5]
-78:                        blit_window(x,y, 100, 100, 0, 0, ASSET_UPARROW_WIDTH, ASSET_UPARROW_HEIGHT, ASSET_UPARROW_ADDR);
-000BF4  90009E     MOV [W14+2], W1
-000BF6  78001E     MOV [W14], W0
-000BF8  258004     MOV #0x5800, W4
-000BFA  200025     MOV #0x2, W5
-000BFC  BE9F84     MOV.D W4, [W15++]
-000BFE  200647     MOV #0x64, W7
-000C00  200646     MOV #0x64, W6
-000C02  EB0280     CLR W5
-000C04  EB0200     CLR W4
-000C06  200643     MOV #0x64, W3
-000C08  200642     MOV #0x64, W2
-000C0A  07FE01     RCALL blit_window
-000C0C  5787E4     SUB W15, #0x4, W15
-79:                        x += xi;
-000C0E  90424E     MOV.B [W14+4], W4
-000C10  FB0204     SE W4, W4
-000C12  420F1E     ADD W4, [W14], [W14]
-80:                        y += yi;
-000C14  90425E     MOV.B [W14+5], W4
-000C16  FB0204     SE W4, W4
-000C18  90029E     MOV [W14+2], W5
-000C1A  428204     ADD W5, W4, W4
-000C1C  980714     MOV W4, [W14+2]
-81:                
-82:                        while (flashstate != fs_idle)
-000C1E  370001     BRA 0xC22
-000C22  804004     MOV flashstate, W4
-000C24  520FE0     SUB W4, #0x0, [W15]
-000C26  3AFFFC     BRA NZ, 0xC20
-83:                        {
-84:                            //check_flash_full_blit();
-85:                            check_flash_window_blit();
-000C20  07FE3E     RCALL check_flash_window_blit
-86:                        }
-87:                    }
-000C28  37FFCF     BRA 0xBC8
-88:                }
+000960  2008B4     MOV #0x8B, W4
+000962  540F84     SUB W8, W4, [W15]
+000964  340001     BRA LE, 0x968
+000966  EBC500     SETM.B W10
+78:                        DBG2 = 1;
+000968  A8A2CC     BSET LATB, #5
+79:                        blit_window(x,y, 100, 100, 0, 0, ASSET_UPARROW_WIDTH, ASSET_UPARROW_HEIGHT, ASSET_UPARROW_ADDR);
+000948  25800C     MOV #0x5800, W12
+00094A  20002D     MOV #0x2, W13
+00094C  370003     BRA 0x954
+00096A  BE9F8C     MOV.D W12, [W15++]
+00096C  200647     MOV #0x64, W7
+00096E  780307     MOV W7, W6
+000970  EB0280     CLR W5
+000972  780205     MOV W5, W4
+000974  780187     MOV W7, W3
+000976  780107     MOV W7, W2
+000978  780088     MOV W8, W1
+00097A  780009     MOV W9, W0
+00097C  07FE86     RCALL blit_window
+80:                        while (flashstate != fs_idle)
+00097E  5787E4     SUB W15, #0x4, W15
+000980  804004     MOV flashstate, W4
+000982  520FE0     SUB W4, #0x0, [W15]
+000984  320004     BRA Z, 0x98E
+000988  804004     MOV flashstate, W4
+00098A  520FE0     SUB W4, #0x0, [W15]
+00098C  3AFFFC     BRA NZ, 0x986
+81:                        {
+82:                            //check_flash_full_blit();
+83:                            check_flash_window_blit();
+000986  07FEAA     RCALL check_flash_window_blit
+84:                        }
+85:                        DBG2 = 0;
+00098E  A9A2CC     BCLR LATB, #5
+86:                        x += xi;
+000990  FB020B     SE W11, W4
+000992  448484     ADD W9, W4, W9
+87:                        y += yi;
+000950  FB020A     SE W10, W4
+000952  440404     ADD W8, W4, W8
+88:                    }
+89:                }
 ---  /home/immesys/w/pecs/coprocessor_dip.X/graphics.c  -------------------------------------------------
 1:                 
 2:                 #include "global.h"
@@ -1210,56 +1067,50 @@ Nov 29, 2013 5:22:56 PM
 16:                
 17:                void g_fill_rgb()
 18:                {
-000718  FA0004     LNK #0x4
+0005F2  BE9F88     MOV.D W8, [W15++]
+0005F4  BE9F8A     MOV.D W10, [W15++]
+0005F6  781F8C     MOV W12, [W15++]
 19:                    lcd_set_cursor(0, 0);
-00071A  EB0080     CLR W1
-00071C  EB0000     CLR W0
-00071E  07FF0B     RCALL lcd_set_cursor
+0005F8  B80060     MUL.UU W0, #0, W0
+0005FA  07FF29     RCALL lcd_set_cursor
 20:                    lcd_write_index(0x022);
-000720  B3C220     MOV #0x22, W0
-000722  07FEAA     RCALL lcd_write_index
+0005FC  B3C220     MOV #0x22, W0
+0005FE  07FEE4     RCALL lcd_write_index
 21:                    uint16_t x, y;
 22:                
 23:                    lcd_select();
-000724  07FE75     RCALL lcd_select
+000600  07FEC3     RCALL lcd_select
 24:                    lcd_write_data_start();
-000726  07FEB4     RCALL lcd_write_data_start
+000602  07FEF3     RCALL lcd_write_data_start
 25:                    for (x = 0; x < LCD_X; x++)
-000728  EB0200     CLR W4
-00072A  780F04     MOV W4, [W14]
-00072C  370011     BRA 0x750
-00074E  E80F1E     INC [W14], [W14]
-000750  200EF4     MOV #0xEF, W4
-000752  78029E     MOV [W14], W5
-000754  528F84     SUB W5, W4, [W15]
-000756  36FFEB     BRA LEU, 0x72E
+000604  EB0580     CLR W11
+000608  200F0C     MOV #0xF0, W12
+00060A  370008     BRA 0x61C
+000616  E8058B     INC W11, W11
+000618  558F8C     SUB W11, W12, [W15]
+00061A  320003     BRA Z, 0x622
 26:                    {
 27:                        for (y = 0; y < LCD_Y; y++)
-00072E  EB0200     CLR W4
-000730  980714     MOV W4, [W14+2]
-000732  370009     BRA 0x746
-000740  90021E     MOV [W14+2], W4
-000742  E80204     INC W4, W4
-000744  980714     MOV W4, [W14+2]
-000746  90029E     MOV [W14+2], W5
-000748  2013F4     MOV #0x13F, W4
-00074A  528F84     SUB W5, W4, [W15]
-00074C  36FFF3     BRA LEU, 0x734
+000606  20140A     MOV #0x140, W10
+000610  E80408     INC W8, W8
+000612  540F8A     SUB W8, W10, [W15]
+000614  3AFFFB     BRA NZ, 0x60C
 28:                        {
 29:                            lcd_write_data_body((x << 8) | y);
-000734  78021E     MOV [W14], W4
-000736  DD22C8     SL W4, #8, W5
-000738  90021E     MOV [W14+2], W4
-00073A  728204     IOR W5, W4, W4
-00073C  780004     MOV W4, W0
-00073E  07FEBE     RCALL lcd_write_data_body
+00060C  740009     IOR W8, W9, W0
+00060E  07FEFC     RCALL lcd_write_data_body
+00061C  DD5CC8     SL W11, #8, W9
+00061E  EB0400     CLR W8
+000620  37FFF5     BRA 0x60C
 30:                        }
 31:                    }
-32:                    lcd_deselect();
-000758  07FE5F     RCALL lcd_deselect
+32:                    lcd_end_gfx();
+000622  07FF2B     RCALL lcd_end_gfx
 33:                }
-00075A  FA8000     ULNK
-00075C  060000     RETURN
+000624  78064F     MOV [--W15], W12
+000626  BE054F     MOV.D [--W15], W10
+000628  BE044F     MOV.D [--W15], W8
+00062A  060000     RETURN
 34:                
 35:                
 36:                
@@ -1287,217 +1138,145 @@ Nov 29, 2013 5:22:56 PM
 58:                
 59:                void blit_rect(uint16_t sx, uint16_t sy, uint16_t width, uint16_t height, uint32_t start_address)
 60:                {
-00075E  FA000C     LNK #0xC
-000760  780F00     MOV W0, [W14]
-000762  980711     MOV W1, [W14+2]
-000764  980722     MOV W2, [W14+4]
-000766  980733     MOV W3, [W14+6]
-000768  980744     MOV W4, [W14+8]
-00076A  980755     MOV W5, [W14+10]
+00062C  BE9F88     MOV.D W8, [W15++]
+00062E  BE0404     MOV.D W4, W8
 61:                    //The X dim is X2 because each column is two byts
 62:                    flashstate = fs_full_blit;
-00076C  200014     MOV #0x1, W4
-00076E  884004     MOV W4, flashstate
+000630  200014     MOV #0x1, W4
+000632  884004     MOV W4, flashstate
 63:                    row = sy;
-000770  90021E     MOV [W14+2], W4
-000772  884034     MOV W4, row
+000634  884031     MOV W1, row
 64:                    col = sx*2;
-000774  78021E     MOV [W14], W4
-000776  420204     ADD W4, W4, W4
-000778  884044     MOV W4, col
+000636  400200     ADD W0, W0, W4
+000638  884044     MOV W4, col
 65:                    row_start = sy;
-00077A  90031E     MOV [W14+2], W6
-00077C  884056     MOV W6, row_start
+00063A  884051     MOV W1, row_start
 66:                    col_start = sx*2;
-00077E  78021E     MOV [W14], W4
-000780  420204     ADD W4, W4, W4
-000782  884074     MOV W4, col_start
+00063C  884074     MOV W4, col_start
 67:                    row_stop = sy + height;
-000784  90029E     MOV [W14+2], W5
-000786  90023E     MOV [W14+6], W4
-000788  428204     ADD W5, W4, W4
-00078A  884064     MOV W4, row_stop
+00063E  418081     ADD W3, W1, W1
+000640  884061     MOV W1, row_stop
 68:                    col_stop = (sx + width)*2;
-00078C  90022E     MOV [W14+4], W4
-00078E  42021E     ADD W4, [W14], W4
-000790  420204     ADD W4, W4, W4
-000792  884084     MOV W4, col_stop
+000642  410000     ADD W2, W0, W0
+000644  400000     ADD W0, W0, W0
+000646  884080     MOV W0, col_stop
 69:                    flash_pix_left = (width);
-000794  90022E     MOV [W14+4], W4
-000796  200005     MOV #0x0, W5
-000798  884014     MOV W4, flash_pix_left
-00079A  884025     MOV W5, 0x804
+000648  B81261     MUL.UU W2, #1, W4
 70:                    flash_pix_left *= (height);
-00079C  90023E     MOV [W14+6], W4
-00079E  B82361     MUL.UU W4, #1, W6
-0007A0  804014     MOV flash_pix_left, W4
-0007A2  804025     MOV 0x804, W5
-0007A4  B9B804     MUL.SS W7, W4, W0
-0007A6  780000     MOV W0, W0
-0007A8  B9A906     MUL.SS W5, W6, W2
-0007AA  780082     MOV W2, W1
-0007AC  400001     ADD W0, W1, W0
-0007AE  780306     MOV W6, W6
-0007B0  780204     MOV W4, W4
-0007B2  B83204     MUL.UU W6, W4, W4
-0007B4  400005     ADD W0, W5, W0
-0007B6  780280     MOV W0, W5
-0007B8  884014     MOV W4, flash_pix_left
-0007BA  884025     MOV W5, 0x804
+00064A  420204     ADD W4, W4, W4
+00064C  4A8285     ADDC W5, W5, W5
+00064E  B81B61     MUL.UU W3, #1, W6
 71:                    flash_pix_left *= 2;
-0007BC  804014     MOV flash_pix_left, W4
-0007BE  804025     MOV 0x804, W5
-0007C0  420204     ADD W4, W4, W4
-0007C2  4A8285     ADDC W5, W5, W5
-0007C4  884014     MOV W4, flash_pix_left
-0007C6  884025     MOV W5, 0x804
+000650  B9A806     MUL.SS W5, W6, W0
+000652  780106     MOV W6, W2
+000654  B82102     MUL.UU W4, W2, W2
+000656  400183     ADD W0, W3, W3
+000658  884012     MOV W2, flash_pix_left
+00065A  884023     MOV W3, 0x804
 72:                
 73:                    //Start flash read
 74:                    flash_deselect();
-0007C8  07FE2F     RCALL flash_deselect
+00065C  07FE9B     RCALL flash_deselect
 75:                    flash_select();
-0007CA  07FE2A     RCALL flash_select
+00065E  07FE98     RCALL flash_select
 76:                    spi2_w_b_xdiscard(0x0B);
-0007CC  B3C0B0     MOV #0xB, W0
-0007CE  07FDD5     RCALL spi2_w_b_xdiscard
+000660  B3C0B0     MOV #0xB, W0
+000662  07FE6A     RCALL spi2_w_b_xdiscard
 77:                    spi2_w_b((start_address >> 16) & 0xFF );
-0007D0  90024E     MOV [W14+8], W4
-0007D2  9002DE     MOV [W14+10], W5
-0007D4  DE2A40     LSR W5, #0, W4
-0007D6  200005     MOV #0x0, W5
-0007D8  784204     MOV.B W4, W4
-0007DA  784004     MOV.B W4, W0
-0007DC  07FDF4     RCALL spi2_w_b
+000664  DE4840     LSR W9, #0, W0
+000666  200001     MOV #0x0, W1
+000668  07FE7F     RCALL spi2_w_b
 78:                    spi2_w_b((start_address >> 8 ) & 0xFF );
-0007DE  90024E     MOV [W14+8], W4
-0007E0  9002DE     MOV [W14+10], W5
-0007E2  DD2B48     SL W5, #8, W6
-0007E4  DE2248     LSR W4, #8, W4
-0007E6  730204     IOR W6, W4, W4
-0007E8  DE2AC8     LSR W5, #8, W5
-0007EA  784204     MOV.B W4, W4
-0007EC  784004     MOV.B W4, W0
-0007EE  07FDEB     RCALL spi2_w_b
+00066A  DD4A48     SL W9, #8, W4
+00066C  DE4048     LSR W8, #8, W0
+00066E  720000     IOR W4, W0, W0
+000670  DE48C8     LSR W9, #8, W1
+000672  07FE7A     RCALL spi2_w_b
 79:                    spi2_w_b((start_address) & 0xFF );
-0007F0  90024E     MOV [W14+8], W4
-0007F2  784204     MOV.B W4, W4
-0007F4  784004     MOV.B W4, W0
-0007F6  07FDE7     RCALL spi2_w_b
+000674  784008     MOV.B W8, W0
+000676  07FE78     RCALL spi2_w_b
 80:                    spi2_rw_b(0xd0); //First dummy byte
-0007F8  B3CD00     MOV #0xD0, W0
-0007FA  07FDD3     RCALL spi2_rw_b
+000678  B3CD00     MOV #0xD0, W0
+00067A  07FE6A     RCALL spi2_rw_b
 81:                
 82:                    //Start GFX write
 83:                    lcd_set_cursor(row, col/2);
-0007FC  804044     MOV col, W4
-0007FE  D10284     LSR W4, W5
-000800  804034     MOV row, W4
-000802  780085     MOV W5, W1
-000804  780004     MOV W4, W0
-000806  07FE97     RCALL lcd_set_cursor
+00067C  804041     MOV col, W1
+00067E  D10081     LSR W1, W1
+000680  804030     MOV row, W0
+000682  07FEE5     RCALL lcd_set_cursor
 84:                    lcd_start_gfx();
-000808  07FEA1     RCALL lcd_start_gfx
+000684  07FEEE     RCALL lcd_start_gfx
 85:                }
-00080A  FA8000     ULNK
-00080C  060000     RETURN
+000686  BE044F     MOV.D [--W15], W8
+000688  060000     RETURN
 86:                void blit_window(uint16_t img_sx, uint16_t img_sy, uint16_t width, uint16_t height,
 87:                                 uint16_t asset_sx, uint16_t asset_sy, uint16_t asset_width, uint16_t asset_height, uint32_t asset_address)
 88:                {
-00080E  FA0010     LNK #0x10
-000810  780F00     MOV W0, [W14]
-000812  980711     MOV W1, [W14+2]
-000814  980722     MOV W2, [W14+4]
-000816  980733     MOV W3, [W14+6]
-000818  980744     MOV W4, [W14+8]
-00081A  980755     MOV W5, [W14+10]
-00081C  980766     MOV W6, [W14+12]
-00081E  980777     MOV W7, [W14+14]
+00068A  FA0000     LNK #0x0
 89:                    flashstate = fs_window_blit;
-000820  200024     MOV #0x2, W4
-000822  884004     MOV W4, flashstate
+00068C  200027     MOV #0x2, W7
+00068E  884007     MOV W7, flashstate
 90:                    col_start = img_sx*2;
-000824  78021E     MOV [W14], W4
-000826  420204     ADD W4, W4, W4
-000828  884074     MOV W4, col_start
+000690  400380     ADD W0, W0, W7
+000692  884077     MOV W7, col_start
 91:                    row_start = img_sy;
-00082A  90021E     MOV [W14+2], W4
-00082C  884054     MOV W4, row_start
+000694  884051     MOV W1, row_start
 92:                    col_stop = (img_sx + width)*2;
-00082E  90022E     MOV [W14+4], W4
-000830  42021E     ADD W4, [W14], W4
-000832  420204     ADD W4, W4, W4
-000834  884084     MOV W4, col_stop
+000696  410000     ADD W2, W0, W0
+000698  400000     ADD W0, W0, W0
+00069A  884080     MOV W0, col_stop
 93:                    row_stop = img_sy + height;
-000836  90029E     MOV [W14+2], W5
-000838  90023E     MOV [W14+6], W4
-00083A  428204     ADD W5, W4, W4
-00083C  884064     MOV W4, row_stop
+00069C  418001     ADD W3, W1, W0
+00069E  884060     MOV W0, row_stop
 94:                    row = row_start;
-00083E  804054     MOV row_start, W4
-000840  884034     MOV W4, row
+0006A0  884031     MOV W1, row
 95:                    col = col_start;
-000842  804074     MOV col_start, W4
-000844  884044     MOV W4, col
+0006A2  884047     MOV W7, col
 96:                    
 97:                    flash_pix_per_row = width*2;
-000846  90022E     MOV [W14+4], W4
-000848  420204     ADD W4, W4, W4
-00084A  8840B4     MOV W4, flash_pix_per_row
+0006A4  410102     ADD W2, W2, W2
+0006A6  8840B2     MOV W2, flash_pix_per_row
 98:                    flash_pix_left_in_row = flash_pix_per_row; //We inject the first two reads now
-00084C  8040B4     MOV flash_pix_per_row, W4
-00084E  8840C4     MOV W4, flash_pix_left_in_row
+0006A8  8840C2     MOV W2, flash_pix_left_in_row
 99:                    flash_pix_rows = height;
-000850  90023E     MOV [W14+6], W4
-000852  8840F4     MOV W4, flash_pix_rows
+0006AA  8840F3     MOV W3, flash_pix_rows
 100:                   flash_pix_row = 0;
-000854  EB0200     CLR W4
-000856  884104     MOV W4, flash_pix_row
+0006AC  EF2820     CLR flash_pix_row
 101:                   flash_rowstride = asset_width*2;
-000858  90026E     MOV [W14+12], W4
-00085A  420204     ADD W4, W4, W4
-00085C  200005     MOV #0x0, W5
-00085E  884094     MOV W4, flash_rowstride
-000860  8840A5     MOV W5, 0x814
+0006AE  430006     ADD W6, W6, W0
+0006B0  200001     MOV #0x0, W1
+0006B2  884090     MOV W0, flash_rowstride
+0006B4  8840A1     MOV W1, 0x814
 102:                   flash_base_address = asset_address +
-00086C  B82361     MUL.UU W4, #1, W6
-00086E  97BA3E     MOV [W14-10], W4
-000870  97BACE     MOV [W14-8], W5
-000872  420306     ADD W4, W6, W6
-000874  4A8387     ADDC W5, W7, W7
-000880  8840D4     MOV W4, flash_base_address
-000882  8840E5     MOV W5, 0x81C
+0006B8  97B83F     MOV [W15-10], W0
+0006BA  97B8CF     MOV [W15-8], W1
+0006BC  400102     ADD W0, W2, W2
+0006BE  4881E0     ADDC W1, #0x0, W3
+0006C8  8840D0     MOV W0, flash_base_address
+0006CA  8840E1     MOV W1, 0x81C
 103:                                        asset_sy*asset_width*2 +
-000862  9002DE     MOV [W14+10], W5
-000864  90026E     MOV [W14+12], W4
-000866  B9AA04     MUL.SS W5, W4, W4
-000868  780204     MOV W4, W4
-00086A  420204     ADD W4, W4, W4
-00087A  200005     MOV #0x0, W5
-00087C  420206     ADD W4, W6, W4
-00087E  4A8287     ADDC W5, W7, W5
+0006C0  428005     ADD W5, W5, W0
+0006C2  B98006     MUL.SS W0, W6, W0
+0006C4  410000     ADD W2, W0, W0
+0006C6  4980E0     ADDC W3, #0x0, W1
 104:                                        asset_sx*2;
-000876  90024E     MOV [W14+8], W4
-000878  420204     ADD W4, W4, W4
+0006B6  420104     ADD W4, W4, W2
 105:               
 106:                   flash_begin_read(flash_base_address);
-000884  8040D4     MOV flash_base_address, W4
-000886  8040E5     MOV 0x81C, W5
-000888  BE0004     MOV.D W4, W0
-00088A  07FDD2     RCALL flash_begin_read
+0006CC  07FE65     RCALL flash_begin_read
 107:               
 108:                   //Start GFX write
 109:                   lcd_set_cursor(row, col/2);
-00088C  804044     MOV col, W4
-00088E  D10284     LSR W4, W5
-000890  804034     MOV row, W4
-000892  780085     MOV W5, W1
-000894  780004     MOV W4, W0
-000896  07FE4F     RCALL lcd_set_cursor
+0006CE  804041     MOV col, W1
+0006D0  D10081     LSR W1, W1
+0006D2  804030     MOV row, W0
+0006D4  07FEBC     RCALL lcd_set_cursor
 110:                   lcd_start_gfx();
-000898  07FE59     RCALL lcd_start_gfx
+0006D6  07FEC5     RCALL lcd_start_gfx
 111:               }
-00089A  FA8000     ULNK
-00089C  060000     RETURN
+0006D8  FA8000     ULNK
+0006DA  060000     RETURN
 112:               
 113:               /**
 114:                * We are taking a different attitude here. We are going to assume
@@ -1507,299 +1286,247 @@ Nov 29, 2013 5:22:56 PM
 118:                */
 119:               inline void check_flash_window_blit()
 120:               {
-00089E  FA0002     LNK #0x2
 121:                   uint8_t b;
 122:               
 123:                   if (flash_pix_left_in_row == 0 && flash_pix_rows > 0)
-0008A0  8040C4     MOV flash_pix_left_in_row, W4
-0008A2  520FE0     SUB W4, #0x0, [W15]
-0008A4  3A001F     BRA NZ, 0x8E4
-0008A6  8040F4     MOV flash_pix_rows, W4
-0008A8  520FE0     SUB W4, #0x0, [W15]
-0008AA  32001C     BRA Z, 0x8E4
+0006DC  8040C5     MOV flash_pix_left_in_row, W5
+0006DE  528FE0     SUB W5, #0x0, [W15]
+0006E0  3A0018     BRA NZ, 0x712
+0006E2  8040F4     MOV flash_pix_rows, W4
+0006E4  520FE0     SUB W4, #0x0, [W15]
+0006E6  32001D     BRA Z, 0x722
 124:                   {
 125:                       flash_pix_left_in_row = flash_pix_per_row;
-0008AC  8040B4     MOV flash_pix_per_row, W4
-0008AE  8840C4     MOV W4, flash_pix_left_in_row
+0006E8  F80816     PUSH flash_pix_per_row
+0006EA  F90818     POP flash_pix_left_in_row
 126:                       flash_pix_rows--;
-0008B0  8040F4     MOV flash_pix_rows, W4
-0008B2  E90204     DEC W4, W4
-0008B4  8840F4     MOV W4, flash_pix_rows
+0006EC  E90204     DEC W4, W4
+0006EE  8840F4     MOV W4, flash_pix_rows
 127:                       flash_pix_row++;
-0008B6  804104     MOV flash_pix_row, W4
-0008B8  E80204     INC W4, W4
-0008BA  884104     MOV W4, flash_pix_row
+0006F0  804102     MOV flash_pix_row, W2
+0006F2  E80102     INC W2, W2
+0006F4  884102     MOV W2, flash_pix_row
 128:                       flash_begin_read(flash_base_address + (uint32_t)flash_rowstride*flash_pix_row);
-0008BC  804104     MOV flash_pix_row, W4
-0008BE  B82361     MUL.UU W4, #1, W6
-0008C0  804094     MOV flash_rowstride, W4
-0008C2  8040A5     MOV 0x814, W5
-0008C4  B9B804     MUL.SS W7, W4, W0
-0008C6  780000     MOV W0, W0
-0008C8  B9A906     MUL.SS W5, W6, W2
-0008CA  780082     MOV W2, W1
-0008CC  400001     ADD W0, W1, W0
-0008CE  780306     MOV W6, W6
-0008D0  780204     MOV W4, W4
-0008D2  B83204     MUL.UU W6, W4, W4
-0008D4  400005     ADD W0, W5, W0
-0008D6  780280     MOV W0, W5
-0008D8  8040D6     MOV flash_base_address, W6
-0008DA  8040E7     MOV 0x81C, W7
-0008DC  430204     ADD W6, W4, W4
-0008DE  4B8285     ADDC W7, W5, W5
-0008E0  BE0004     MOV.D W4, W0
-0008E2  07FDA6     RCALL flash_begin_read
+0006F6  200003     MOV #0x0, W3
+0006F8  8040A4     MOV 0x814, W4
+0006FA  B9A202     MUL.SS W4, W2, W4
+0006FC  780002     MOV W2, W0
+0006FE  BC0812     MUL flash_rowstride
+000700  420183     ADD W4, W3, W3
+000702  8040D0     MOV flash_base_address, W0
+000704  8040E1     MOV 0x81C, W1
+000706  400002     ADD W0, W2, W0
+000708  488083     ADDC W1, W3, W1
+00070A  07FE46     RCALL flash_begin_read
 129:                   }
 130:                   if (flash_pix_left_in_row > 0)
-0008E4  8040C4     MOV flash_pix_left_in_row, W4
-0008E6  520FE0     SUB W4, #0x0, [W15]
-0008E8  320006     BRA Z, 0x8F6
-131:                   {
-132:                       DBG2 = 1;
-0008EA  A8A2CC     BSET LATB, #5
+00070C  8040C5     MOV flash_pix_left_in_row, W5
+00070E  528FE0     SUB W5, #0x0, [W15]
+000710  320008     BRA Z, 0x722
+131:                   {   while (GFX_TX_FULL);
+000712  AB2240     BTST SPI1STAT, #1
+000714  3AFFFE     BRA NZ, 0x712
+132:                       while (FL_TX_FULL);
+000716  AB2260     BTST SPI2STAT, #1
+000718  3AFFFE     BRA NZ, 0x716
 133:                       FL_REG = 0xdb;
-0008EC  200DB4     MOV #0xDB, W4
-0008EE  881344     MOV W4, SPI2BUF
+00071A  200DB4     MOV #0xDB, W4
+00071C  881344     MOV W4, SPI2BUF
 134:               
 135:                       flash_pix_left_in_row--;
-0008F0  8040C4     MOV flash_pix_left_in_row, W4
-0008F2  E90204     DEC W4, W4
-0008F4  8840C4     MOV W4, flash_pix_left_in_row
+00071E  E90285     DEC W5, W5
+000720  8840C5     MOV W5, flash_pix_left_in_row
 136:                   }
 137:               
 138:                   //Check if we need to send a cursor sequence
 139:                   if (col == col_stop)
-0008F6  804045     MOV col, W5
-0008F8  804084     MOV col_stop, W4
-0008FA  528F84     SUB W5, W4, [W15]
-0008FC  3A001A     BRA NZ, 0x932
+000722  804084     MOV col_stop, W4
+000724  804045     MOV col, W5
+000726  528F84     SUB W5, W4, [W15]
+000728  3A0012     BRA NZ, 0x74E
 140:                   {
 141:                       col = col_start;
-0008FE  804074     MOV col_start, W4
-000900  884044     MOV W4, col
+00072A  F8080E     PUSH col_start
+00072C  F90808     POP col
 142:                       row++;
-000902  804034     MOV row, W4
-000904  E80204     INC W4, W4
-000906  884034     MOV W4, row
+00072E  804034     MOV row, W4
+000730  E80204     INC W4, W4
+000732  884034     MOV W4, row
 143:                       if (row == row_stop)
-000908  804035     MOV row, W5
-00090A  804064     MOV row_stop, W4
-00090C  528F84     SUB W5, W4, [W15]
-00090E  3A0005     BRA NZ, 0x91A
+000734  804065     MOV row_stop, W5
+000736  520F85     SUB W4, W5, [W15]
+000738  3A0004     BRA NZ, 0x742
 144:                       {
 145:                           flashstate = fs_idle;
-000910  EB0200     CLR W4
-000912  884004     MOV W4, flashstate
+00073A  EF2800     CLR flashstate
 146:                           flash_deselect();
-000914  07FD89     RCALL flash_deselect
+00073C  07FE2B     RCALL flash_deselect
 147:                           lcd_end_gfx();
-000916  07FE28     RCALL lcd_end_gfx
+00073E  07FE9D     RCALL lcd_end_gfx
 148:                           return;
-000918  37001B     BRA 0x950
+000740  370017     BRA 0x770
 149:                       }
 150:                       lcd_end_gfx();
-00091A  07FE26     RCALL lcd_end_gfx
+000742  07FE9B     RCALL lcd_end_gfx
 151:                       lcd_set_cursor(row, col/2);
-00091C  804044     MOV col, W4
-00091E  D10284     LSR W4, W5
-000920  804034     MOV row, W4
-000922  780085     MOV W5, W1
-000924  780004     MOV W4, W0
-000926  07FE07     RCALL lcd_set_cursor
+000744  804041     MOV col, W1
+000746  D10081     LSR W1, W1
+000748  804030     MOV row, W0
+00074A  07FE81     RCALL lcd_set_cursor
 152:                       lcd_start_gfx();
-000928  07FE11     RCALL lcd_start_gfx
+00074C  07FE8A     RCALL lcd_start_gfx
 153:                   }
 154:               
-155:                   //while (GFX_TX_FULL);
-156:                   //while (FL_RX_EMPTY);
+155:                   while (GFX_TX_FULL);
+00074E  AB2240     BTST SPI1STAT, #1
+000750  3AFFFE     BRA NZ, 0x74E
+156:                   while (FL_RX_EMPTY);
+000752  200205     MOV #0x20, W5
+000754  801304     MOV SPI2STAT, W4
+000756  620205     AND W4, W5, W4
+000758  3AFFFD     BRA NZ, 0x754
 157:                   while (!GFX_RX_EMPTY) b = GFX_REG;
-00092A  370004     BRA 0x934
-00092C  801244     MOV SPI1BUF, W4
-00092E  784F04     MOV.B W4, [W14]
-000930  370001     BRA 0x934
-000932  000000     NOP
-000934  801205     MOV SPI1STAT, W5
-000936  200204     MOV #0x20, W4
-000938  628204     AND W5, W4, W4
-00093A  520FE0     SUB W4, #0x0, [W15]
-00093C  32FFF7     BRA Z, 0x92C
+00075A  ABA240     BTST SPI1STAT, #5
+00075C  3A0005     BRA NZ, 0x768
+00075E  200205     MOV #0x20, W5
+000760  801244     MOV SPI1BUF, W4
+000762  801204     MOV SPI1STAT, W4
+000764  620205     AND W4, W5, W4
+000766  32FFFC     BRA Z, 0x760
 158:                   col++;
-00093E  804044     MOV col, W4
-000940  E80204     INC W4, W4
-000942  884044     MOV W4, col
-159:                   DBG2 = 0;
-000944  A9A2CC     BCLR LATB, #5
-160:                   b = FL_REG;
-000946  801344     MOV SPI2BUF, W4
-000948  784F04     MOV.B W4, [W14]
-161:                   GFX_REG = b;
-00094A  78429E     MOV.B [W14], W5
-00094C  FB8205     ZE W5, W4
-00094E  881244     MOV W4, SPI1BUF
-162:               
-163:               }
-000950  FA8000     ULNK
-000952  060000     RETURN
-164:               inline void check_flash_full_blit()
-165:               {
-000954  FA0002     LNK #0x2
-166:                   uint8_t b;
-167:               
-168:                   //Check if there is space in the GFX tx buffer
-169:                   if (GFX_TX_FULL) 
-000956  801204     MOV SPI1STAT, W4
-000958  620262     AND W4, #0x2, W4
-00095A  520FE0     SUB W4, #0x0, [W15]
-00095C  3A0057     BRA NZ, 0xA0C
-170:                   {
-171:                       return;
-000A0C  000000     NOP
-000A0E  370003     BRA 0xA16
-172:                   }
-173:                   
-174:                   //Make sure we keep request pipeline full
-175:                   if(flash_pix_left > 0 && !FL_TX_FULL)
-00095E  804014     MOV flash_pix_left, W4
-000960  804025     MOV 0x804, W5
-000962  520FE0     SUB W4, #0x0, [W15]
-000964  5A8FE0     SUBB W5, #0x0, [W15]
-000966  32000D     BRA Z, 0x982
-000968  801304     MOV SPI2STAT, W4
-00096A  620262     AND W4, #0x2, W4
-00096C  520FE0     SUB W4, #0x0, [W15]
-00096E  3A0009     BRA NZ, 0x982
-176:                   {
-177:                       FL_REG = 0xdb; //Dummy Byte
-000970  200DB4     MOV #0xDB, W4
-000972  881344     MOV W4, SPI2BUF
-178:                       flash_pix_left--;
-000974  804014     MOV flash_pix_left, W4
-000976  804025     MOV 0x804, W5
-000978  520261     SUB W4, #0x1, W4
-00097A  5A82E0     SUBB W5, #0x0, W5
-00097C  884014     MOV W4, flash_pix_left
-00097E  884025     MOV W5, 0x804
-000980  370012     BRA 0x9A6
-179:                   }
-180:                   else if (flash_pix_left == 0)
-000982  804014     MOV flash_pix_left, W4
-000984  804025     MOV 0x804, W5
-000986  520FE0     SUB W4, #0x0, [W15]
-000988  5A8FE0     SUBB W5, #0x0, [W15]
-00098A  3A0004     BRA NZ, 0x994
-181:                   {
-182:                       DBG2 = 0;
-00098C  A9A2CC     BCLR LATB, #5
-183:                       DBG2 = 1;
-00098E  A8A2CC     BSET LATB, #5
-184:                       DBG2 = 0;
-000990  A9A2CC     BCLR LATB, #5
-000992  370009     BRA 0x9A6
-185:                   }
-186:                   else if (FL_TX_FULL)
-000994  801304     MOV SPI2STAT, W4
-000996  620262     AND W4, #0x2, W4
-000998  520FE0     SUB W4, #0x0, [W15]
-00099A  320005     BRA Z, 0x9A6
-187:                   {
-188:                       DBG2 = 0;
-00099C  A9A2CC     BCLR LATB, #5
-189:                       DBG2 = 1;
-00099E  A8A2CC     BSET LATB, #5
-190:                       DBG2 = 0;
-0009A0  A9A2CC     BCLR LATB, #5
-191:                       DBG2 = 1;
-0009A2  A8A2CC     BSET LATB, #5
-192:                       DBG2 = 0;
-0009A4  A9A2CC     BCLR LATB, #5
-193:                   }
-194:               
-195:                   
-196:               
-197:                   //Check if we need to send a cursor sequence
-198:                   if (col == col_stop)
-0009A6  804045     MOV col, W5
-0009A8  804084     MOV col_stop, W4
-0009AA  528F84     SUB W5, W4, [W15]
-0009AC  3A0015     BRA NZ, 0x9D8
-199:                   {
-200:                       col = col_start;
-0009AE  804074     MOV col_start, W4
-0009B0  884044     MOV W4, col
-201:                       row++;
-0009B2  804034     MOV row, W4
-0009B4  E80204     INC W4, W4
-0009B6  884034     MOV W4, row
-202:                       if (row == row_stop)
-0009B8  804035     MOV row, W5
-0009BA  804064     MOV row_stop, W4
-0009BC  528F84     SUB W5, W4, [W15]
-0009BE  3A0004     BRA NZ, 0x9C8
-203:                       {
-204:                           flashstate = fs_idle;
-0009C0  EB0200     CLR W4
-0009C2  884004     MOV W4, flashstate
-205:                           lcd_end_gfx();
-0009C4  07FDD1     RCALL lcd_end_gfx
-206:                           return;
-0009C6  370027     BRA 0xA16
-207:                       }
-208:                       lcd_end_gfx();
-0009C8  07FDCF     RCALL lcd_end_gfx
-209:                       lcd_set_cursor(row, col/2);
-0009CA  804044     MOV col, W4
-0009CC  D10284     LSR W4, W5
-0009CE  804034     MOV row, W4
-0009D0  780085     MOV W5, W1
-0009D2  780004     MOV W4, W0
-0009D4  07FDB0     RCALL lcd_set_cursor
-210:                       lcd_start_gfx();
-0009D6  07FDBA     RCALL lcd_start_gfx
-211:                   }
-212:               
-213:                   //Check if there is still space in the GFX tx buffer
-214:                   if (GFX_TX_FULL) return;
-0009D8  801204     MOV SPI1STAT, W4
-0009DA  620262     AND W4, #0x2, W4
-0009DC  520FE0     SUB W4, #0x0, [W15]
-0009DE  3A0018     BRA NZ, 0xA10
-000A10  000000     NOP
-000A12  370001     BRA 0xA16
-215:               
-216:                   //Ok there is space, grab a byte from flash to send to gfx
-217:                   if (FL_RX_EMPTY) return;
-0009E0  801305     MOV SPI2STAT, W5
-0009E2  200204     MOV #0x20, W4
-0009E4  628204     AND W5, W4, W4
-0009E6  520FE0     SUB W4, #0x0, [W15]
-0009E8  3A0015     BRA NZ, 0xA14
-000A14  000000     NOP
-218:               
-219:                   b = FL_REG;
-0009EA  801344     MOV SPI2BUF, W4
-0009EC  784F04     MOV.B W4, [W14]
-220:                   col++;
-0009EE  804044     MOV col, W4
-0009F0  E80204     INC W4, W4
-0009F2  884044     MOV W4, col
-221:                   GFX_REG = b;
-0009F4  78429E     MOV.B [W14], W5
-0009F6  FB8205     ZE W5, W4
-0009F8  881244     MOV W4, SPI1BUF
-222:                   while (!GFX_RX_EMPTY) b = GFX_REG;
-0009FA  370002     BRA 0xA00
-0009FC  801244     MOV SPI1BUF, W4
-0009FE  784F04     MOV.B W4, [W14]
-000A00  801205     MOV SPI1STAT, W5
-000A02  200204     MOV #0x20, W4
-000A04  628204     AND W5, W4, W4
-000A06  520FE0     SUB W4, #0x0, [W15]
-000A08  32FFF9     BRA Z, 0x9FC
-000A0A  370005     BRA 0xA16
-223:               }
-000A16  FA8000     ULNK
-000A18  060000     RETURN
+000768  EC2808     INC col
+159:                   b = FL_REG;
+00076A  801344     MOV SPI2BUF, W4
+160:                   GFX_REG = b;
+00076C  FB8204     ZE W4, W4
+00076E  881244     MOV W4, SPI1BUF
+161:               
+162:               }
+000770  060000     RETURN
+163:               inline void check_flash_full_blit()
+164:               {
+165:                   uint8_t b;
+166:               
+167:                   //Check if there is space in the GFX tx buffer
+168:                   if (GFX_TX_FULL) 
+000772  AB2240     BTST SPI1STAT, #1
+000774  3A003D     BRA NZ, 0x7F0
+169:                   {
+170:                       return;
+171:                   }
+172:                   
+173:                   //Make sure we keep request pipeline full
+174:                   if(flash_pix_left > 0 && !FL_TX_FULL)
+000776  804014     MOV flash_pix_left, W4
+000778  804025     MOV 0x804, W5
+00077A  520FE0     SUB W4, #0x0, [W15]
+00077C  5A8FE0     SUBB W5, #0x0, [W15]
+00077E  320009     BRA Z, 0x792
+000780  AB2260     BTST SPI2STAT, #1
+000782  3A000B     BRA NZ, 0x79A
+175:                   {
+176:                       FL_REG = 0xdb; //Dummy Byte
+000784  200DB6     MOV #0xDB, W6
+000786  881346     MOV W6, SPI2BUF
+177:                       flash_pix_left--;
+000788  520361     SUB W4, #0x1, W6
+00078A  5A83E0     SUBB W5, #0x0, W7
+00078C  884016     MOV W6, flash_pix_left
+00078E  884027     MOV W7, 0x804
+000790  37000B     BRA 0x7A8
+178:                   }
+179:                   else if (flash_pix_left == 0)
+180:                   {
+181:                       DBG2 = 0;
+000792  A9A2CC     BCLR LATB, #5
+182:                       DBG2 = 1;
+000794  A8A2CC     BSET LATB, #5
+183:                       DBG2 = 0;
+000796  A9A2CC     BCLR LATB, #5
+000798  370007     BRA 0x7A8
+184:                   }
+185:                   else if (FL_TX_FULL)
+00079A  AB2260     BTST SPI2STAT, #1
+00079C  320005     BRA Z, 0x7A8
+186:                   {
+187:                       DBG2 = 0;
+00079E  A9A2CC     BCLR LATB, #5
+188:                       DBG2 = 1;
+0007A0  A8A2CC     BSET LATB, #5
+189:                       DBG2 = 0;
+0007A2  A9A2CC     BCLR LATB, #5
+190:                       DBG2 = 1;
+0007A4  A8A2CC     BSET LATB, #5
+191:                       DBG2 = 0;
+0007A6  A9A2CC     BCLR LATB, #5
+192:                   }
+193:               
+194:                   
+195:               
+196:                   //Check if we need to send a cursor sequence
+197:                   if (col == col_stop)
+0007A8  804084     MOV col_stop, W4
+0007AA  804045     MOV col, W5
+0007AC  528F84     SUB W5, W4, [W15]
+0007AE  3A0011     BRA NZ, 0x7D2
+198:                   {
+199:                       col = col_start;
+0007B0  F8080E     PUSH col_start
+0007B2  F90808     POP col
+200:                       row++;
+0007B4  804034     MOV row, W4
+0007B6  E80204     INC W4, W4
+0007B8  884034     MOV W4, row
+201:                       if (row == row_stop)
+0007BA  804065     MOV row_stop, W5
+0007BC  520F85     SUB W4, W5, [W15]
+0007BE  3A0003     BRA NZ, 0x7C6
+202:                       {
+203:                           flashstate = fs_idle;
+0007C0  EF2800     CLR flashstate
+204:                           lcd_end_gfx();
+0007C2  07FE5B     RCALL lcd_end_gfx
+205:                           return;
+0007C4  370015     BRA 0x7F0
+206:                       }
+207:                       lcd_end_gfx();
+0007C6  07FE59     RCALL lcd_end_gfx
+208:                       lcd_set_cursor(row, col/2);
+0007C8  804041     MOV col, W1
+0007CA  D10081     LSR W1, W1
+0007CC  804030     MOV row, W0
+0007CE  07FE3F     RCALL lcd_set_cursor
+209:                       lcd_start_gfx();
+0007D0  07FE48     RCALL lcd_start_gfx
+210:                   }
+211:               
+212:                   //Check if there is still space in the GFX tx buffer
+213:                   if (GFX_TX_FULL) return;
+0007D2  AB2240     BTST SPI1STAT, #1
+0007D4  3A000D     BRA NZ, 0x7F0
+214:               
+215:                   //Ok there is space, grab a byte from flash to send to gfx
+216:                   if (FL_RX_EMPTY) return;
+0007D6  ABA260     BTST SPI2STAT, #5
+0007D8  3A000B     BRA NZ, 0x7F0
+217:               
+218:                   b = FL_REG;
+0007DA  801344     MOV SPI2BUF, W4
+219:                   col++;
+0007DC  EC2808     INC col
+220:                   GFX_REG = b;
+0007DE  FB8204     ZE W4, W4
+0007E0  881244     MOV W4, SPI1BUF
+221:                   while (!GFX_RX_EMPTY) b = GFX_REG;
+0007E2  ABA240     BTST SPI1STAT, #5
+0007E4  3A0005     BRA NZ, 0x7F0
+0007E6  200205     MOV #0x20, W5
+0007E8  801244     MOV SPI1BUF, W4
+0007EA  801204     MOV SPI1STAT, W4
+0007EC  620205     AND W4, W5, W4
+0007EE  32FFFC     BRA Z, 0x7E8
+222:               }
+0007F0  060000     RETURN
 ---  /home/immesys/w/pecs/coprocessor_dip.X/config.c  ---------------------------------------------------
 1:                 #include <xc.h>
 2:                 
@@ -1845,285 +1572,262 @@ Nov 29, 2013 5:22:56 PM
 42:                
 43:                void init_hw()
 44:                {
-000A1A  FA0000     LNK #0x0
 45:                    //Initialise all ANx pins to digital
 46:                    AD1PCFG = 0xFFFF;
-000A1C  EB8200     SETM W4
-000A1E  881964     MOV W4, AD1PCFG
+0007F2  EFA32C     SETM AD1PCFG
 47:                
 48:                    //Config other pin directions
 49:                    LCD_RST_TRIS = 0;
-000A20  A922C0     BCLR TRISA, #1
+0007F4  A922C0     BCLR TRISA, #1
 50:                    LCD_RST = 1;
-000A22  A822C4     BSET LATA, #1
+0007F6  A822C4     BSET LATA, #1
 51:                    DBG2_TRIS = 0;
-000A24  A9A2C8     BCLR TRISB, #5
+0007F8  A9A2C8     BCLR TRISB, #5
 52:                    LCD_SS_TRIS = 0;
-000A26  A942C8     BCLR TRISB, #2
+0007FA  A942C8     BCLR TRISB, #2
 53:                    TP_SS_TRIS = 0;
-000A28  A9E2C9     BCLR 0x2C9, #7
+0007FC  A9E2C9     BCLR 0x2C9, #7
 54:                    FL_SS_TRIS = 0;
-000A2A  A982C8     BCLR TRISB, #4
+0007FE  A982C8     BCLR TRISB, #4
 55:                    
 56:                    //Set oscillator and unlock RP
 57:                    __builtin_write_OSCCONH(0b001); //FRC wth PLL
-000A2C  200016     MOV #0x1, W6
-000A2E  200784     MOV #0x78, W4
-000A30  2009A5     MOV #0x9A, W5
-000A32  207437     MOV #0x743, W7
-000A34  784B84     MOV.B W4, [W7]
-000A36  784B85     MOV.B W5, [W7]
-000A38  784B86     MOV.B W6, [W7]
+000800  2009A5     MOV #0x9A, W5
+000802  200016     MOV #0x1, W6
+000804  200784     MOV #0x78, W4
+000806  207437     MOV #0x743, W7
+000808  784B84     MOV.B W4, [W7]
+00080A  784B85     MOV.B W5, [W7]
+00080C  784B86     MOV.B W6, [W7]
 58:                    __builtin_write_OSCCONL(0b00000100); //Disable lock, don't osc switch
-000A3A  200046     MOV #0x4, W6
-000A3C  200464     MOV #0x46, W4
-000A3E  200575     MOV #0x57, W5
-000A40  207427     MOV #0x742, W7
-000A42  784B84     MOV.B W4, [W7]
-000A44  784B85     MOV.B W5, [W7]
-000A46  784B86     MOV.B W6, [W7]
+00080E  200575     MOV #0x57, W5
+000810  200046     MOV #0x4, W6
+000812  200464     MOV #0x46, W4
+000814  207427     MOV #0x742, W7
+000816  784B84     MOV.B W4, [W7]
+000818  784B85     MOV.B W5, [W7]
+00081A  784B86     MOV.B W6, [W7]
 59:                    _RCDIV = 0; //FRC divide by 1: 8Mhz
-000A48  803A24     MOV CLKDIV, W4
-000A4A  A18004     BCLR W4, #8
-000A4C  A19004     BCLR W4, #9
-000A4E  A1A004     BCLR W4, #10
-000A50  883A24     MOV W4, CLKDIV
+00081C  803A24     MOV CLKDIV, W4
+00081E  A18004     BCLR W4, #8
+000820  A19004     BCLR W4, #9
+000822  A1A004     BCLR W4, #10
+000824  883A24     MOV W4, CLKDIV
 60:                    _CPDIV = 00; //PLL divide by 1: Fsys = 32Mhz Fcy = 16 MIPS
-000A52  803A24     MOV CLKDIV, W4
-000A54  A16004     BCLR W4, #6
-000A56  A17004     BCLR W4, #7
-000A58  883A24     MOV W4, CLKDIV
+000826  803A24     MOV CLKDIV, W4
+000828  A16004     BCLR W4, #6
+00082A  A17004     BCLR W4, #7
+00082C  883A24     MOV W4, CLKDIV
 61:                
 62:                    //Assign RP outputs
 63:                    LCD_MOSI_RPO  = 7;  //SDO1 output
-000A5A  803615     MOV RPOR1, W5
-000A5C  2E0FF4     MOV #0xE0FF, W4
-000A5E  628284     AND W5, W4, W5
-000A60  207004     MOV #0x700, W4
-000A62  728204     IOR W5, W4, W4
-000A64  883614     MOV W4, RPOR1
+00082E  803614     MOV RPOR1, W4
+000830  2E0FF5     MOV #0xE0FF, W5
+000832  620205     AND W4, W5, W4
+000834  207006     MOV #0x700, W6
+000836  720206     IOR W4, W6, W4
+000838  883614     MOV W4, RPOR1
 64:                    LCD_SCK_RPO   = 8;  //SCK1 output
-000A66  803605     MOV RPOR0, W5
-000A68  2FFE04     MOV #0xFFE0, W4
-000A6A  628204     AND W5, W4, W4
-000A6C  A03004     BSET W4, #3
-000A6E  883604     MOV W4, RPOR0
+00083A  803606     MOV RPOR0, W6
+00083C  2FFE04     MOV #0xFFE0, W4
+00083E  630304     AND W6, W4, W6
+000840  A03006     BSET W6, #3
+000842  883606     MOV W6, RPOR0
 65:                   // LCD_CS_RPO    = 9;  //SS1 output
 66:                    FL_MOSI_RPO   = 10; //SDO2 output
-000A70  803665     MOV RPOR6, W5
-000A72  2E0FF4     MOV #0xE0FF, W4
-000A74  628284     AND W5, W4, W5
-000A76  20A004     MOV #0xA00, W4
-000A78  728204     IOR W5, W4, W4
-000A7A  883664     MOV W4, RPOR6
+000844  803666     MOV RPOR6, W6
+000846  630305     AND W6, W5, W6
+000848  20A007     MOV #0xA00, W7
+00084A  730307     IOR W6, W7, W6
+00084C  883666     MOV W6, RPOR6
 67:                    FL_SCK_RPO    = 11; //SCK2 output
-000A7C  803675     MOV RPOR7, W5
-000A7E  2FFE04     MOV #0xFFE0, W4
-000A80  628204     AND W5, W4, W4
-000A82  B300B4     IOR #0xB, W4
-000A84  883674     MOV W4, RPOR7
+00084E  803676     MOV RPOR7, W6
+000850  630304     AND W6, W4, W6
+000852  B300B6     IOR #0xB, W6
+000854  883676     MOV W6, RPOR7
 68:                   // TP_CS_RPO     = 12; //SS2 output
 69:                    TP_BL_CTL_RPO = 18; //OC1 output
-000A86  803635     MOV RPOR3, W5
-000A88  2E0FF4     MOV #0xE0FF, W4
-000A8A  628284     AND W5, W4, W5
-000A8C  212004     MOV #0x1200, W4
-000A8E  728204     IOR W5, W4, W4
-000A90  883634     MOV W4, RPOR3
+000856  803636     MOV RPOR3, W6
+000858  630305     AND W6, W5, W6
+00085A  212007     MOV #0x1200, W7
+00085C  730307     IOR W6, W7, W6
+00085E  883636     MOV W6, RPOR3
 70:                    DEBUG_RPO     = 3; //U1TX
-000A92  803625     MOV RPOR2, W5
-000A94  2E0FF4     MOV #0xE0FF, W4
-000A96  628284     AND W5, W4, W5
-000A98  203004     MOV #0x300, W4
-000A9A  728204     IOR W5, W4, W4
-000A9C  883624     MOV W4, RPOR2
+000860  803626     MOV RPOR2, W6
+000862  630285     AND W6, W5, W5
+000864  B33005     IOR #0x300, W5
+000866  883625     MOV W5, RPOR2
 71:                    
 72:                    //Assign RP inputs
 73:                    _SDI1R = LCD_MISO_RPI;
-000A9E  803545     MOV RPINR20, W5
-000AA0  2FFE04     MOV #0xFFE0, W4
-000AA2  628204     AND W5, W4, W4
-000AA4  A00004     BSET W4, #0
-000AA6  883544     MOV W4, RPINR20
+000868  803545     MOV RPINR20, W5
+00086A  628284     AND W5, W4, W5
+00086C  A00005     BSET W5, #0
+00086E  883545     MOV W5, RPINR20
 74:                    _SDI2R = FL_MISO_RPI;
-000AA8  803565     MOV RPINR22, W5
-000AAA  2FFE04     MOV #0xFFE0, W4
-000AAC  628204     AND W5, W4, W4
-000AAE  B30094     IOR #0x9, W4
-000AB0  883564     MOV W4, RPINR22
+000870  803565     MOV RPINR22, W5
+000872  628284     AND W5, W4, W5
+000874  B30095     IOR #0x9, W5
+000876  883565     MOV W5, RPINR22
 75:                    _INT2R = TP_IRQ_RPI;
-000AB2  803415     MOV RPINR1, W5
-000AB4  2FFE04     MOV #0xFFE0, W4
-000AB6  628204     AND W5, W4, W4
-000AB8  B30114     IOR #0x11, W4
-000ABA  883414     MOV W4, RPINR1
+000878  803415     MOV RPINR1, W5
+00087A  628204     AND W5, W4, W4
+00087C  B30114     IOR #0x11, W4
+00087E  883414     MOV W4, RPINR1
 76:                
 77:                    //Configure SPI1 module
 78:                    _SPI1IF = 0;
-000ABC  A94085     BCLR 0x85, #2
+000880  A94085     BCLR 0x85, #2
 79:                    _SPI1IP = 5;
-000ABE  800544     MOV IPC2, W4
-000AC0  A08004     BSET W4, #8
-000AC2  A19004     BCLR W4, #9
-000AC4  A0A004     BSET W4, #10
-000AC6  880544     MOV W4, IPC2
+000882  800544     MOV IPC2, W4
+000884  A08004     BSET W4, #8
+000886  A19004     BCLR W4, #9
+000888  A0A004     BSET W4, #10
+00088A  880544     MOV W4, IPC2
 80:                    SPI1STATbits.SISEL = 0b100; //Interrupt when there is space in TX
-000AC8  801204     MOV SPI1STAT, W4
-000ACA  A12004     BCLR W4, #2
-000ACC  A13004     BCLR W4, #3
-000ACE  A04004     BSET W4, #4
-000AD0  881204     MOV W4, SPI1STAT
+00088C  801204     MOV SPI1STAT, W4
+00088E  A12004     BCLR W4, #2
+000890  A13004     BCLR W4, #3
+000892  A04004     BSET W4, #4
+000894  881204     MOV W4, SPI1STAT
 81:                    SPI1CON1bits.DISSCK = 0; //Use clock
-000AD2  A98243     BCLR 0x243, #4
+000896  A98243     BCLR 0x243, #4
 82:                    SPI1CON1bits.DISSDO = 0; //Enable SDO
-000AD4  A96243     BCLR 0x243, #3
+000898  A96243     BCLR 0x243, #3
 83:                    SPI1CON1bits.MODE16 = 0; //8 bit
-000AD6  A94243     BCLR 0x243, #2
+00089A  A94243     BCLR 0x243, #2
 84:                    SPI1CON1bits.SMP = 0; ////INVALID:Sample in the middle of the bit
-000AD8  A92243     BCLR 0x243, #1
+00089C  A92243     BCLR 0x243, #1
 85:                    SPI1CON1bits.CKE = 0; //0= Mode 3, clock is idle high, and
-000ADA  A90243     BCLR 0x243, #0
+00089E  A90243     BCLR 0x243, #0
 86:                    SPI1CON1bits.CKP = 1; //1= data changes on falling edge, sample on rising
-000ADC  A8C242     BSET SPI1CON1, #6
+0008A0  A8C242     BSET SPI1CON1, #6
 87:                    SPI1CON1bits.MSTEN = 1; //Master
-000ADE  A8A242     BSET SPI1CON1, #5
+0008A2  A8A242     BSET SPI1CON1, #5
 88:                    SPI1CON1bits.SPRE = 0b101; //4:1 = 4Mhz probably
-000AE0  801214     MOV SPI1CON1, W4
-000AE2  A02004     BSET W4, #2
-000AE4  A13004     BCLR W4, #3
-000AE6  A04004     BSET W4, #4
-000AE8  881214     MOV W4, SPI1CON1
+0008A4  801214     MOV SPI1CON1, W4
+0008A6  A02004     BSET W4, #2
+0008A8  A13004     BCLR W4, #3
+0008AA  A04004     BSET W4, #4
+0008AC  881214     MOV W4, SPI1CON1
 89:                    SPI1CON1bits.PPRE = 0b11; //0b11 = 1:1
-000AEA  801214     MOV SPI1CON1, W4
-000AEC  A00004     BSET W4, #0
-000AEE  A01004     BSET W4, #1
-000AF0  881214     MOV W4, SPI1CON1
+0008AE  200030     MOV #0x3, W0
+0008B0  B72242     IOR SPI1CON1
 90:                    SPI1CON2bits.FRMEN = 0; //No framing
-000AF2  A9E245     BCLR 0x245, #7
+0008B2  A9E245     BCLR 0x245, #7
 91:                    SPI1CON2bits.SPIBEN = 1; //Enable enhanced buffer FIFO
-000AF4  A80244     BSET SPI1CON2, #0
+0008B4  A80244     BSET SPI1CON2, #0
 92:                    SPI1STATbits.SPIEN = 1;
-000AF6  A8E241     BSET 0x241, #7
+0008B6  A8E241     BSET 0x241, #7
 93:                    _SPI1IE = 0;
-000AF8  A94095     BCLR 0x95, #2
+0008B8  A94095     BCLR 0x95, #2
 94:                
 95:                    //Configure SPI2 module
 96:                    _SPI2IF = 0;
-000AFA  A92088     BCLR IFS2, #1
+0008BA  A92088     BCLR IFS2, #1
 97:                    _SPI2IP = 5;
-000AFC  8005A4     MOV IPC8, W4
-000AFE  A04004     BSET W4, #4
-000B00  A15004     BCLR W4, #5
-000B02  A06004     BSET W4, #6
-000B04  8805A4     MOV W4, IPC8
+0008BC  8005A4     MOV IPC8, W4
+0008BE  A04004     BSET W4, #4
+0008C0  A15004     BCLR W4, #5
+0008C2  A06004     BSET W4, #6
+0008C4  8805A4     MOV W4, IPC8
 98:                    SPI2STATbits.SISEL = 0b100; //Interrupt when there is space in TX
-000B06  801304     MOV SPI2STAT, W4
-000B08  A12004     BCLR W4, #2
-000B0A  A13004     BCLR W4, #3
-000B0C  A04004     BSET W4, #4
-000B0E  881304     MOV W4, SPI2STAT
+0008C6  801304     MOV SPI2STAT, W4
+0008C8  A12004     BCLR W4, #2
+0008CA  A13004     BCLR W4, #3
+0008CC  A04004     BSET W4, #4
+0008CE  881304     MOV W4, SPI2STAT
 99:                    SPI2CON1bits.DISSCK = 0; //Use clock
-000B10  A98263     BCLR 0x263, #4
+0008D0  A98263     BCLR 0x263, #4
 100:                   SPI2CON1bits.DISSDO = 0; //Enable SDO
-000B12  A96263     BCLR 0x263, #3
+0008D2  A96263     BCLR 0x263, #3
 101:                   SPI2CON1bits.MODE16 = 0; //8 bit
-000B14  A94263     BCLR 0x263, #2
+0008D4  A94263     BCLR 0x263, #2
 102:                   SPI2CON1bits.SMP = 0; ////INVALID:Sample in the middle of the bit
-000B16  A92263     BCLR 0x263, #1
+0008D6  A92263     BCLR 0x263, #1
 103:                   SPI2CON1bits.CKE = 0; //0= Mode 3, clock is idle high, and
-000B18  A90263     BCLR 0x263, #0
+0008D8  A90263     BCLR 0x263, #0
 104:                   SPI2CON1bits.CKP = 1; //1= data changes on falling edge, sample on rising
-000B1A  A8C262     BSET SPI2CON1, #6
+0008DA  A8C262     BSET SPI2CON1, #6
 105:                   SPI2CON1bits.MSTEN = 1; //Master
-000B1C  A8A262     BSET SPI2CON1, #5
+0008DC  A8A262     BSET SPI2CON1, #5
 106:                   SPI2CON1bits.SPRE = 0b110; //2:1 = 8Mhz probably
-000B1E  801314     MOV SPI2CON1, W4
-000B20  A12004     BCLR W4, #2
-000B22  A03004     BSET W4, #3
-000B24  A04004     BSET W4, #4
-000B26  881314     MOV W4, SPI2CON1
+0008DE  801314     MOV SPI2CON1, W4
+0008E0  A12004     BCLR W4, #2
+0008E2  B30184     IOR #0x18, W4
+0008E4  881314     MOV W4, SPI2CON1
 107:                   SPI2CON1bits.PPRE = 0b11; //0b11 = 1:1
-000B28  801314     MOV SPI2CON1, W4
-000B2A  A00004     BSET W4, #0
-000B2C  A01004     BSET W4, #1
-000B2E  881314     MOV W4, SPI2CON1
+0008E6  B72262     IOR SPI2CON1
 108:                   SPI2CON2bits.FRMEN = 0; //No framing
-000B30  A9E265     BCLR 0x265, #7
+0008E8  A9E265     BCLR 0x265, #7
 109:                   SPI2CON2bits.SPIBEN = 1; //Enable enhanced buffer FIFO
-000B32  A80264     BSET SPI2CON2, #0
+0008EA  A80264     BSET SPI2CON2, #0
 110:                   SPI2STATbits.SPIEN = 1;
-000B34  A8E261     BSET 0x261, #7
+0008EC  A8E261     BSET 0x261, #7
 111:                   _SPI2IE = 0;
-000B36  A92098     BCLR IEC2, #1
+0008EE  A92098     BCLR IEC2, #1
 112:               
 113:                   //Configure UART module (debug)
 114:                   U1MODEbits.UEN = 00;
-000B38  801104     MOV U1MODE, W4
-000B3A  A18004     BCLR W4, #8
-000B3C  A19004     BCLR W4, #9
-000B3E  881104     MOV W4, U1MODE
+0008F0  801104     MOV U1MODE, W4
+0008F2  A18004     BCLR W4, #8
+0008F4  A19004     BCLR W4, #9
+0008F6  881104     MOV W4, U1MODE
 115:                   U1BRG = 33; //115200
-000B40  200214     MOV #0x21, W4
-000B42  881144     MOV W4, U1BRG
+0008F8  200214     MOV #0x21, W4
+0008FA  881144     MOV W4, U1BRG
 116:                   U1MODEbits.BRGH = 1;
-000B44  A86220     BSET U1MODE, #3
+0008FC  A86220     BSET U1MODE, #3
 117:                   U1MODEbits.PDSEL = 00;
-000B46  801104     MOV U1MODE, W4
-000B48  A11004     BCLR W4, #1
-000B4A  A12004     BCLR W4, #2
-000B4C  881104     MOV W4, U1MODE
+0008FE  801104     MOV U1MODE, W4
+000900  A11004     BCLR W4, #1
+000902  A12004     BCLR W4, #2
+000904  881104     MOV W4, U1MODE
 118:                   U1MODEbits.STSEL = 0; //one stop.
-000B4E  A90220     BCLR U1MODE, #0
+000906  A90220     BCLR U1MODE, #0
 119:                   //U1STAbits.UTXEN = 1;
 120:                   U1MODEbits.UARTEN = 1;
-000B50  A8E221     BSET 0x221, #7
+000908  A8E221     BSET 0x221, #7
 121:                   U1STAbits.UTXEN = 1;
-000B52  A84223     BSET 0x223, #2
+00090A  A84223     BSET 0x223, #2
 122:                   _U1TXIE = 0;
-000B54  A98095     BCLR 0x95, #4
+00090C  A98095     BCLR 0x95, #4
 123:                   _U1RXIE = 0;
-000B56  A96095     BCLR 0x95, #3
+00090E  A96095     BCLR 0x95, #3
 124:               
 125:                   //Configure a timer for general use (T2/T3)
 126:                   //This rolls over ~30 min so don't use it for too long
 127:                   //a period
 128:                   T2CONbits.T32 = 1;
-000B58  A86110     BSET T2CON, #3
+000910  A86110     BSET T2CON, #3
 129:                   T2CONbits.TCKPS = 0b01; //2Mhz
-000B5A  800884     MOV T2CON, W4
-000B5C  A04004     BSET W4, #4
-000B5E  A15004     BCLR W4, #5
-000B60  880884     MOV W4, T2CON
+000912  800884     MOV T2CON, W4
+000914  A04004     BSET W4, #4
+000916  A15004     BCLR W4, #5
+000918  880884     MOV W4, T2CON
 130:                   T2CONbits.TON = 1;
-000B62  A8E111     BSET 0x111, #7
+00091A  A8E111     BSET 0x111, #7
 131:               
 132:                   //Configure a PWM output for the screen backlight
 133:                   //PR1 = 0xFF;
 134:                   OC1CON1bits.OCTSEL = 0b111; //sysclk 
-000B64  800C84     MOV OC1CON1, W4
-000B66  A0A004     BSET W4, #10
-000B68  A0B004     BSET W4, #11
-000B6A  A0C004     BSET W4, #12
-000B6C  880C84     MOV W4, OC1CON1
+00091C  21C000     MOV #0x1C00, W0
+00091E  B72190     IOR OC1CON1
 135:                   OC1CON1bits.OCM = 0b110; //Edge aligned PWM
-000B6E  800C84     MOV OC1CON1, W4
-000B70  A10004     BCLR W4, #0
-000B72  A01004     BSET W4, #1
-000B74  A02004     BSET W4, #2
-000B76  880C84     MOV W4, OC1CON1
+000920  800C84     MOV OC1CON1, W4
+000922  A10004     BCLR W4, #0
+000924  B30064     IOR #0x6, W4
+000926  880C84     MOV W4, OC1CON1
 136:                   OC1CON2bits.OCTRIS = 0;
-000B78  A9A192     BCLR OC1CON2, #5
+000928  A9A192     BCLR OC1CON2, #5
 137:                   OC1CON2bits.SYNCSEL = 0x1F; 
-000B7A  800C94     MOV OC1CON2, W4
-000B7C  B301F4     IOR #0x1F, W4
-000B7E  880C94     MOV W4, OC1CON2
+00092A  2001F0     MOV #0x1F, W0
+00092C  B72192     IOR OC1CON2
 138:                   OC1RS = 0xFF;
-000B80  200FF4     MOV #0xFF, W4
-000B82  880CA4     MOV W4, OC1RS
+00092E  200FF4     MOV #0xFF, W4
+000930  880CA4     MOV W4, OC1RS
 139:                   OC1R = 0xFF;
-000B84  200FF4     MOV #0xFF, W4
-000B86  880CB4     MOV W4, OC1R
+000932  880CB4     MOV W4, OC1R
 140:               
 141:               }
-000B88  FA8000     ULNK
-000B8A  060000     RETURN
+000934  060000     RETURN
