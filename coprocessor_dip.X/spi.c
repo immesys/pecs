@@ -29,6 +29,23 @@ void spi1_flush_tx()
 }
 
 /**
+ * Flush the TX fifo and discard RX bytes
+ */
+void spi2_flush_tx()
+{
+    uint8_t discard;
+
+    //Flush TX operations
+    while(SPI2STATbits.SPIBEC);
+
+    //Flush shift register
+    while(!SPI2STATbits.SRMPT);
+
+    //Discard RX FIFO
+    while(!SPI2STATbits.SRXMPT) discard = SPI2BUF;
+}
+
+/**
  * Write a byte to SPI and read the response.
  * This requires waiting for FIFO to flush before starting
  * (returned values are discarded)
@@ -75,6 +92,26 @@ inline void spi2_w_b_xdiscard(uint8_t b)
     while(!SPI2STATbits.SRXMPT) discard = SPI2BUF;
 
     SPI2BUF = b;
+}
+
+
+/**
+ * Write a byte to SPI and read the response.
+ * This requires waiting for FIFO to flush before starting
+ * (returned values are discarded)
+ *
+ * @param b The byte to write
+ * @return  the read byte
+ */
+inline uint8_t spi2_rw_b(uint8_t b)
+{
+    uint8_t rv;
+    spi2_flush_tx();
+    SPI2BUF = b;
+    //Wait for response byte
+    while(SPI2STATbits.SRXMPT);
+    rv = SPI2BUF;
+    return rv;
 }
 
 /**
@@ -131,12 +168,34 @@ inline void lcd_deselect(void)
 
 inline void flash_select(void)
 {
-    todo
+    FL_SS = 0;
 }
 
 inline void flash_deselect(void)
 {
-    todo
+    FL_SS = 1;
+}
+
+inline void flash_begin_read(uint32_t address)
+{
+    flash_deselect();
+    flash_select();
+    spi2_w_b_xdiscard(0x0B);
+    spi2_w_b((address >> 16) & 0xFF );
+    spi2_w_b((address >> 8 ) & 0xFF );
+    spi2_w_b((address) & 0xFF );
+    //We need the RW here so that we make sure that the first character
+    //that appears in the RX fifo is in fact from this read
+    spi2_rw_b(0xd0); //First dummy byte
+}
+inline void tp_select(void)
+{
+    TP_SS = 0;
+}
+
+inline void tp_deselect(void)
+{
+    TP_SS = 1;
 }
 
 inline void lcd_write_index(uint8_t idx)
@@ -259,6 +318,7 @@ void lcd_init(void)
     uint16_t dev_code;
 
     lcd_deselect();
+    tp_deselect();
     LCD_RST = 0;
     delay_ms(50);
     LCD_RST = 1;
@@ -318,7 +378,7 @@ void lcd_init(void)
     }
     else
     {
-        tc(0xDD01);
+        while(1) tc(0xDD01);
     }
 
 }

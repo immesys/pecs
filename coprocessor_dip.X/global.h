@@ -28,6 +28,8 @@ inline void lcd_write_reg(uint16_t addr, uint16_t value);
 inline uint16_t lcd_read_data(void);
 inline uint16_t lcd_read_reg(uint16_t addr);
 inline void lcd_set_cursor(uint16_t x, uint16_t y);
+inline uint8_t spi2_rw_b(uint8_t b);
+inline void flash_begin_read(uint32_t address);
 
 /**
  * Delay in units of half a microsecond
@@ -54,14 +56,32 @@ inline void tc(uint16_t v);
 //spi.c
 void delay_ms(uint16_t x);
 void lcd_init(void);
+inline void spi2_w_b_xdiscard(uint8_t b);
+inline void spi2_w_b(uint8_t b);
+inline void flash_select(void);
+inline void flash_deselect(void);
+inline void lcd_start_gfx();
+inline void lcd_end_gfx();
 
+//graphics.c
+void blit_rect(uint16_t sx, uint16_t sy, uint16_t ex, uint16_t ey, uint32_t start_address);
+inline void check_flash_window_blit();
+inline void check_flash_full_blit();
+void blit_window(uint16_t img_sx, uint16_t img_sy, uint16_t width, uint16_t height,
+                 uint16_t asset_sx, uint16_t asset_sy, uint16_t asset_width, uint16_t asset_height, uint32_t asset_address);
+typedef enum
+{
+    fs_idle,
+    fs_full_blit,
+    fs_window_blit
+} flashstate_t;
 //Pins
 #define LCD_MOSI_RPO    _RP3R
 #define LCD_SCK_RPO     _RP0R
 #define LCD_CS_RPO      _RP2R
 
-#define TP_MOSI_RPO     _RP13R
-#define TP_SCK_RPO      _RP14R
+#define FL_MOSI_RPO     _RP13R
+#define FL_SCK_RPO      _RP14R
 #define TP_CS_RPO       _RP15R
 #define TP_BL_CTL_RPO   _RP7R
 
@@ -69,7 +89,7 @@ void lcd_init(void);
 
 
 #define LCD_MISO_RPI    1
-#define TP_MISO_RPI     18
+#define FL_MISO_RPI     9//18
 #define TP_IRQ_RPI      17
 
 #define LCD_RST_TRIS    _TRISA1
@@ -81,6 +101,9 @@ void lcd_init(void);
 #define TP_SS           _LATB15
 #define DBG2_TRIS       _TRISB5
 #define DBG2            _LATB5
+
+#define FL_SS           _LATB4
+#define FL_SS_TRIS      _TRISB4
 
 #define LCD_BL          OC1R
 

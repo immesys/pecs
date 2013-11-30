@@ -11,7 +11,7 @@
 
 // CONFIG3
 #pragma config WPFP = WPFP63            // Write Protection Flash Page Segment Boundary (Highest Page (same as page 42))
-#pragma config SOSCSEL = SOSC           // Secondary Oscillator Pin Mode Select (SOSC pins in Default (high drive-strength) Oscillator Mode)
+#pragma config SOSCSEL = IO             // Secondary Oscillator Pin Mode Select (SOSC pins have digital I/O functions (RA4, RB4))
 #pragma config WUTSEL = LEG             // Voltage Regulator Wake-up Time Select (Default regulator start-up time used)
 #pragma config WPDIS = WPDIS            // Segment Write Protection Disable (Segmented code protection disabled)
 #pragma config WPCFG = WPCFGDIS         // Write Protect Configuration Page Select (Last page and Flash Configuration words are unprotected)
@@ -51,6 +51,7 @@ void init_hw()
     DBG2_TRIS = 0;
     LCD_SS_TRIS = 0;
     TP_SS_TRIS = 0;
+    FL_SS_TRIS = 0;
     
     //Set oscillator and unlock RP
     __builtin_write_OSCCONH(0b001); //FRC wth PLL
@@ -62,15 +63,15 @@ void init_hw()
     LCD_MOSI_RPO  = 7;  //SDO1 output
     LCD_SCK_RPO   = 8;  //SCK1 output
    // LCD_CS_RPO    = 9;  //SS1 output
-    TP_MOSI_RPO   = 10; //SDO2 output
-    TP_SCK_RPO    = 11; //SCK2 output
+    FL_MOSI_RPO   = 10; //SDO2 output
+    FL_SCK_RPO    = 11; //SCK2 output
    // TP_CS_RPO     = 12; //SS2 output
     TP_BL_CTL_RPO = 18; //OC1 output
     DEBUG_RPO     = 3; //U1TX
     
     //Assign RP inputs
     _SDI1R = LCD_MISO_RPI;
-    _SDI2R = TP_MISO_RPI;
+    _SDI2R = FL_MISO_RPI;
     _INT2R = TP_IRQ_RPI;
 
     //Configure SPI1 module
@@ -84,12 +85,30 @@ void init_hw()
     SPI1CON1bits.CKE = 0; //0= Mode 3, clock is idle high, and
     SPI1CON1bits.CKP = 1; //1= data changes on falling edge, sample on rising
     SPI1CON1bits.MSTEN = 1; //Master
-    SPI1CON1bits.SPRE = 0b101; //2:1 = 8Mhz probably
+    SPI1CON1bits.SPRE = 0b101; //4:1 = 4Mhz probably
     SPI1CON1bits.PPRE = 0b11; //0b11 = 1:1
     SPI1CON2bits.FRMEN = 0; //No framing
     SPI1CON2bits.SPIBEN = 1; //Enable enhanced buffer FIFO
     SPI1STATbits.SPIEN = 1;
     _SPI1IE = 0;
+
+    //Configure SPI2 module
+    _SPI2IF = 0;
+    _SPI2IP = 5;
+    SPI2STATbits.SISEL = 0b100; //Interrupt when there is space in TX
+    SPI2CON1bits.DISSCK = 0; //Use clock
+    SPI2CON1bits.DISSDO = 0; //Enable SDO
+    SPI2CON1bits.MODE16 = 0; //8 bit
+    SPI2CON1bits.SMP = 0; ////INVALID:Sample in the middle of the bit
+    SPI2CON1bits.CKE = 0; //0= Mode 3, clock is idle high, and
+    SPI2CON1bits.CKP = 1; //1= data changes on falling edge, sample on rising
+    SPI2CON1bits.MSTEN = 1; //Master
+    SPI2CON1bits.SPRE = 0b110; //2:1 = 8Mhz probably
+    SPI2CON1bits.PPRE = 0b11; //0b11 = 1:1
+    SPI2CON2bits.FRMEN = 0; //No framing
+    SPI2CON2bits.SPIBEN = 1; //Enable enhanced buffer FIFO
+    SPI2STATbits.SPIEN = 1;
+    _SPI2IE = 0;
 
     //Configure UART module (debug)
     U1MODEbits.UEN = 00;
