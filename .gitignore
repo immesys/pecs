@@ -7,3 +7,7 @@ coprocessor_dip.X/nbproject/private/
 coprocessor_dip.X/nbproject/Makefile-genesis.properties
 coprocessor_dip.X/dist/
 coprocessor_dip.X/build/
+assets/*.map.hex
+tos-app/build
+venv
+

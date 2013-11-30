@@ -316,7 +316,7 @@ void draw_red_bar_full(uint8_t v)
                    ASSET_BARS_WIDTH,
                    ASSET_BARS_HEIGHT,
                    ASSET_BARS_ADDR);
-   /* blocking_wblit(REDBAR_POSITION_X,
+    blocking_wblit(REDBAR_POSITION_X,
                    REDBAR_POSITION_Y,
                    v + V_OFFSET,
                    ASSET_REDBAR_HEIGHT,
@@ -324,10 +324,15 @@ void draw_red_bar_full(uint8_t v)
                    ASSET_REDBAR_WIDTH,
                    ASSET_REDBAR_HEIGHT,
                    ASSET_REDBAR_ADDR);
-    blocking_ovblit(REDBAR_POSITION_X + v + V_OFFSET - (ASSET_SLIDER_KNOB_WIDTH>>1), REDBAR_POSITION_Y - 2, ASSET_SLIDER_KNOB_ADDR, ASSET_SLIDER_KNOB_LENGTH);*/
+    blocking_ovblit(REDBAR_POSITION_X + v + V_OFFSET - (ASSET_SLIDER_KNOB_WIDTH>>1), REDBAR_POSITION_Y - 2, ASSET_SLIDER_KNOB_ADDR, ASSET_SLIDER_KNOB_LENGTH);
+}
+void draw_bg()
+{
+    blocking_wblit(0,0,320,240,0,0,320,240,ASSET_BARS_ADDR);
 }
 void draw_bar_screen_full(uint8_t redval, uint8_t blueval)
 {
-   // draw_blue_bar_full(100);
+    draw_bg();
+    draw_blue_bar_full(100);
     draw_red_bar_full(100);
 }
