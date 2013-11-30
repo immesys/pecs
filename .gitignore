@@ -2,6 +2,7 @@ build/*
 *.pyc
 *~
 *\#*
+coprocessor_dip.X/disasm/
 coprocessor_dip.X/nbproject/private/
 coprocessor_dip.X/nbproject/Makefile-genesis.properties
 coprocessor_dip.X/dist/
