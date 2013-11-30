@@ -46,6 +46,8 @@ def fl_chip_read(address, length):
 def fl_chip_read_chunked(address, length):
     rv = []
     while length > 0:
+        print "\r 0x%05x left" % length,
+        sys.stdout.flush()
         if length < 64:
             toread = length
         else:
@@ -53,6 +55,7 @@ def fl_chip_read_chunked(address, length):
         rv += fl_chip_read(address, toread)
         length -= 64
         address += 64
+    print "."
     return rv
     
 def fl_chip_write_page(address, content):
@@ -74,7 +77,7 @@ def fl_chip_write_page(address, content):
     time.sleep(0.1)
 
 def fl_chip_write(address, content):
-    print "Writing",(len(content)/512),"pages"
+    #print "Writing",(len(content)/512),"pages"
     if address %512 != 0:
         print "Yo, your address is not page aligned"
         raise Error("Badness")
@@ -85,7 +88,9 @@ def fl_chip_write(address, content):
         fl_chip_write_page(address, page)
         address += 512
         content = content[512:]
-        #print "< (%d left)" % len(content)  
+        print "\r 0x%05x left" % len(content),
+        sys.stdout.flush()
+    print "."  
 def fl_set_512b():
     lj.spi([0x3D, 0x2A, 0x80, 0xA6], **spicfg)
     

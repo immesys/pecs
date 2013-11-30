@@ -9,23 +9,13 @@
 #include <stdlib.h>
 #include "global.h"
 
-#define ASSET_FULLBARS_ADDR   0x000000
-#define ASSET_FULLBARS_LENGTH 0x025800
-#define ASSET_FULLBARS_WIDTH  320
-#define ASSET_FULLBARS_HEIGHT 240
-#define ASSET_UPARROW_ADDR   0x025800
-#define ASSET_UPARROW_LENGTH 0x004e20
-#define ASSET_UPARROW_WIDTH  100
-#define ASSET_UPARROW_HEIGHT 100
-#define ASSET_UP2_ADDR   0x02a800
-#define ASSET_UP2_LENGTH 0x009c40
-#define ASSET_UP2_WIDTH  200
-#define ASSET_UP2_HEIGHT 100
+
 
 void speedtest();
 extern void g_fill_rgb();
 extern void delay_ms(uint16_t v);
 extern flashstate_t flashstate;
+void fragtest();
 int main()
 {
     init_hw();
@@ -42,7 +32,9 @@ int main()
     //blit_rect(0,0,ASSET_FULLBARS_WIDTH,ASSET_FULLBARS_HEIGHT,ASSET_FULLBARS_ADDR);
     //blit_window(5, 5, 50, 50,
     //             133, 119, ASSET_FULLBARS_WIDTH, ASSET_FULLBARS_HEIGHT, ASSET_FULLBARS_ADDR);
-    speedtest();
+   // speedtest();
+    draw_bar_screen_full(128, 128);
+    while(1);
     //blit_window(0,0, 100, 100, 0, 0, ASSET_UPARROW_WIDTH, ASSET_UPARROW_HEIGHT, ASSET_UPARROW_ADDR);
     //printf("Starting event loop\n");
     DBG2 = 0;
@@ -63,6 +55,7 @@ int main()
     }
 }
 
+#if 0
 void speedtest()
 {
     int16_t x = 5;
@@ -87,3 +80,24 @@ void speedtest()
         y += yi;
     }
 }
+
+void fragtest()
+{
+    DBG2 = 1;
+    uint16_t x;
+    uint16_t y;
+    for (x = 0; x < 10; x++)
+    {
+        for (y = 0; y < 10; y++)
+        {
+            blit_window(x*15,y*15, 10, 10, x*10, y*10, ASSET_UPARROW_WIDTH, ASSET_UPARROW_HEIGHT, ASSET_UPARROW_ADDR);
+            while (flashstate != fs_idle)
+            {
+                //check_flash_full_blit();
+                check_flash_window_blit();
+            }
+        }
+    }
+    DBG2 = 0;
+}
+#endif

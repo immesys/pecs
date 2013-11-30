@@ -1,7 +1,7 @@
 
 from png import Reader, Writer
 import sys
-import fastspi
+
 
 """
 From the chips perspective, there are two types of images. 
@@ -23,14 +23,13 @@ naturally occurs, it's easy to just push it up to white
 """
 
 def pack(fn, t="rectangle"):
-    
-    print "Packing",fn
     fn = fn+".png"
     in_skip = False
     width, height, pixels, meta = Reader(filename=fn).asRGBA()
     mem = []
     allrows = [pixels.next() for i in xrange(height)]
     allrows.reverse() #Screen has different zero indexing
+    row = 0
     for rowd in allrows:
         if t == "overlay":
             #Overlay type images don't have automatic logic to go to the next
@@ -41,9 +40,9 @@ def pack(fn, t="rectangle"):
         for col in xrange(0, width):
             r, g, b, a = rowd[col*4:col*4+4]
             if t == "overlay":  
-                if a > 128 and not in_skip:
+                if a < 128 and not in_skip:
                     in_skip = True
-                elif a < 128:
+                elif a >= 128:
                     if in_skip:
                         in_skip = False
                         mem.append(0xF7)
@@ -60,9 +59,16 @@ def pack(fn, t="rectangle"):
             if t == "rectangle":
                 mem.append( ((r & 0xf8) + (g >> 5))&0xFF )
                 mem.append( ((g << 3)&0xe0) + (b >> 3) )
-                
+        row += 1
     
-    print "Image packed,",(width*height),"pixels in",len(mem),"bytes (",hex(len(mem)),")",(len(mem)/512),"pages",(len(mem)/(512*40.96)),"%"
+    f = open(fn+".map.hex","w")
+    for idx in xrange(len(mem)):
+        if idx%16 == 0 and idx != 0:
+            f.write("\n")
+        f.write("%02x " % mem[idx])
+    f.close()             
+    print "Packed {:16s} ({:>3}x{:<3} = {:5d}) in 0x{:>5x} bytes, {:>3} pages {:.2f}%".format(fn, width, height, width*height, len(mem), len(mem)/512, len(mem)/(512*40.96))
+    #print "Image packed,",(width*height),"pixels in",len(mem),"bytes (",hex(len(mem)),")",(len(mem)/512),"pages",(len(mem)/(512*40.96)),"%"
     return (mem, width, height)
 
 if len(sys.argv) != 2:
@@ -70,9 +76,12 @@ if len(sys.argv) != 2:
     sys.exit(1)
 
 images = [
-        ("fullbars","rectangle"), 
-        ("uparrow","rectangle"), 
-        ("up2","rectangle")
+        ("bars","rectangle"), 
+        ("bluebar","rectangle"),
+        ("redbar","rectangle"),
+        ("slider_knob","overlay"), 
+        ("up2","rectangle"),
+        ("sdb","rectangle")
         ]
 
 if sys.argv[1] == "make":                        
@@ -80,6 +89,8 @@ if sys.argv[1] == "make":
         pack(fn, t)
         
 elif sys.argv[1] == "makeprog":
+    global fastspi
+    fastspi = __import__("fastspi")
     assets = []
     for fn, t in images:
         assets.append((fn, pack(fn, t)))

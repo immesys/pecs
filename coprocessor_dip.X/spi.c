@@ -22,7 +22,7 @@ void spi1_flush_tx()
     while(!SPI1STATbits.SRXMPT) discard = SPI1BUF;
 
     //Flush TX operations
-    while(SPI1STATbits.SPIBEC);
+    while(SPI1STATbits.SPIBEC) discard = SPI1BUF;
 
     //Flush shift register
     while(!SPI1STATbits.SRMPT);

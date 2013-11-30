@@ -100,8 +100,8 @@ void blit_window(uint16_t img_sx, uint16_t img_sy, uint16_t width, uint16_t heig
     flash_pix_row = 0;
     flash_rowstride = asset_width*2;
     flash_base_address = asset_address +
-                         asset_sy*asset_width*2 +
-                         asset_sx*2;
+                         (uint32_t)asset_sy*(uint32_t)asset_width*2 +
+                         (uint32_t)asset_sx*2;
 
     flash_begin_read(flash_base_address);
 
@@ -110,6 +110,55 @@ void blit_window(uint16_t img_sx, uint16_t img_sy, uint16_t width, uint16_t heig
     lcd_start_gfx();
 }
 
+void blit_overlay(uint16_t sx, uint16_t sy, uint32_t asset_address, uint32_t asset_length)
+{
+    flashstate = fs_overlay_blit;
+    flash_pix_left = asset_length;
+    col_start = sx;
+    row_start = sy;
+    flash_begin_read(asset_address);
+    //lcd_set_cursor(row + row_start, col + col_start);
+    lcd_start_gfx();
+}
+
+void check_flash_overlay_blit()
+{
+    uint8_t b;
+    if (flash_pix_left > 0)
+    {
+        flash_pix_left--;
+        FL_REG = 0xdb;
+    }
+    else
+    {
+        lcd_end_gfx();
+        flashstate = fs_idle;
+        flash_deselect();
+        return;
+    }
+    while (FL_RX_EMPTY);
+    b = FL_REG;
+    if (b == OV_SENTINEL)
+    {
+        FL_REG = 0xdb;
+        FL_REG = 0xdb;
+        while (FL_RX_EMPTY);
+        col = FL_REG;
+        while (FL_RX_EMPTY);
+        row = FL_REG;
+        FL_REG = 0xdb;
+        flash_pix_left -= 3;
+        lcd_end_gfx();
+        //Image stream has the thingy at the beginning
+        lcd_set_cursor(row + row_start, col + col_start);
+        lcd_start_gfx();
+        while (FL_RX_EMPTY);
+        b = FL_REG;
+    }
+    
+    GFX_REG = b;
+    while (!GFX_RX_EMPTY) b = GFX_REG;
+}
 /**
  * We are taking a different attitude here. We are going to assume
  * that we are moving slowly enough that the TX buffers will
@@ -219,4 +268,66 @@ inline void check_flash_full_blit()
     col++;
     GFX_REG = b;
     while (!GFX_RX_EMPTY) b = GFX_REG;
+}
+
+void blocking_wblit(uint16_t img_sx, uint16_t img_sy, uint16_t width, uint16_t height,
+                   uint16_t asset_sx, uint16_t asset_sy, uint16_t asset_width, uint16_t asset_height, uint32_t asset_address)
+{
+    blit_window( img_sx,  img_sy,  width,  height,
+                  asset_sx,  asset_sy,  asset_width,  asset_height,  asset_address);
+    while(flashstate != fs_idle) check_flash_window_blit();
+}
+void blocking_ovblit(uint16_t sx, uint16_t sy, uint32_t asset_address, uint32_t asset_length)
+{
+    blit_overlay(sx,sy,asset_address,asset_length);
+    while(flashstate != fs_idle) check_flash_overlay_blit();
+}
+void draw_blue_bar_full(uint8_t v)
+{
+    //First draw the required amount of background
+    blocking_wblit(BLUEBAR_POSITION_X + v + V_OFFSET,
+                   BLUEBAR_POSITION_Y,
+                   ASSET_BLUEBAR_WIDTH - v - V_OFFSET,
+                   ASSET_BLUEBAR_HEIGHT,
+                   BLUEBAR_POSITION_X + v + V_OFFSET,
+                   BLUEBAR_POSITION_Y,
+                   ASSET_BARS_WIDTH,
+                   ASSET_BARS_HEIGHT,
+                   ASSET_BARS_ADDR);
+    blocking_wblit(BLUEBAR_POSITION_X,
+                   BLUEBAR_POSITION_Y,
+                   v + V_OFFSET,
+                   ASSET_BLUEBAR_HEIGHT,
+                   0, 0,
+                   ASSET_BLUEBAR_WIDTH,
+                   ASSET_BLUEBAR_HEIGHT,
+                   ASSET_BLUEBAR_ADDR);
+    blocking_ovblit(BLUEBAR_POSITION_X + v + V_OFFSET - (ASSET_SLIDER_KNOB_WIDTH>>1), BLUEBAR_POSITION_Y - 2, ASSET_SLIDER_KNOB_ADDR, ASSET_SLIDER_KNOB_LENGTH);
+}
+void draw_red_bar_full(uint8_t v)
+{
+        //First draw the required amount of background
+    blocking_wblit(REDBAR_POSITION_X + v + V_OFFSET, //SX
+                   REDBAR_POSITION_Y,                //SY
+                   ASSET_REDBAR_WIDTH - v - V_OFFSET, //WIDTH
+                   ASSET_REDBAR_HEIGHT,               //HEIGHT
+                   REDBAR_POSITION_X + v + V_OFFSET,
+                   REDBAR_POSITION_Y,
+                   ASSET_BARS_WIDTH,
+                   ASSET_BARS_HEIGHT,
+                   ASSET_BARS_ADDR);
+   /* blocking_wblit(REDBAR_POSITION_X,
+                   REDBAR_POSITION_Y,
+                   v + V_OFFSET,
+                   ASSET_REDBAR_HEIGHT,
+                   0, 0,
+                   ASSET_REDBAR_WIDTH,
+                   ASSET_REDBAR_HEIGHT,
+                   ASSET_REDBAR_ADDR);
+    blocking_ovblit(REDBAR_POSITION_X + v + V_OFFSET - (ASSET_SLIDER_KNOB_WIDTH>>1), REDBAR_POSITION_Y - 2, ASSET_SLIDER_KNOB_ADDR, ASSET_SLIDER_KNOB_LENGTH);*/
+}
+void draw_bar_screen_full(uint8_t redval, uint8_t blueval)
+{
+   // draw_blue_bar_full(100);
+    draw_red_bar_full(100);
 }
