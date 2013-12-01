@@ -58,12 +58,23 @@ void spi2_flush_tx()
  */
 inline uint8_t spi1_rw_b(uint8_t b)
 {
+  //  while(SPI1STATbits.SPIROV) {DBG2 = 1; DBG2= 0;}
     uint8_t rv;
     spi1_flush_tx();
     SPI1BUF = b;
     //Wait for response byte
+    DBG2 = 1;
     while(SPI1STATbits.SRXMPT);
+  //  while(SPI1STATbits.SPIROV) {DBG2 = 1; DBG2= 0;}
+    Nop();
+    Nop();
+    Nop();
+    Nop();
+    Nop();
+    DBG2 = 0;
     rv = SPI1BUF;
+    tc(rv);
+  //  while(SPI1STATbits.SPIROV) {DBG2 = 1; DBG2= 0;}
     return rv;
 }
 
@@ -161,6 +172,9 @@ inline void spi1_w_b(uint8_t b)
 
 inline void lcd_select(void)
 {
+    SPI1CON1bits.SPRE = LCD_SPI_SPRESCALE;
+    SPI1CON1bits.PPRE = LCD_SPI_PPRESCALE;
+    TP_SS = 1;
     LCD_SS = 0;
 }
 
@@ -193,6 +207,9 @@ inline void flash_begin_read(uint32_t address)
 }
 inline void tp_select(void)
 {
+    SPI1CON1bits.SPRE = TP_SPI_SPRESCALE;
+    SPI1CON1bits.PPRE = TP_SPI_PPRESCALE;
+    LCD_SS = 1;
     TP_SS = 0;
 }
 
@@ -307,11 +324,6 @@ void delay_ms(uint16_t x)
     } while((now - then) < hmicros);
 }
 
-void wave_test(void)
-{
-    lcd_read_reg(0x0000);
-
-}
 /**
  * This magic incantation for screen initialisation was translated from the
  * example source code given by the vendor: powermcu.com / hotmcu.com
@@ -384,5 +396,53 @@ void lcd_init(void)
     {
         while(1) tc(0xDD01);
     }
+}
+
+inline uint16_t tp_read_ad()
+{
+    uint16_t rv, b;
+    rv = 5;
+    rv = spi1_rw_b(0xdb);
+    rv <<= 8;
+    delay_hus(2);
+    b = spi1_rw_b(0xdb);
+    rv |= b;
+    rv >>= 3;
+    rv &= 0xFFF;
+    return rv;
+}
+uint16_t tp_read_x(void)
+{
+    uint16_t rv;
+    tp_select();
+    delay_hus(2);
+    spi1_rw_b(TP_CHX);
+    delay_hus(2);
+    rv = tp_read_ad();
+    tp_deselect();
+    return rv;
+}
+uint16_t tp_read_y(void)
+{
+    uint16_t rv;
+    tp_select();
+    delay_hus(2);
+    spi1_rw_b(TP_CHY);
+    delay_hus(2);
+    rv = tp_read_ad();
+    tp_deselect();
+    return rv;
+}
+void tp_get_raw_xy(uint16_t *x, uint16_t *y)
+{
+    *x = tp_read_x();
+    delay_hus(2);
+    *y = tp_read_y();
+    delay_hus(2);
+    
+}
+
+void tp_init()
+{
 
 }

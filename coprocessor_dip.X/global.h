@@ -62,11 +62,16 @@ inline void flash_select(void);
 inline void flash_deselect(void);
 inline void lcd_start_gfx();
 inline void lcd_end_gfx();
+uint8_t tp_sample_xy(uint16_t *x, uint16_t *y);
+void tp_get_raw_xy(uint16_t *x, uint16_t *y);
 
 //graphics.c
 void blit_rect(uint16_t sx, uint16_t sy, uint16_t width, uint16_t height, uint32_t start_address);
 inline void check_flash_window_blit();
 inline void check_flash_full_blit();
+inline void draw_calibrate_bg();
+inline void erase_calibrate_point(uint16_t x, uint16_t y);
+inline void draw_calibrate_point(uint16_t x, uint16_t y);
 void blit_window(uint16_t img_sx, uint16_t img_sy, uint16_t width, uint16_t height,
                  uint16_t asset_sx, uint16_t asset_sy, uint16_t asset_width, uint16_t asset_height, uint32_t asset_address);
 void draw_bar_screen_full(uint8_t redval, uint8_t blueval);
@@ -77,6 +82,24 @@ typedef enum
     fs_window_blit,
     fs_overlay_blit
 } flashstate_t;
+
+typedef struct
+{
+    int32_t x;
+    int32_t y;
+} point_t;
+
+//TODO double? Really?
+typedef struct Matrix
+{
+   int32_t  An,
+            Bn,
+            Cn,
+            Dn,
+            En,
+            Fn,
+            Divider ;
+} matrix_t ;
 //Pins
 #define LCD_MOSI_RPO    _RP3R
 #define LCD_SCK_RPO     _RP0R
@@ -92,7 +115,10 @@ typedef enum
 
 #define LCD_MISO_RPI    1
 #define FL_MISO_RPI     9//18
-#define TP_IRQ_RPI      17
+#define TP_IRQ_RPI      8
+
+#define TP_IRQ          _RB8
+#define TP_IRQ_TRIS     _TRISB8
 
 #define LCD_RST_TRIS    _TRISA1
 #define LCD_RST         _LATA1
@@ -133,6 +159,20 @@ typedef enum
 #define ASSET_SDB_LENGTH 0x025800
 #define ASSET_SDB_WIDTH  320
 #define ASSET_SDB_HEIGHT 240
+#define ASSET_PECS_ADDR   0x062e00
+#define ASSET_PECS_LENGTH 0x025800
+#define ASSET_PECS_WIDTH  320
+#define ASSET_PECS_HEIGHT 240
+#define ASSET_POINT_ADDR   0x088600
+#define ASSET_POINT_LENGTH 0x0005b2
+#define ASSET_POINT_WIDTH  27
+#define ASSET_POINT_HEIGHT 27
+#define ASSET_CALIBRATE_ADDR   0x088c00
+#define ASSET_CALIBRATE_LENGTH 0x025800
+#define ASSET_CALIBRATE_WIDTH  320
+#define ASSET_CALIBRATE_HEIGHT 240
+
+
 
 #define BLUEBAR_POSITION_X 40
 #define BLUEBAR_POSITION_Y 48
@@ -142,5 +182,15 @@ typedef enum
 #define V_OFFSET 20
 #define OV_SENTINEL 0xF7
 #define KNOB_START_X 38
+
+#define LCD_SPI_SPRESCALE 0b101 //0b101 3:1 == 5.3 Mhz
+#define LCD_SPI_PPRESCALE 0b11  //0b11 = 1:1
+
+#define TP_SPI_SPRESCALE  0b111 //0b111 1:1
+#define TP_SPI_PPRESCALE  0b01  //0b01 16:1 == 1Mhz
+
+/* AD channel selection command and register */
+#define	TP_CHX 	0x90 	/* channel Y+ selection command */
+#define	TP_CHY 	0xd0	/* channel X+ selection command*/
 #endif	/* GLOBAL_H */
 

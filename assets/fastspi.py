@@ -46,8 +46,6 @@ def fl_chip_read(address, length):
 def fl_chip_read_chunked(address, length):
     rv = []
     while length > 0:
-        print "\r 0x%05x left" % length,
-        sys.stdout.flush()
         if length < 64:
             toread = length
         else:
@@ -55,6 +53,8 @@ def fl_chip_read_chunked(address, length):
         rv += fl_chip_read(address, toread)
         length -= 64
         address += 64
+        print "\r 0x%05x left" % length,
+        sys.stdout.flush()
     print "."
     return rv
     

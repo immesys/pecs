@@ -72,7 +72,7 @@ LDLIBSOPTIONS=
 FIXDEPS=fixDeps
 
 .build-conf:  ${BUILD_SUBPROJECTS}
-	${MAKE}  -f nbproject/Makefile-default.mk dist/${CND_CONF}/${IMAGE_TYPE}/coprocessor_dip.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}
+	${MAKE}  -j 8 -f nbproject/Makefile-default.mk dist/${CND_CONF}/${IMAGE_TYPE}/coprocessor_dip.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}
 
 MP_PROCESSOR_OPTION=24FJ64GB002
 MP_LINKER_FILE_OPTION=,--script=p24FJ64GB002.gld

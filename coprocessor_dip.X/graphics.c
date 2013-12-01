@@ -330,9 +330,232 @@ void draw_bg()
 {
     blocking_wblit(0,0,320,240,0,0,320,240,ASSET_BARS_ADDR);
 }
+inline void draw_calibrate_bg()
+{
+    blocking_wblit(0,0,ASSET_CALIBRATE_WIDTH,ASSET_CALIBRATE_HEIGHT,0,0,ASSET_CALIBRATE_WIDTH,ASSET_CALIBRATE_HEIGHT,ASSET_CALIBRATE_ADDR);
+}
+inline void draw_pecs_bg()
+{
+    blocking_wblit(0,0,
+                   ASSET_PECS_WIDTH,ASSET_PECS_HEIGHT,
+                   0,0,
+                   ASSET_PECS_WIDTH,ASSET_PECS_HEIGHT,
+                   ASSET_PECS_ADDR);
+}
+inline void erase_calibrate_point(uint16_t x, uint16_t y)
+{
+    blocking_wblit(x-(ASSET_POINT_WIDTH+1)/2, y - (ASSET_POINT_HEIGHT+1)/2,
+                   ASSET_POINT_WIDTH, ASSET_POINT_HEIGHT,
+                   x-(ASSET_POINT_WIDTH+1)/2, y - (ASSET_POINT_HEIGHT+1)/2,
+                   ASSET_CALIBRATE_WIDTH, ASSET_CALIBRATE_HEIGHT,
+                   ASSET_CALIBRATE_ADDR);
+}
+inline void draw_calibrate_point(uint16_t x, uint16_t y)
+{
+    blocking_wblit(x-(ASSET_POINT_WIDTH+1)/2, y - (ASSET_POINT_HEIGHT+1)/2,
+                   ASSET_POINT_WIDTH, ASSET_POINT_HEIGHT,
+                   0, 0,
+                   ASSET_POINT_WIDTH, ASSET_POINT_HEIGHT,
+                   ASSET_POINT_ADDR);
+}
 void draw_bar_screen_full(uint8_t redval, uint8_t blueval)
 {
     draw_bg();
     draw_blue_bar_full(100);
     draw_red_bar_full(100);
+}
+
+point_t measured_tp_points [3];
+point_t displayed_tp_points [3] = { {45,45}, {270, 45}, {190,190} };
+matrix_t cmatrix;
+
+void tp_set_calibration_matrix(void)
+{
+    cmatrix.Divider = ((measured_tp_points[0].x - measured_tp_points[2].x) * (measured_tp_points[1].y - measured_tp_points[2].y)) -
+                      ((measured_tp_points[1].x - measured_tp_points[2].x) * (measured_tp_points[0].y - measured_tp_points[2].y));
+    if (cmatrix.Divider == 0)
+    {
+        while(1) tc(0xDE05);
+    }
+    /* A£?((XD0£­XD2) (Y1£­Y2)£­(XD1£­XD2) (Y0£­Y2))£¯K	*/
+    cmatrix.An = ((displayed_tp_points[0].x - displayed_tp_points[2].x) * (measured_tp_points[1].y - measured_tp_points[2].y)) -
+                 ((displayed_tp_points[1].x - displayed_tp_points[2].x) * (measured_tp_points[0].y - measured_tp_points[2].y)) ;
+	/* B£?((X0£­X2) (XD1£­XD2)£­(XD0£­XD2) (X1£­X2))£¯K	*/
+    cmatrix.Bn = ((measured_tp_points[0].x - measured_tp_points[2].x) * (displayed_tp_points[1].x - displayed_tp_points[2].x)) -
+                 ((displayed_tp_points[0].x - displayed_tp_points[2].x) * (measured_tp_points[1].x - measured_tp_points[2].x)) ;
+    /* C£?(Y0(X2XD1£­X1XD2)+Y1(X0XD2£­X2XD0)+Y2(X1XD0£­X0XD1))£¯K */
+    cmatrix.Cn = (measured_tp_points[2].x * displayed_tp_points[1].x - measured_tp_points[1].x * displayed_tp_points[2].x) * measured_tp_points[0].y +
+                 (measured_tp_points[0].x * displayed_tp_points[2].x - measured_tp_points[2].x * displayed_tp_points[0].x) * measured_tp_points[1].y +
+                 (measured_tp_points[1].x * displayed_tp_points[0].x - measured_tp_points[0].x * displayed_tp_points[1].x) * measured_tp_points[2].y ;
+    /* D£?((YD0£­YD2) (Y1£­Y2)£­(YD1£­YD2) (Y0£­Y2))£¯K	*/
+    cmatrix.Dn = ((displayed_tp_points[0].y - displayed_tp_points[2].y) * (measured_tp_points[1].y - measured_tp_points[2].y)) -
+                 ((displayed_tp_points[1].y - displayed_tp_points[2].y) * (measured_tp_points[0].y - measured_tp_points[2].y)) ;
+    /* E£?((X0£­X2) (YD1£­YD2)£­(YD0£­YD2) (X1£­X2))£¯K	*/
+    cmatrix.En = ((measured_tp_points[0].x - measured_tp_points[2].x) * (displayed_tp_points[1].y - displayed_tp_points[2].y)) -
+                 ((displayed_tp_points[0].y - displayed_tp_points[2].y) * (measured_tp_points[1].x - measured_tp_points[2].x)) ;
+    /* F£?(Y0(X2YD1£­X1YD2)+Y1(X0YD2£­X2YD0)+Y2(X1YD0£­X0YD1))£¯K */
+    cmatrix.Fn = (measured_tp_points[2].x * displayed_tp_points[1].y - measured_tp_points[1].x * displayed_tp_points[2].y) * measured_tp_points[0].y +
+                 (measured_tp_points[0].x * displayed_tp_points[2].y - measured_tp_points[2].x * displayed_tp_points[0].y) * measured_tp_points[1].y +
+                 (measured_tp_points[1].x * displayed_tp_points[0].y - measured_tp_points[0].x * displayed_tp_points[1].y) * measured_tp_points[2].y ;
+}
+
+#define THRESHOLD 2
+
+uint8_t tp_multisample_xy_raw(point_t *out)
+{
+    uint8_t count = 0;
+  //  uint16_t tpx, tpy;
+    int32_t buffer [2][9];
+    int32_t temp[3];
+    int32_t m0, m1, m2;
+    uint16_t sx,sy;
+
+    do
+    {
+        tp_get_raw_xy(&sx, &sy);
+        buffer[0][count] = sx;
+        buffer[1][count] = sy;
+        count++;
+    } while( !TP_IRQ && count < 9);
+
+    if (count == 9)
+    {
+        //X
+        temp[0] = ( buffer[0][0] + buffer[0][1] + buffer[0][2] ) / 3;
+        temp[1] = ( buffer[0][3] + buffer[0][4] + buffer[0][5] ) / 3;
+        temp[2] = ( buffer[0][6] + buffer[0][7] + buffer[0][8] ) / 3;
+
+        /* Calculate the three groups of data */
+        m0 = temp[0] - temp[1];
+        m1 = temp[1] - temp[2];
+        m2 = temp[2] - temp[0];
+
+        /* Absolute value of the above difference */
+        m0 = m0 > 0 ? m0 : (-m0);
+        m1 = m1 > 0 ? m1 : (-m1);
+        m2 = m2 > 0 ? m2 : (-m2);
+
+        if( m0 > THRESHOLD  &&  m1 > THRESHOLD  &&  m2 > THRESHOLD )
+        {
+            return 0;
+        }
+        /* Calculating their average value */
+        if( m0 < m1 )
+        {
+            if( m2 < m0 )
+            {
+                out->x = ( temp[0] + temp[2] ) / 2;
+            }
+            else
+            {
+                out->x = ( temp[0] + temp[1] ) / 2;
+            }
+        }
+        else if(m2<m1)
+        {
+            out->x = ( temp[0] + temp[2] ) / 2;
+        }
+        else
+        {
+            out->x = ( temp[1] + temp[2] ) / 2;
+        }
+        /* calculate the average value of Y */
+        temp[0] = ( buffer[1][0] + buffer[1][1] + buffer[1][2] ) / 3;
+        temp[1] = ( buffer[1][3] + buffer[1][4] + buffer[1][5] ) / 3;
+        temp[2] = ( buffer[1][6] + buffer[1][7] + buffer[1][8] ) / 3;
+
+        m0 = temp[0] - temp[1];
+        m1 = temp[1] - temp[2];
+        m2 = temp[2] - temp[0];
+
+        m0 = m0 > 0 ? m0 : (-m0);
+        m1 = m1 > 0 ? m1 : (-m1);
+        m2 = m2 > 0 ? m2 : (-m2);
+        if( m0 > THRESHOLD && m1 > THRESHOLD && m2 > THRESHOLD )
+        {
+            return 0;
+        }
+
+        if( m0 < m1 )
+        {
+            if( m2 < m0 )
+            {
+                out->y = ( temp[0] + temp[2] ) / 2;
+            }
+            else
+            {
+                out->y = ( temp[0] + temp[1] ) / 2;
+            }
+        }
+        else if( m2 < m1 )
+        {
+            out->y = ( temp[0] + temp[2] ) / 2;
+        }
+        else
+        {
+            out->y = ( temp[1] + temp[2] ) / 2;
+        }
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
+}
+uint8_t tp_get_calibrated_point(uint16_t *x, uint16_t *y)
+{
+    point_t raw;
+    int32_t xx, yy;
+
+    if(cmatrix.Divider == 0 || !tp_multisample_xy_raw(&raw))
+    {
+        return 0;
+    }
+    xx =  ( (cmatrix.An * raw.x) +
+                      (cmatrix.Bn * raw.y) +
+                       cmatrix.Cn
+                     ) / cmatrix.Divider ;
+    yy =  ( (cmatrix.Dn * raw.x) +
+                       (cmatrix.En * raw.y) +
+                        cmatrix.Fn
+                     ) / cmatrix.Divider ;
+    *x = (uint16_t)xx;
+    *y = (uint16_t)yy;
+    return 1;
+}
+void tp_calibrate(void)
+{
+    uint8_t i;
+    uint8_t rv;
+    draw_calibrate_bg();
+    for (i = 0; i < 3; i++)
+    {
+        rv = 0;
+        draw_calibrate_point(displayed_tp_points[i].x, displayed_tp_points[i].y);
+        
+        do
+        {
+            if (TP_IRQ) continue;
+            rv = tp_multisample_xy_raw(&measured_tp_points[i]);
+        } while (rv == 0);
+        tc(0xBB02);
+        tc(rv);
+        tc(0xBB01);
+        tc(measured_tp_points[i].x);
+        tc(measured_tp_points[i].y);
+        if( i!= 2)
+        {
+            erase_calibrate_point(displayed_tp_points[i].x, displayed_tp_points[i].y);
+            delay_ms(500);
+        }
+    }
+    draw_pecs_bg();
+    tp_set_calibration_matrix();
+    uint16_t x, y;
+    while(1)
+    {
+        rv = tp_get_calibrated_point(&x, &y);
+        if (rv)
+            draw_calibrate_point(x, y);
+    }
 }

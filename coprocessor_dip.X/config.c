@@ -52,6 +52,7 @@ void init_hw()
     LCD_SS_TRIS = 0;
     TP_SS_TRIS = 0;
     FL_SS_TRIS = 0;
+    TP_IRQ_TRIS = 1;
     
     //Set oscillator and unlock RP
     __builtin_write_OSCCONH(0b001); //FRC wth PLL
@@ -72,7 +73,7 @@ void init_hw()
     //Assign RP inputs
     _SDI1R = LCD_MISO_RPI;
     _SDI2R = FL_MISO_RPI;
-    _INT2R = TP_IRQ_RPI;
+   // _INT2R = TP_IRQ_RPI;
 
     //Configure SPI1 module
     _SPI1IF = 0;
@@ -85,8 +86,8 @@ void init_hw()
     SPI1CON1bits.CKE = 0; //0= Mode 3, clock is idle high, and
     SPI1CON1bits.CKP = 1; //1= data changes on falling edge, sample on rising
     SPI1CON1bits.MSTEN = 1; //Master
-    SPI1CON1bits.SPRE = 0b101; //4:1 = 4Mhz probably
-    SPI1CON1bits.PPRE = 0b11; //0b11 = 1:1
+    SPI1CON1bits.SPRE = LCD_SPI_SPRESCALE;
+    SPI1CON1bits.PPRE = LCD_SPI_PPRESCALE;
     SPI1CON2bits.FRMEN = 0; //No framing
     SPI1CON2bits.SPIBEN = 1; //Enable enhanced buffer FIFO
     SPI1STATbits.SPIEN = 1;

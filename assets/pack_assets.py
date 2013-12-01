@@ -1,7 +1,7 @@
 
 from png import Reader, Writer
 import sys
-
+import time
 
 """
 From the chips perspective, there are two types of images. 
@@ -81,7 +81,10 @@ images = [
         ("redbar","rectangle"),
         ("slider_knob","overlay"), 
         ("up2","rectangle"),
-        ("sdb","rectangle")
+        ("sdb","rectangle"),
+        ("pecs","rectangle"),
+        ("point","rectangle"),
+        ("calibrate", "rectangle"),
         ]
 
 if sys.argv[1] == "make":                        
@@ -96,9 +99,10 @@ elif sys.argv[1] == "makeprog":
         assets.append((fn, pack(fn, t)))
     addr = 0
     amap = []
+    then = time.time()
     for a in assets:
         amap += [(a[0], addr, a[1])]
-        print "Programming %s to 0x%x" % (a[0], addr)
+        print "Programming %s to 0x%05x (rtotalp = 0x%04x/0x%04x)" % (a[0], addr, (addr+len(a[1][0])+512)/512, 4096)
         fastspi.fl_chip_write(addr, a[1][0])
         
         print "Reading back for verify"
@@ -110,8 +114,8 @@ elif sys.argv[1] == "makeprog":
         addr += len(a[1][0])
         if addr % 512 != 0:
             addr += 512 - (addr%512)
-                
-    print "Final address map:"
+    print "Programming complete (%.2fs)" % (time.time() - then)            
+    print "Final asset constants:"
     for a in amap:
         print "#define ASSET_%s_ADDR   0x%06x" % (a[0].upper(), a[1])
         print "#define ASSET_%s_LENGTH 0x%06x" % (a[0].upper(), len(a[2][0]))

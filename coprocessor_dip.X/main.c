@@ -33,7 +33,10 @@ int main()
     //blit_window(5, 5, 50, 50,
     //             133, 119, ASSET_FULLBARS_WIDTH, ASSET_FULLBARS_HEIGHT, ASSET_FULLBARS_ADDR);
    // speedtest();
-    draw_bar_screen_full(128, 128);
+    tp_calibrate();
+    //draw_calibrate_bg();
+    //draw_calibrate_point(40,40);
+    //draw_bar_screen_full(128, 128);
     while(1);
     //blit_window(0,0, 100, 100, 0, 0, ASSET_UPARROW_WIDTH, ASSET_UPARROW_HEIGHT, ASSET_UPARROW_ADDR);
     //printf("Starting event loop\n");
