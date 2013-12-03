@@ -77,14 +77,16 @@ if len(sys.argv) != 2:
 
 images = [
         ("bars","rectangle"), 
-        ("bluebar","rectangle"),
-        ("redbar","rectangle"),
+       # ("bluebar","rectangle"),
+       # ("redbar","rectangle"),
         ("slider_knob","overlay"), 
-        ("up2","rectangle"),
-        ("sdb","rectangle"),
-        ("pecs","rectangle"),
+       # ("up2","rectangle"),
+       # ("sdb","rectangle"),
+       # ("pecs","rectangle"),
         ("point","rectangle"),
         ("calibrate", "rectangle"),
+        ("bluebar2","rectangle"),
+        ("redbar2","rectangle"),
         ]
 
 if sys.argv[1] == "make":                        

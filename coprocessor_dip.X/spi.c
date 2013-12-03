@@ -58,23 +58,13 @@ void spi2_flush_tx()
  */
 inline uint8_t spi1_rw_b(uint8_t b)
 {
-  //  while(SPI1STATbits.SPIROV) {DBG2 = 1; DBG2= 0;}
     uint8_t rv;
     spi1_flush_tx();
     SPI1BUF = b;
     //Wait for response byte
     DBG2 = 1;
     while(SPI1STATbits.SRXMPT);
-  //  while(SPI1STATbits.SPIROV) {DBG2 = 1; DBG2= 0;}
-    Nop();
-    Nop();
-    Nop();
-    Nop();
-    Nop();
-    DBG2 = 0;
     rv = SPI1BUF;
-    tc(rv);
-  //  while(SPI1STATbits.SPIROV) {DBG2 = 1; DBG2= 0;}
     return rv;
 }
 

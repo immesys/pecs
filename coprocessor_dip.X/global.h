@@ -31,6 +31,12 @@ inline void lcd_set_cursor(uint16_t x, uint16_t y);
 inline uint8_t spi2_rw_b(uint8_t b);
 inline void flash_begin_read(uint32_t address);
 
+typedef struct
+{
+    int32_t x;
+    int32_t y;
+} point_t;
+
 /**
  * Delay in units of half a microsecond
  * @param x number of half microseconds to delay
@@ -74,7 +80,15 @@ inline void erase_calibrate_point(uint16_t x, uint16_t y);
 inline void draw_calibrate_point(uint16_t x, uint16_t y);
 void blit_window(uint16_t img_sx, uint16_t img_sy, uint16_t width, uint16_t height,
                  uint16_t asset_sx, uint16_t asset_sy, uint16_t asset_width, uint16_t asset_height, uint32_t asset_address);
-void draw_bar_screen_full(uint8_t redval, uint8_t blueval);
+void draw_bar_screen_full();
+inline void do_screen_touch(uint16_t x, uint16_t y);
+void poll_tp();
+void init_vals();
+void poll_screen();
+void tp_calibrate(void);
+void gen_qr_code(const char* str);
+void draw_qr_code();
+
 typedef enum
 {
     fs_idle,
@@ -83,11 +97,7 @@ typedef enum
     fs_overlay_blit
 } flashstate_t;
 
-typedef struct
-{
-    int32_t x;
-    int32_t y;
-} point_t;
+
 
 //TODO double? Really?
 typedef struct Matrix
@@ -100,6 +110,16 @@ typedef struct Matrix
             Fn,
             Divider ;
 } matrix_t ;
+
+typedef union
+{
+    uint32_t u32;
+    struct
+    {
+        uint16_t u16_low;
+        uint16_t u16_high;
+    };
+} split_u32_t;
 //Pins
 #define LCD_MOSI_RPO    _RP3R
 #define LCD_SCK_RPO     _RP0R
@@ -139,38 +159,27 @@ typedef struct Matrix
 #define ASSET_BARS_LENGTH 0x025800
 #define ASSET_BARS_WIDTH  320
 #define ASSET_BARS_HEIGHT 240
-#define ASSET_BLUEBAR_ADDR   0x025800
-#define ASSET_BLUEBAR_LENGTH 0x006590
-#define ASSET_BLUEBAR_WIDTH  260
-#define ASSET_BLUEBAR_HEIGHT 50
-#define ASSET_REDBAR_ADDR   0x02be00
-#define ASSET_REDBAR_LENGTH 0x006590
-#define ASSET_REDBAR_WIDTH  260
-#define ASSET_REDBAR_HEIGHT 50
-#define ASSET_SLIDER_KNOB_ADDR   0x032400
+#define ASSET_SLIDER_KNOB_ADDR   0x025800
 #define ASSET_SLIDER_KNOB_LENGTH 0x001272
 #define ASSET_SLIDER_KNOB_WIDTH  54
 #define ASSET_SLIDER_KNOB_HEIGHT 54
-#define ASSET_UP2_ADDR   0x033800
-#define ASSET_UP2_LENGTH 0x009c40
-#define ASSET_UP2_WIDTH  200
-#define ASSET_UP2_HEIGHT 100
-#define ASSET_SDB_ADDR   0x03d600
-#define ASSET_SDB_LENGTH 0x025800
-#define ASSET_SDB_WIDTH  320
-#define ASSET_SDB_HEIGHT 240
-#define ASSET_PECS_ADDR   0x062e00
-#define ASSET_PECS_LENGTH 0x025800
-#define ASSET_PECS_WIDTH  320
-#define ASSET_PECS_HEIGHT 240
-#define ASSET_POINT_ADDR   0x088600
+#define ASSET_POINT_ADDR   0x026c00
 #define ASSET_POINT_LENGTH 0x0005b2
 #define ASSET_POINT_WIDTH  27
 #define ASSET_POINT_HEIGHT 27
-#define ASSET_CALIBRATE_ADDR   0x088c00
+#define ASSET_CALIBRATE_ADDR   0x027200
 #define ASSET_CALIBRATE_LENGTH 0x025800
 #define ASSET_CALIBRATE_WIDTH  320
 #define ASSET_CALIBRATE_HEIGHT 240
+#define ASSET_BLUEBAR2_ADDR   0x04ca00
+#define ASSET_BLUEBAR2_LENGTH 0x007620
+#define ASSET_BLUEBAR2_WIDTH  270
+#define ASSET_BLUEBAR2_HEIGHT 56
+#define ASSET_REDBAR2_ADDR   0x054200
+#define ASSET_REDBAR2_LENGTH 0x007620
+#define ASSET_REDBAR2_WIDTH  270
+#define ASSET_REDBAR2_HEIGHT 56
+
 
 
 
@@ -179,10 +188,15 @@ typedef struct Matrix
 #define REDBAR_POSITION_X  40
 #define REDBAR_POSITION_Y  142
 
-#define V_OFFSET 20
+#define BLUEBAR2_POSITION_X 31
+#define BLUEBAR2_POSITION_Y 45
+#define REDBAR2_POSITION_X  31
+#define REDBAR2_POSITION_Y  139
+
+#define V_OFFSET 29
 #define OV_SENTINEL 0xF7
 #define KNOB_START_X 38
-
+#define BG_OVERFLOW 4
 #define LCD_SPI_SPRESCALE 0b101 //0b101 3:1 == 5.3 Mhz
 #define LCD_SPI_PPRESCALE 0b11  //0b11 = 1:1
 
@@ -192,5 +206,18 @@ typedef struct Matrix
 /* AD channel selection command and register */
 #define	TP_CHX 	0x90 	/* channel Y+ selection command */
 #define	TP_CHY 	0xd0	/* channel X+ selection command*/
+
+#define TP_POLL_THRESHOLD 100000 //50ms
+
+#define RED_TP_START_Y 142
+#define RED_TP_END_Y   192
+
+
+#define BLUE_TP_START_Y 48
+#define BLUE_TP_END_Y   98
+#define BOTH_TP_START_X 0
+#define BOTH_TP_END_X   320
+
+#define MAX_V           218
 #endif	/* GLOBAL_H */
 

@@ -13,6 +13,7 @@
 #define Cyan           0x7FFF
 #define Yellow         0xFFE0
 
+#include "QR_Encode.h"
 
 void g_fill_rgb()
 {
@@ -32,7 +33,22 @@ void g_fill_rgb()
     lcd_end_gfx();
 }
 
+void g_fill_white()
+{
+    lcd_set_cursor(0, 0);
+    lcd_write_index(0x022);
+    uint16_t x, y;
 
+    lcd_start_gfx();
+    for (x = 0; x < LCD_X; x++)
+    {
+        for (y = 0; y < LCD_Y; y++)
+        {
+            lcd_write_data_body(0xFFFF);
+        }
+    }
+    lcd_end_gfx();
+}
 
 flashstate_t flashstate;
 uint32_t flash_pix_left;
@@ -55,6 +71,17 @@ uint16_t flash_pix_row;
 #define GFX_REG (SPI1BUF)
 #define FL_RX_EMPTY (SPI2STATbits.SRXMPT)
 #define GFX_RX_EMPTY (SPI1STATbits.SRXMPT)
+
+point_t measured_tp_points [3];
+point_t displayed_tp_points [3] = { {45,45}, {270, 45}, {190,190} };
+matrix_t cmatrix;
+
+uint8_t blue_val;
+uint8_t red_val;
+uint8_t new_blue_val;
+uint8_t new_red_val;
+
+#define THRESHOLD 2
 
 void blit_rect(uint16_t sx, uint16_t sy, uint16_t width, uint16_t height, uint32_t start_address)
 {
@@ -149,6 +176,7 @@ void check_flash_overlay_blit()
         FL_REG = 0xdb;
         flash_pix_left -= 3;
         lcd_end_gfx();
+        poll_tp();
         //Image stream has the thingy at the beginning
         lcd_set_cursor(row + row_start, col + col_start);
         lcd_start_gfx();
@@ -197,6 +225,7 @@ inline void check_flash_window_blit()
             return;
         }
         lcd_end_gfx();
+        poll_tp();
         lcd_set_cursor(row, col/2);
         lcd_start_gfx();
     }
@@ -255,6 +284,7 @@ inline void check_flash_full_blit()
         }
         lcd_end_gfx();
         lcd_set_cursor(row, col/2);
+        poll_tp();
         lcd_start_gfx();
     }
 
@@ -285,46 +315,46 @@ void blocking_ovblit(uint16_t sx, uint16_t sy, uint32_t asset_address, uint32_t 
 void draw_blue_bar_full(uint8_t v)
 {
     //First draw the required amount of background
-    blocking_wblit(BLUEBAR_POSITION_X + v + V_OFFSET,
-                   BLUEBAR_POSITION_Y,
-                   ASSET_BLUEBAR_WIDTH - v - V_OFFSET,
-                   ASSET_BLUEBAR_HEIGHT,
-                   BLUEBAR_POSITION_X + v + V_OFFSET,
-                   BLUEBAR_POSITION_Y,
+    blocking_wblit(BLUEBAR2_POSITION_X + v + V_OFFSET,
+                   BLUEBAR2_POSITION_Y,
+                   ASSET_BLUEBAR2_WIDTH - v - V_OFFSET + BG_OVERFLOW,
+                   ASSET_BLUEBAR2_HEIGHT,
+                   BLUEBAR2_POSITION_X + v + V_OFFSET,
+                   BLUEBAR2_POSITION_Y,
                    ASSET_BARS_WIDTH,
                    ASSET_BARS_HEIGHT,
                    ASSET_BARS_ADDR);
-    blocking_wblit(BLUEBAR_POSITION_X,
-                   BLUEBAR_POSITION_Y,
+    blocking_wblit(BLUEBAR2_POSITION_X,
+                   BLUEBAR2_POSITION_Y,
                    v + V_OFFSET,
-                   ASSET_BLUEBAR_HEIGHT,
+                   ASSET_BLUEBAR2_HEIGHT,
                    0, 0,
-                   ASSET_BLUEBAR_WIDTH,
-                   ASSET_BLUEBAR_HEIGHT,
-                   ASSET_BLUEBAR_ADDR);
-    blocking_ovblit(BLUEBAR_POSITION_X + v + V_OFFSET - (ASSET_SLIDER_KNOB_WIDTH>>1), BLUEBAR_POSITION_Y - 2, ASSET_SLIDER_KNOB_ADDR, ASSET_SLIDER_KNOB_LENGTH);
+                   ASSET_BLUEBAR2_WIDTH,
+                   ASSET_BLUEBAR2_HEIGHT,
+                   ASSET_BLUEBAR2_ADDR);
+    blocking_ovblit(BLUEBAR2_POSITION_X + v + V_OFFSET - (ASSET_SLIDER_KNOB_WIDTH>>1), BLUEBAR2_POSITION_Y + 1, ASSET_SLIDER_KNOB_ADDR, ASSET_SLIDER_KNOB_LENGTH);
 }
 void draw_red_bar_full(uint8_t v)
 {
         //First draw the required amount of background
-    blocking_wblit(REDBAR_POSITION_X + v + V_OFFSET, //SX
-                   REDBAR_POSITION_Y,                //SY
-                   ASSET_REDBAR_WIDTH - v - V_OFFSET, //WIDTH
-                   ASSET_REDBAR_HEIGHT,               //HEIGHT
-                   REDBAR_POSITION_X + v + V_OFFSET,
-                   REDBAR_POSITION_Y,
+    blocking_wblit(REDBAR2_POSITION_X + v + V_OFFSET, //SX
+                   REDBAR2_POSITION_Y,                //SY
+                   ASSET_REDBAR2_WIDTH - v - V_OFFSET + BG_OVERFLOW, //WIDTH
+                   ASSET_REDBAR2_HEIGHT,               //HEIGHT
+                   REDBAR2_POSITION_X + v + V_OFFSET,
+                   REDBAR2_POSITION_Y,
                    ASSET_BARS_WIDTH,
                    ASSET_BARS_HEIGHT,
                    ASSET_BARS_ADDR);
-    blocking_wblit(REDBAR_POSITION_X,
-                   REDBAR_POSITION_Y,
+    blocking_wblit(REDBAR2_POSITION_X,
+                   REDBAR2_POSITION_Y,
                    v + V_OFFSET,
-                   ASSET_REDBAR_HEIGHT,
+                   ASSET_REDBAR2_HEIGHT,
                    0, 0,
-                   ASSET_REDBAR_WIDTH,
-                   ASSET_REDBAR_HEIGHT,
-                   ASSET_REDBAR_ADDR);
-    blocking_ovblit(REDBAR_POSITION_X + v + V_OFFSET - (ASSET_SLIDER_KNOB_WIDTH>>1), REDBAR_POSITION_Y - 2, ASSET_SLIDER_KNOB_ADDR, ASSET_SLIDER_KNOB_LENGTH);
+                   ASSET_REDBAR2_WIDTH,
+                   ASSET_REDBAR2_HEIGHT,
+                   ASSET_REDBAR2_ADDR);
+    blocking_ovblit(REDBAR2_POSITION_X + v + V_OFFSET - (ASSET_SLIDER_KNOB_WIDTH>>1), REDBAR2_POSITION_Y + 1, ASSET_SLIDER_KNOB_ADDR, ASSET_SLIDER_KNOB_LENGTH);
 }
 void draw_bg()
 {
@@ -334,6 +364,7 @@ inline void draw_calibrate_bg()
 {
     blocking_wblit(0,0,ASSET_CALIBRATE_WIDTH,ASSET_CALIBRATE_HEIGHT,0,0,ASSET_CALIBRATE_WIDTH,ASSET_CALIBRATE_HEIGHT,ASSET_CALIBRATE_ADDR);
 }
+#ifdef ASSET_PECS_ADDR
 inline void draw_pecs_bg()
 {
     blocking_wblit(0,0,
@@ -342,6 +373,7 @@ inline void draw_pecs_bg()
                    ASSET_PECS_WIDTH,ASSET_PECS_HEIGHT,
                    ASSET_PECS_ADDR);
 }
+#endif
 inline void erase_calibrate_point(uint16_t x, uint16_t y)
 {
     blocking_wblit(x-(ASSET_POINT_WIDTH+1)/2, y - (ASSET_POINT_HEIGHT+1)/2,
@@ -358,16 +390,13 @@ inline void draw_calibrate_point(uint16_t x, uint16_t y)
                    ASSET_POINT_WIDTH, ASSET_POINT_HEIGHT,
                    ASSET_POINT_ADDR);
 }
-void draw_bar_screen_full(uint8_t redval, uint8_t blueval)
+void draw_bar_screen_full(void)
 {
     draw_bg();
-    draw_blue_bar_full(100);
-    draw_red_bar_full(100);
+    draw_blue_bar_full(red_val);
+    draw_red_bar_full(blue_val);
 }
 
-point_t measured_tp_points [3];
-point_t displayed_tp_points [3] = { {45,45}, {270, 45}, {190,190} };
-matrix_t cmatrix;
 
 void tp_set_calibration_matrix(void)
 {
@@ -399,7 +428,7 @@ void tp_set_calibration_matrix(void)
                  (measured_tp_points[1].x * displayed_tp_points[0].y - measured_tp_points[0].x * displayed_tp_points[1].y) * measured_tp_points[2].y ;
 }
 
-#define THRESHOLD 2
+
 
 uint8_t tp_multisample_xy_raw(point_t *out)
 {
@@ -538,24 +567,148 @@ void tp_calibrate(void)
             if (TP_IRQ) continue;
             rv = tp_multisample_xy_raw(&measured_tp_points[i]);
         } while (rv == 0);
-        tc(0xBB02);
-        tc(rv);
-        tc(0xBB01);
-        tc(measured_tp_points[i].x);
-        tc(measured_tp_points[i].y);
         if( i!= 2)
         {
             erase_calibrate_point(displayed_tp_points[i].x, displayed_tp_points[i].y);
             delay_ms(500);
         }
     }
-    draw_pecs_bg();
+  //  draw_pecs_bg();
     tp_set_calibration_matrix();
-    uint16_t x, y;
-    while(1)
+  /*  while(1)
     {
         rv = tp_get_calibrated_point(&x, &y);
         if (rv)
             draw_calibrate_point(x, y);
+    }*/
+}
+
+inline void do_screen_touch(uint16_t x, uint16_t y)
+{
+    int16_t nv;
+    if (x >= BOTH_TP_START_X && x < BOTH_TP_END_X)
+    {
+        if (y >= RED_TP_START_Y && y <= RED_TP_END_Y)
+        {
+            nv = x - REDBAR2_POSITION_X - V_OFFSET;
+            if (nv < 0) nv = 0;
+            if (nv > MAX_V) nv = MAX_V;
+            new_red_val = nv;
+        }
+        if (y >= BLUE_TP_START_Y && y <= BLUE_TP_END_Y)
+        {
+            nv = x - BLUEBAR2_POSITION_X - V_OFFSET;
+            if (nv < 0) nv = 0;
+            if (nv > MAX_V) nv = MAX_V;
+            new_blue_val = nv;
+        }
     }
+}
+void init_vals()
+{
+    blue_val = 0;
+    red_val = 0;
+    new_red_val = 0;
+    new_blue_val = 0;
+}
+void poll_tp()
+{
+    static split_u32_t last_time;
+    split_u32_t time;
+    time.u16_low = TMR2;
+    time.u16_high = TMR3HLD;
+    if(time.u32 - last_time.u32 > TP_POLL_THRESHOLD && TP_IRQ == 0)
+    {
+        uint16_t xx, yy;
+        if(tp_get_calibrated_point(&xx, &yy))
+        {
+            last_time = time;
+            do_screen_touch(xx,yy);
+        }
+    }
+}
+void poll_screen()
+{
+    if (new_red_val != red_val)
+    {
+        red_val = new_red_val;
+        draw_red_bar_full(new_red_val);
+        
+    }
+    if (new_blue_val != blue_val)
+    {
+        blue_val = new_blue_val;
+        draw_blue_bar_full(new_blue_val);
+    }
+}
+
+uint16_t code [33 * 33];
+void gen_qr_code(const char* str)
+{
+    uint8_t tempdata[33*33];
+    uint8_t w =EncodeData(3, 0, str, 32, &tempdata[0]);
+    uint16_t size=((w*w)/8)+(((w*w)%8)?1:0);
+    uint16_t n;
+    uint16_t idx = 0;
+    uint16_t bit_count = 0;
+    for(n=0;n<size;n++)
+    {
+        int b=0;
+        for(b=7;b>=0;b--)
+        {
+          if (((n+1)*8)-b>w*w){break;}
+          if((tempdata[n] & (1 << b)) != 0)
+          {
+              code[idx] = 0x00;
+              idx++;
+          }
+          else
+          {
+              code[idx] = 0xFF;
+              idx++;
+          }
+          bit_count++;
+        }
+    }
+}
+void gen_fake_code()
+{
+    uint16_t i;
+    for (i = 0; i < (33*33); i++)
+    {
+        if (i%2 == 0) code[i] = 0xFFFF;
+        else code [i] = 0x0000;
+    }
+}
+void draw_qr_code()
+{
+    g_fill_white();
+    uint8_t mult = 7;
+    uint8_t xoff = 44;
+    uint8_t yoff = 4;
+    lcd_set_cursor(xoff, yoff);
+    lcd_write_index(0x022);
+
+
+    uint16_t row,  col, y, rowi, coli;
+    y = yoff;
+    for (row = 0; row < 33; row++)
+    {
+        for (rowi = 0; rowi < mult; rowi++)
+        {
+            lcd_end_gfx();
+            lcd_set_cursor(y, xoff);
+            lcd_start_gfx();
+            for (col = 0; col < 33; col++)
+            {
+                for (coli = 0; coli < mult; coli++)
+                {
+                    lcd_write_data_body(code[row*33 + col]);
+                }
+            }
+            y++;
+        }
+
+    }
+    lcd_end_gfx();
 }

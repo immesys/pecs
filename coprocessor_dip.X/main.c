@@ -25,15 +25,25 @@ int main()
     DBG2 = 0;
     DBG2 = 1;
     DBG2 = 0;
+    init_vals();
     lcd_init();
-    g_fill_rgb();
    // blit_rect(0,0,ASSET_UPARROW_WIDTH,ASSET_UPARROW_HEIGHT,ASSET_UPARROW_ADDR);
     //blit_rect(5,5,ASSET_UP2_WIDTH+5,ASSET_UP2_HEIGHT+5,ASSET_UP2_ADDR);
     //blit_rect(0,0,ASSET_FULLBARS_WIDTH,ASSET_FULLBARS_HEIGHT,ASSET_FULLBARS_ADDR);
     //blit_window(5, 5, 50, 50,
     //             133, 119, ASSET_FULLBARS_WIDTH, ASSET_FULLBARS_HEIGHT, ASSET_FULLBARS_ADDR);
    // speedtest();
+    gen_qr_code("http://pecs.cal-sdb.org/AABBCCDD");
+    gen_fake_code();
+    draw_qr_code();
+    while(1);
     tp_calibrate();
+    draw_bar_screen_full();
+    while(1)
+    {
+        poll_screen();
+        poll_tp();
+    }
     //draw_calibrate_bg();
     //draw_calibrate_point(40,40);
     //draw_bar_screen_full(128, 128);

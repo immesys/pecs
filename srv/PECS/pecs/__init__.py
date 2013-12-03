@@ -91,9 +91,9 @@ def main(global_config, **settings):
     config = Configurator(settings=settings)
     config.add_static_view('static', 'static', cache_max_age=3600)
     config.add_route('home', '/')
-    config.add_route('homeuid', '/{uid}')
-    config.add_route('apply_fan', '/{uid}/fan')
-    config.add_route('apply_heat','/{uid}/heat')
+    config.add_route('controlpanel', '/{code:[0-9A-F]{8}}')
+    config.add_route('apply_fan', '/{code:[0-9A-F]{8}}/fan')
+    config.add_route('apply_heat','/{code:[0-9A-F]{8}}/heat')
     config.scan()
     return config.make_wsgi_app()
     

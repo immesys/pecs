@@ -67,6 +67,8 @@
 
     <div class="container">
 
+      
+
       <!-- Main hero unit for a primary marketing message or call to action -->
       <div class="hero-unit">
         <h1>Hello User</h1>
@@ -75,7 +77,7 @@
         <p><a href="#about" class="btn btn-primary btn-large">Learn more &raquo;</a></p>
       </div>
 
-      <h2>You are currently using chair: DEFAULT HOMEPAGE</h2>
+      <h2>You are currently using chair: ${chair["uid"]}</h2>
 
       <!-- Example row of columns 
       <div class="row">
@@ -160,7 +162,13 @@
           min:"0",
           max:"7",
           width:"95%",
-          
+          slide: function( event, ui ) {
+            $.getJSON(${code}+"/fan",{"v":ui.value},function(data, stat)
+            {
+                console.log("dat",data, "stat",stat);
+            });
+            $( "#chaircoolvalue" ).html("Cooling level: "+ ui.value );
+          }
         });
         $( "#chaircoolvalue" ).html("Cooling level: "+ $( "#chaircoolslider" ).slider( "value" ) );
       });
@@ -175,7 +183,13 @@
 	  width:"95%",
           backgroundColor: "#0000FF",
           animate: true,
-          
+          slide: function( event, ui ) {
+            $.getJSON(${code}+"/heat",{"v":ui.value},function(data, stat)
+            {
+                console.log("dat",data, "stat",stat);
+            });
+            $( "#chairheatvalue" ).html("Heating level: "+ ui.value );
+          }
         });
         $( "#chairheatvalue" ).html("Heating level: "+ $( "#chairheatslider" ).slider( "value" ) );
       });
@@ -189,7 +203,9 @@
           max:"7",
           backgroundColor: "#0000FF",
           animate: true,
-          
+          slide: function( event, ui ) {
+            $( "#fancoolvalue" ).html("Cooling level: "+ ui.value );
+          }
         });
         $( "#fancoolvalue" ).html("Cooling level: "+ $( "#fancoolslider" ).slider( "value" ) );
       });
@@ -203,7 +219,9 @@
           max:"1",
           backgroundColor: "#0000FF",
           animate: true,
-          
+          slide: function( event, ui ) {
+            $( "#fanheatvalue" ).html("Heating level: "+ ui.value );
+          }
         });
         $( "#fanheatvalue" ).html("Heating level: "+ $( "#fanheatslider" ).slider( "value" ) );
       });
@@ -217,7 +235,9 @@
           max:"1",
           backgroundColor: "#0000FF",
           animate: true,
-          
+          slide: function( event, ui ) {
+            $( "#fwheatvalue" ).html("Heating level: "+ ui.value );
+          }
         });
         $( "#fwheatvalue" ).html("Heating level: "+ $( "#fwheatslider" ).slider( "value" ) );
       });
