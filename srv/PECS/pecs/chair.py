@@ -22,6 +22,7 @@ def get_heat_stream(uid):
         db.devices.save(dev)
         
     params = shared.copy()
+    uid = str(uid)
     params.update({'instName':uid, 'uuid':dev['heat_stream_id'], 'instFullName':'PECS chair #'+uid, 'sensorName':"heating", 'unitofMeasure':'points'})
     rv = Ssstream(**params)
     return rv
@@ -35,6 +36,7 @@ def get_fan_stream(uid):
         db.devices.save(dev)
         
     params = shared.copy()
+    uid = str(uid)
     params.update({'instName':uid, 'uuid':dev['fan_stream_id'], 'instFullName':'PECS chair #'+uid, 'sensorName':'fans', 'unitofMeasure':'points'})
     rv = Ssstream(**params)
     return rv
@@ -48,6 +50,7 @@ def get_occupancy_stream(uid):
         db.devices.save(dev)
         
     params = shared.copy()
+    uid = str(uid)
     params.update({'instName':uid, 'uuid':dev['contact_stream_id'], 'instFullName':'PECS chair #'+uid,'sensorName':'occupancy', 'unitofMeasure':'points'})
     rv = Ssstream(**params)
     return rv
@@ -59,7 +62,7 @@ def launch_udp_server():
         while True:
             data, addr = sock.recvfrom(1024)
             fan, heat, occupancy, uid = struct.unpack_from("<BBBL", data)
-            uid = str(uid)
+            uid = int(uid)
             doc = {"uid":uid, "addr":addr, "fan":fan, "heat":heat, "sw":occupancy, "when":time.time()}
             setchair(uid, fan, heat)
             db.packets.save(doc)
@@ -94,12 +97,19 @@ def getchair(code):
 
 def setchair_ex(code, fan, heat):
     ch = getchair(code)
+    
     if ch is None:
         return {"error":"not found"}
     if fan is None:
         fan = ch["fan"]
     if heat is None:
         heat = ch["heat"]
+    fan = int(fan)
+    heat = int(heat)
+    print "params: ",ch,fan,heat
+    ch["fan"] = fan
+    ch["heat"] = heat
+    #print "setting chair %d to %d, %d" %(ch["uid"],fan,heat)
     setchair(ch["uid"], fan, heat)
     synchair(ch["uid"], ch)
     return {"error":"none"}
@@ -115,6 +125,7 @@ def setchair(uid, fan, heat):
     
     c = db.chairs.find_one({"uid":uid})
     if c == None:
+        print "Chair not found for uid: ",uid
         #No biggie
         c = {"uid":uid}
     c["fan"] = fan
@@ -125,16 +136,20 @@ def synchair(uid, chair=None):
     if chair == None:
         chair = db.chairs.find_one({"uid":uid})
     if chair is None:
+        print "Synchair: chair not found"
         return False
     msg = chr(0x15) + chr(chair["fan"]) + chr(chair["heat"])
     
     curs = db.packets.find({'uid':uid}).sort([("when", pymongo.DESCENDING)])
     if curs.count() == 0:
+        print "Synchair, packet not found"
         return False
     destaddr = curs[0]["addr"][0]
     sock = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
     print "destaddr is",repr(destaddr)
-    sock.sendto(msg, (destaddr, 7001))
+    print "msg is",[hex(ord(c)) for c in msg]
+    rv = sock.sendto(msg, (destaddr, 7001))
+    print "rv is:",rv
     return True
           
 def log_control_heartbeat(code, command, value, worked):
@@ -149,22 +164,16 @@ def get_ages():
     return rv
     
 def sendmsg(uid, msg):
-    chair = getchair(code)
-    if chair is None:
-        log_control_heartbeat(code, command, value, False)
-        return {"error":"not found"}
-    log_control_heartbeat(code, command, value, True)
-    uid = chair["uid"]
     print "Searching for uid: ",uid
     curs = db.packets.find({'uid':uid}).sort([("when", pymongo.DESCENDING)])
     if curs.count() == 0:
         return {"error":"not found"}
     destaddr = curs[0]["addr"][0]
     sock = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
-    cmd = r"" + chr(command)+chr(value)
-    print "cmd is",cmd
     print "destaddr is",repr(destaddr)
-    sock.sendto(cmd, (destaddr, 7001))
+    print "msg is",[hex(ord(c)) for c in msg]
+    rv = sock.sendto(msg, (destaddr, 7001))
+    print "rv was: ",rv
     return {"success":"True","address":destaddr}
     
     

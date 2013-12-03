@@ -8,7 +8,7 @@ import time
 from ssmap import Ssstream
 client = pymongo.MongoClient()
 db = client.pecs
-from chair import launch_udp_server()
+from chair import launch_udp_server
   
 
 def main(global_config, **settings):

@@ -163,7 +163,7 @@
           max:"7",
           width:"95%",
           slide: function( event, ui ) {
-            $.getJSON(${code}+"/fan",{"v":ui.value},function(data, stat)
+            $.getJSON("${code}/fan",{"v":ui.value},function(data, stat)
             {
                 console.log("dat",data, "stat",stat);
             });
@@ -184,7 +184,7 @@
           backgroundColor: "#0000FF",
           animate: true,
           slide: function( event, ui ) {
-            $.getJSON(${code}+"/heat",{"v":ui.value},function(data, stat)
+            $.getJSON("${code}/heat",{"v":ui.value},function(data, stat)
             {
                 console.log("dat",data, "stat",stat);
             });

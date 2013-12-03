@@ -19,7 +19,7 @@ def controlpanel(request):
     if chairobj == None:
         return {"error":"Chair code invalid"}
     else:
-        return {"error":"none", "chair":chairobj, "code":code}
+        return {"error":"none", "chair":chairobj, "code":"{:08X}".format(code)}
     
 @view_config(route_name='apply_fan', renderer='json')
 def apply_fan(request):
