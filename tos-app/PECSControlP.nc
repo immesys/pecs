@@ -145,6 +145,18 @@ implementation
             set_heat();
             post sendrep();
             break;
+        case 0x15:
+            atomic
+            {
+                st_heat = pd[2];
+                shadow_heat = pd[2];
+                st_fan = pd[1];
+                shadow_fan = pd[1];
+            }
+            set_fan();
+            set_heat();
+            post sendrep();
+            break;
     }
   }
 
