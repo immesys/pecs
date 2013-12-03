@@ -157,7 +157,7 @@
     <script>
       $(function() { 
         $( "#chaircoolslider" ).slider({
-          value: 4,
+          value: ${chair["fan"]},
           orientation: "horizontal",
           min:"0",
           max:"7",
@@ -176,7 +176,7 @@
     <script>
       $(function() { 
         $( "#chairheatslider" ).slider({
-          value: 0,
+          value: ${chair["heat"]},
           orientation: "horizontal",
           min:"0",
           max:"1",
