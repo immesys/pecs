@@ -159,7 +159,7 @@ def get_ages():
     ids = list(db.packets.distinct("uid"))
     rv = []
     for i in ids:
-        doc = db.packets.find({'uid':uid}).sort([("when", pymongo.DESCENDING)])[0]
+        doc = db.packets.find({'uid':i}).sort([("when", pymongo.DESCENDING)])[0]
         rv += [(i, time.time()-doc["when"])]
     return rv
     
