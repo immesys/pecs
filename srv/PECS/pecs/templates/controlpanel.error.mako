@@ -69,7 +69,7 @@
         <img src="http://www.schoolimprovement.com/docs/ascd-kickoff.jpg" style="float:right">
       </div>
       <div>
-        <h4>It looks like we werent able to find your chair. There are a couple of reasons why this may have happened. </h4>
+        <h4>It looks like we weren't able to find your chair. There are a couple of reasons why this may have happened. </h4>
         <p> 
           <ol>
             <li>You may have bookmarked this website in order to access the chair's settings quickly. Unfortunately, you need to scan the QR code every time. <h4>WHY?</h4> Well if we let everyone bookmark your chair's website then they could control your chair while you were sitting on it. Not exactly ideal!</li>

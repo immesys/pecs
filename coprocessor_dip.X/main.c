@@ -35,9 +35,9 @@ int main()
    // speedtest();
     //gen_qr_code("http://pecs.cal-sdb.org/AABBCCDD");
     //gen_fake_code();
-    unpack();
-    draw_qr_code();
-    while(1);
+    //unpack();
+   // draw_qr_code();
+   // while(1);
     tp_calibrate();
     draw_bar_screen_full();
     while(1)
