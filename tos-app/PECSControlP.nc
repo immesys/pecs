@@ -87,8 +87,8 @@ implementation
   task void sendrep()
   {
   
-    controls.fan_setting = st_fan;
-    controls.heat_setting = st_heat;
+    controls.fan_setting = shadow_fan;
+    controls.heat_setting = shadow_heat;
     controls.occupancy = !(call contact.get());
     controls.uid = 0xAABBCCDD;
 

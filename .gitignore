@@ -10,4 +10,4 @@ coprocessor_dip.X/build/
 assets/*.map.hex
 tos-app/build
 venv
-
+env
