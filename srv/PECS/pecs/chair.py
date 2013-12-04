@@ -64,7 +64,11 @@ def launch_udp_server():
             fan, heat, occupancy, uid = struct.unpack_from("<BBBL", data)
             uid = int(uid)
             doc = {"uid":uid, "addr":addr, "fan":fan, "heat":heat, "sw":occupancy, "when":time.time()}
-            setchair(uid, fan, heat)
+            ch = db.chairs.find_one({"uid":uid})
+            if ch != None:
+                if ch["fan"] != fan or ch["heat"] != heat:
+                    synchair(uid, ch)
+            #setchair(uid, fan, heat)
             db.packets.save(doc)
             
             heats = get_heat_stream(uid)
