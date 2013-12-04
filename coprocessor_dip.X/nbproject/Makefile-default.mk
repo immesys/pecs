@@ -45,17 +45,17 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Source Files Quoted if spaced
-SOURCEFILES_QUOTED_IF_SPACED=main.c config.c spi.c uart.c graphics.c QR_Encode.c
+SOURCEFILES_QUOTED_IF_SPACED=main.c config.c spi.c uart.c graphics.c
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/main.o ${OBJECTDIR}/config.o ${OBJECTDIR}/spi.o ${OBJECTDIR}/uart.o ${OBJECTDIR}/graphics.o ${OBJECTDIR}/QR_Encode.o
-POSSIBLE_DEPFILES=${OBJECTDIR}/main.o.d ${OBJECTDIR}/config.o.d ${OBJECTDIR}/spi.o.d ${OBJECTDIR}/uart.o.d ${OBJECTDIR}/graphics.o.d ${OBJECTDIR}/QR_Encode.o.d
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/main.o ${OBJECTDIR}/config.o ${OBJECTDIR}/spi.o ${OBJECTDIR}/uart.o ${OBJECTDIR}/graphics.o
+POSSIBLE_DEPFILES=${OBJECTDIR}/main.o.d ${OBJECTDIR}/config.o.d ${OBJECTDIR}/spi.o.d ${OBJECTDIR}/uart.o.d ${OBJECTDIR}/graphics.o.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/main.o ${OBJECTDIR}/config.o ${OBJECTDIR}/spi.o ${OBJECTDIR}/uart.o ${OBJECTDIR}/graphics.o ${OBJECTDIR}/QR_Encode.o
+OBJECTFILES=${OBJECTDIR}/main.o ${OBJECTDIR}/config.o ${OBJECTDIR}/spi.o ${OBJECTDIR}/uart.o ${OBJECTDIR}/graphics.o
 
 # Source Files
-SOURCEFILES=main.c config.c spi.c uart.c graphics.c QR_Encode.c
+SOURCEFILES=main.c config.c spi.c uart.c graphics.c
 
 
 CFLAGS=
@@ -114,13 +114,6 @@ ${OBJECTDIR}/graphics.o: graphics.c  nbproject/Makefile-${CND_CONF}.mk
 	${MP_CC} $(MP_EXTRA_CC_PRE)  graphics.c  -o ${OBJECTDIR}/graphics.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/graphics.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -omf=elf -O1 -msmart-io=1 -Wall -msfr-warn=off -Wall
 	@${FIXDEPS} "${OBJECTDIR}/graphics.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
-${OBJECTDIR}/QR_Encode.o: QR_Encode.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} ${OBJECTDIR} 
-	@${RM} ${OBJECTDIR}/QR_Encode.o.d 
-	@${RM} ${OBJECTDIR}/QR_Encode.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  QR_Encode.c  -o ${OBJECTDIR}/QR_Encode.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/QR_Encode.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -omf=elf -O1 -msmart-io=1 -Wall -msfr-warn=off -Wall
-	@${FIXDEPS} "${OBJECTDIR}/QR_Encode.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
-	
 else
 ${OBJECTDIR}/main.o: main.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR} 
@@ -156,13 +149,6 @@ ${OBJECTDIR}/graphics.o: graphics.c  nbproject/Makefile-${CND_CONF}.mk
 	@${RM} ${OBJECTDIR}/graphics.o 
 	${MP_CC} $(MP_EXTRA_CC_PRE)  graphics.c  -o ${OBJECTDIR}/graphics.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/graphics.o.d"      -g -omf=elf -O1 -msmart-io=1 -Wall -msfr-warn=off -Wall
 	@${FIXDEPS} "${OBJECTDIR}/graphics.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
-	
-${OBJECTDIR}/QR_Encode.o: QR_Encode.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} ${OBJECTDIR} 
-	@${RM} ${OBJECTDIR}/QR_Encode.o.d 
-	@${RM} ${OBJECTDIR}/QR_Encode.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  QR_Encode.c  -o ${OBJECTDIR}/QR_Encode.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/QR_Encode.o.d"      -g -omf=elf -O1 -msmart-io=1 -Wall -msfr-warn=off -Wall
-	@${FIXDEPS} "${OBJECTDIR}/QR_Encode.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
 endif
 

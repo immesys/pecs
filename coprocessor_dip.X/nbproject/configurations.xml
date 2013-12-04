@@ -18,8 +18,6 @@
       <itemPath>spi.c</itemPath>
       <itemPath>uart.c</itemPath>
       <itemPath>graphics.c</itemPath>
-      <itemPath>QR_Encode.c</itemPath>
-      <itemPath>QR_Encode.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -184,6 +182,7 @@
         <property key="UART 1" value="true"/>
         <property key="UART 2" value="true"/>
         <property key="USB" value="true"/>
+        <property key="firmware.download.all" value="false"/>
         <property key="hwtoolclock.frcindebug" value="false"/>
         <property key="memories.aux" value="false"/>
         <property key="memories.bootflash" value="true"/>

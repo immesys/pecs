@@ -33,8 +33,9 @@ int main()
     //blit_window(5, 5, 50, 50,
     //             133, 119, ASSET_FULLBARS_WIDTH, ASSET_FULLBARS_HEIGHT, ASSET_FULLBARS_ADDR);
    // speedtest();
-    gen_qr_code("http://pecs.cal-sdb.org/AABBCCDD");
-    gen_fake_code();
+    //gen_qr_code("http://pecs.cal-sdb.org/AABBCCDD");
+    //gen_fake_code();
+    unpack();
     draw_qr_code();
     while(1);
     tp_calibrate();

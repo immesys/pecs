@@ -157,13 +157,13 @@
     <script>
       $(function() { 
         $( "#chaircoolslider" ).slider({
-          value: 4,
+          value: ${chair["fan"]},
           orientation: "horizontal",
           min:"0",
           max:"7",
           width:"95%",
           slide: function( event, ui ) {
-            $.getJSON(${code}+"/fan",{"v":ui.value},function(data, stat)
+            $.getJSON("${code}/fan",{"v":ui.value},function(data, stat)
             {
                 console.log("dat",data, "stat",stat);
             });
@@ -176,7 +176,7 @@
     <script>
       $(function() { 
         $( "#chairheatslider" ).slider({
-          value: 0,
+          value: ${chair["heat"]},
           orientation: "horizontal",
           min:"0",
           max:"1",
@@ -184,7 +184,7 @@
           backgroundColor: "#0000FF",
           animate: true,
           slide: function( event, ui ) {
-            $.getJSON(${code}+"/heat",{"v":ui.value},function(data, stat)
+            $.getJSON("${code}/heat",{"v":ui.value},function(data, stat)
             {
                 console.log("dat",data, "stat",stat);
             });
