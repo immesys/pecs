@@ -81,8 +81,11 @@
       Using heating and cooling information from the devices, we can relay important temperature information to building managers so that they can make educated decisions as to temperature set points. If there are many people in the same area feeling warm then the manager can lower the temperature in that particular room. The hope is that this will lead to reduced energy waste.
       </p>
 
+      <br>
+      <img src="static/img/pecs_logo.jpg" style = "width: 500px; display:inline"><img src="static/img/cbe.jpg" style="display:inline; width: 500px;">
+      
       <footer>
-        <p>&copy; PECS 2013</p>
+        <p>&copy; PECS - Michael Andersen and Joseph Bynoe 2013</p>
       </footer>
 
     </div>

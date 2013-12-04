@@ -80,6 +80,9 @@
         <h4>Please scan the QR code again.</h4>
       </div>
       
+      <br>
+      <img src="static/img/pecs_logo.jpg" style = "width: 500px; display:inline"><img src="static/img/cbe.jpg" style="display:inline; width: 500px;">
+      
       <footer>
         <p>&copy; PECS - Michael Andersen and Joseph Bynoe 2013</p>
       </footer>

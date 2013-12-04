@@ -70,7 +70,7 @@
 
       <!-- Main hero unit for a primary marketing message or call to action -->
       <div class="hero-unit">
-        <h2>Hello!</h2>
+        <h1>Hello!</h1>
         <p></p>
         <p>Welcome to the Personal Environmental Control System or as we like to call it, PECS. On this page, you will have the ability to control the heating and cooling features of the chair, fan and footwarmer. </p>
         <p><a href="/about" class="btn btn-primary btn-large">Learn more &raquo;</a></p>
@@ -80,15 +80,19 @@
         <h2>Getting Started</h2>
         <p>In order to get started you can:
           <ol>
-            <li>Scan the QR code on the screen</li>
-            <img src="static/img/qrcode.jpg">
+            <li>Scan the QR code on the chair's screen</li>
+            <img src="static/img/qrcode.jpg" style="height:305px">
             <p style = "clear: both;">
-            <li>Enter in the number found on the screen</li>
+            <li>Enter in the number found on the chair's screen</li>
+            <img src="static/img/screen_num.png" style="height:350px">
           </ol>
-          <p><b>Hint:</b> If you are looking for the screen it is located underneath the left arm of your chair on top of the black control box. Scanning this will send you to the controls for your chair, fan and footwarmer.</p>
+          <p><b>Hint:</b> If you are looking for the screen it is located underneath the left arm of your chair on top of the black control box. </p>
+          <p>Scanning this will send you to the controls for your chair, fan and footwarmer.</p>
         </p>
       </div>
 
+      <br>
+      <img src="static/img/pecs_logo.jpg" style = "width: 500px; display:inline"><img src="static/img/cbe.jpg" style="display:inline; width: 500px;">
 
       <footer>
         <p>&copy; PECS - Michael Andersen and Joseph Bynoe 2013</p>
