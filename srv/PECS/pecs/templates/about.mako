@@ -75,14 +75,17 @@
       PECS or Personal Environmental Control System is a system composed of a heating/cooling fan and chair combined with a footwarmer. The idea is that an individual can sit down at one of these stations and adjust the three devices so that they can feel comfortable, at least thermally. The settings can be controlled via this website or the 
       </p>
 
-      <p>Control of an individual chair was the just the beginning of our project.Our true goal was to establish a system where </p>
+      <p>Control of an individual chair was the just the beginning. Our true goal was to establish a platform where users could move between these chair-fan-footwarmer setups and have their heating/cooling profiles uploaded via bluetooth or the internet. By simply scanning the QR code on the chair pre established profiles can be uploaded as well as altered to suit the user's preferences. </p>
 
       <p>
-      The ultimate goal of our devices is to provide information to building managers so that they can make educated decisions as to temperature set points. If there are many people in the same area feeling warm then the manager can lower the temperature in that particular room. The hope is that this will lead to reduced energy waste.
+      Using heating and cooling information from the devices, we can relay important temperature information to building managers so that they can make educated decisions as to temperature set points. If there are many people in the same area feeling warm then the manager can lower the temperature in that particular room. The hope is that this will lead to reduced energy waste.
       </p>
+
+      <br>
+      <img src="static/img/pecs_logo.jpg" style = "width: 500px; display:inline"><img src="static/img/cbe.jpg" style="display:inline; width: 500px;">
       
       <footer>
-        <p>&copy; PECS 2013</p>
+        <p>&copy; PECS - Michael Andersen and Joseph Bynoe 2013</p>
       </footer>
 
     </div>

@@ -52,8 +52,8 @@
           <div class="nav-collapse collapse">
             <ul class="nav">
               <li class="active"><a href="#">Home</a></li>
-              <li><a href="#about">About</a></li>
-              <li><a href="#contact">Trends</a></li>
+              <li><a href="/about">About</a></li>
+              <li><a href="/contact">Contact</a></li>
             </ul>
             <form class="navbar-form pull-right">
               <input class="span2" type="text" placeholder="User ID">
@@ -142,8 +142,11 @@
       
       <hr>
 
+      <br>
+      <img src="static/img/pecs_logo.jpg" style = "width: 500px; display:inline"><img src="static/img/cbe.jpg" style="display:inline; width: 500px;">
+
       <footer>
-        <p>&copy; PECS 2013</p>
+        <p>&copy; PECS - Michael Andersen and Joseph Bynoe 2013</p>
       </footer>
 
     </div> <!-- /container -->

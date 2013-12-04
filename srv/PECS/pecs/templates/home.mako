@@ -70,79 +70,32 @@
 
       <!-- Main hero unit for a primary marketing message or call to action -->
       <div class="hero-unit">
-        <h1>Hello User</h1>
+        <h1>Hello!</h1>
         <p></p>
         <p>Welcome to the Personal Environmental Control System or as we like to call it, PECS. On this page, you will have the ability to control the heating and cooling features of the chair, fan and footwarmer. </p>
         <p><a href="/about" class="btn btn-primary btn-large">Learn more &raquo;</a></p>
       </div>
 
-      <h2>You are currently using chair: DEFAULT HOMEPAGE</h2>
-
-      <!-- Example row of columns 
-      <div class="row">
-        <div class="span4">
-          <h2>Chair</h2>
-          <p>Your chair is equipped with 3 fans and 2 two heating strips. You can adjust the sliders below to change the level of heating and cooling within the chair </p>  
-          <div style="text-align:center">
-          <div style="margin:10px 10px 10px 10px">
-          <h4 id="chaircoolvalue"></h4>
-          <div id="chaircoolslider" style="width:95%"></div>
-          <h4 id="chairheatvalue" style="width:95%"></h4>
-          <div id="chairheatslider" style="width:95%"></div> 
-          </div></div>
-        </div>
-        <div class="span4">
-          <h2>Fan</h2>
-          <p>The fan that is residing on your desk is capable of three speeds and has a heating lamp built in for warmth. If you wish, you can have both at the same time. Just toggle the controls below. </p>
-          <h4 id="fancoolvalue"></h4>
-          <div id="fancoolslider"></div>
-          <h4 id="fanheatvalue"></h4>
-          <div id="fanheatslider"></div>
-       </div>
-        <div class="span4">
-          <h2>Footwarmer</h2>
-          <p>The footwarmer is only capable of providing heat. It is located underneath your desk.</p>
-          <h4 id="fwheatvalue"></h4>
-          <div id="fwheatslider"></div>
-        </div>
+      <div>
+        <h2>Getting Started</h2>
+        <p>In order to get started you can:
+          <ol>
+            <li>Scan the QR code on the chair's screen</li>
+            <img src="static/img/qrcode.jpg" style="height:305px">
+            <p style = "clear: both;">
+            <li>Enter in the number found on the chair's screen</li>
+            <img src="static/img/screen_num.png" style="height:350px">
+          </ol>
+          <p><b>Hint:</b> If you are looking for the screen it is located underneath the left arm of your chair on top of the black control box. </p>
+          <p>Scanning this will send you to the controls for your chair, fan and footwarmer.</p>
+        </p>
       </div>
 
--->
-      <div id="content">
-        <ul id="tabs" class="nav nav-tabs" data-tabs="tabs">
-          <li class="active"><a href="#chair" data-toggle="tab"><FONT Size=5>Chair</FONT></a></li>
-          <li><a href="#fan" data-toggle="tab"><FONT Size=5>Fan</FONT></a></li>
-          <li><a href="#footwarmer" data-toggle="tab"><FONT Size=5>Footwarmer</FONT></a></li>
-        </ul>
-        <div id="my-tab-content" class="tab-content">
-          <div class="tab-pane active" id="chair">
-             <div style="text-align:center">
-          <div style="margin:10px 10px 10px 10px">
-          <h4 id="chaircoolvalue"></h4>
-          <div id="chaircoolslider" style="width:100%"></div>
-          <h4 id="chairheatvalue" style="width:100%"></h4>
-          <div id="chairheatslider" style="width:100%"></div>
-          </div></div>
-          </div>
-          <div class="tab-pane" id="fan">
-          <p>The fan that is residing on your desk is capable of three speeds and has a heating lamp built in for warmth. If you wish, you can have both at the same time. Just toggle the controls below. </p>
-              <h4 id="fancoolvalue"></h4>
-              <div id="fancoolslider"></div>
-              <h4 id="fanheatvalue"></h4>
-              <div id="fanheatslider"></div>
-          </div>
-          <div class="tab-pane" id="footwarmer">
-              <p>The footwarmer is only capable of providing heat. It is located underneath your desk.</p>
-              <h4 id="fwheatvalue"></h4>
-              <div id="fwheatslider"></div>
-          </div>
-        </div>
-      </div>
-      
-      <hr>
+      <br>
+      <img src="static/img/pecs_logo.jpg" style = "width: 500px; display:inline"><img src="static/img/cbe.jpg" style="display:inline; width: 500px;">
 
       <footer>
-        <p>&copy; PECS 2013</p>
+        <p>&copy; PECS - Michael Andersen and Joseph Bynoe 2013</p>
       </footer>
 
     </div> <!-- /container -->

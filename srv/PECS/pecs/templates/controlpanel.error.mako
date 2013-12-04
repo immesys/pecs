@@ -66,7 +66,7 @@
 
     <div class="container">
       <div>
-        <img src="http://www.schoolimprovement.com/docs/ascd-kickoff.jpg" style="float:right">
+        <img src="static/img/sorry.jpg" style="float:right">
       </div>
       <div>
         <h4>It looks like we weren't able to find your chair. There are a couple of reasons why this may have happened. </h4>
@@ -79,6 +79,14 @@
         </p>
         <h4>Please scan the QR code again.</h4>
       </div>
+      
+      <br>
+      <img src="static/img/pecs_logo.jpg" style = "width: 500px; display:inline"><img src="static/img/cbe.jpg" style="display:inline; width: 500px;">
+      
+      <footer>
+        <p>&copy; PECS - Michael Andersen and Joseph Bynoe 2013</p>
+      </footer>
+
     </div>
 
 
