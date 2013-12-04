@@ -7,7 +7,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
-
+    <link rel="icon" 
+      type="image/png" 
+      href="static/img/favicon.png">
     <!-- Le styles -->
     <link href="static/css/bootstrap.css" rel="stylesheet">
     <style type="text/css">
@@ -74,7 +76,7 @@
         <h1>Hello User</h1>
         <p></p>
         <p>Welcome to the Personal Environmental Control System or as we like to call it, PECS. On this page, you will have the ability to control the heating and cooling features of the chair, fan and footwarmer. </p>
-        <p><a href="#about" class="btn btn-primary btn-large">Learn more &raquo;</a></p>
+        <p><a href="/about" class="btn btn-primary btn-large">Learn more &raquo;</a></p>
       </div>
 
       <h2>You are currently using chair: ${chair["uid"]}</h2>
