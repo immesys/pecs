@@ -34,5 +34,8 @@ pecs/static/img/glyphicons-halflings.png
 pecs/static/js/bootstrap.js
 pecs/static/js/bootstrap.min.js
 pecs/static/js/jquery.js
+pecs/templates/controlpanel.error.mako
+pecs/templates/controlpanel.found.mako
+pecs/templates/controlpanel.mako
 pecs/templates/home.mako
 pecs/templates/mytemplate.pt

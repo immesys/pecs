@@ -84,7 +84,11 @@ def sendmsg(uid, msg):
 def my_view(request):
     return {'project': 'PECS'}
     
-    
+
+@view_config(route_name="contact", renderer="pecs:templates/contact.mako")
+def contact(request):
+    return {}
+        
 @view_config(route_name='controlpanel', renderer='pecs:templates/controlpanel.mako')
 def controlpanel(request):
     code = int(request.matchdict['code'],16)
