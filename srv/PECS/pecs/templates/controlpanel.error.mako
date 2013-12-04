@@ -79,6 +79,11 @@
         </p>
         <h4>Please scan the QR code again.</h4>
       </div>
+      
+      <footer>
+        <p>&copy; PECS - Michael Andersen and Joseph Bynoe 2013</p>
+      </footer>
+      
     </div>
 
 

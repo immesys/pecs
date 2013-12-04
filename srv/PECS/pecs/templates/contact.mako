@@ -80,7 +80,7 @@
       </form>
 
       <footer>
-        <p>&copy; PECS 2013</p>
+        <p>&copy; PECS - Michael Andersen and Joseph Bynoe 2013</p>
       </footer>
 
     </div>
