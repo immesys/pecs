@@ -52,8 +52,8 @@
           <div class="nav-collapse collapse">
             <ul class="nav">
               <li><a href="/">Home</a></li>
-              <li><a href="/about">About</a></li>
-              <li class="active"><a href="/contact">Contact</a></li>
+              <li class="active"><a href="/about">About</a></li>
+              <li><a href="/contact">Contact</a></li>
             </ul>
             <form class="navbar-form pull-right">
               <input class="span2" type="text" placeholder="User ID">
@@ -66,19 +66,21 @@
     </div>
 
     <div class="container">
-      <h1> Contact </h1>
-      <div>
-        <p>We are always looking to improve our product. If you have any comments or concerns we would love to hear from you. </p>
-      </div>
+      <h1>About</h1>
+      <p>PECS was started by us: Michael Andersen and Joseph Bynoe. We are both graduate students at the University of California, Berkeley working in conjunction with Centre of the Built Environment (CBE) here at Berkeley. We became involved with this idea as a final project for our Interactive Device Design course. 
+      </p>
 
-      <form action="demo_form.asp">
-        Name: <br><input type="text" name="name" placeholder="John Doe"><br>
-        Email: <br><input type="text" name="email" placeholder="johndoe@gmail.com"><br>
-        Comment: <br><textarea name="Comment" placeholder="Great Job!"></textarea>
-        <br>
-        <button type="submit" class="btn">Submit</button>
-      </form>
+      <h3>What is PECS?</h3>
+      <p>
+      PECS or Personal Environmental Control System is a system composed of a heating/cooling fan and chair combined with a footwarmer. The idea is that an individual can sit down at one of these stations and adjust the three devices so that they can feel comfortable, at least thermally. The settings can be controlled via this website or the 
+      </p>
 
+      <p>Control of an individual chair was the just the beginning of our project.Our true goal was to establish a system where </p>
+
+      <p>
+      The ultimate goal of our devices is to provide information to building managers so that they can make educated decisions as to temperature set points. If there are many people in the same area feeling warm then the manager can lower the temperature in that particular room. The hope is that this will lead to reduced energy waste.
+      </p>
+      
       <footer>
         <p>&copy; PECS 2013</p>
       </footer>

@@ -15,6 +15,10 @@ def my_view(request):
 @view_config(route_name="contact", renderer="pecs:templates/contact.mako")
 def contact(request):
     return {}
+
+@view_config(route_name="about", renderer="pecs:templates/about.mako")
+def about(request):
+    return {}
         
 @view_config(route_name='controlpanel', renderer='pecs:templates/controlpanel.mako')
 def controlpanel(request):

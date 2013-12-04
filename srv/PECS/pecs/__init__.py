@@ -24,6 +24,7 @@ def main(global_config, **settings):
     config.add_route('apply_fan', '/{code:[0-9A-F]{8}}/fan')
     config.add_route('apply_heat','/{code:[0-9A-F]{8}}/heat')
     config.add_route("contact", "/contact")
+    config.add_route("about", "/about")
     config.add_route('ages','/debug/ages')
     config.scan()
     return config.make_wsgi_app()

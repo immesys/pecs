@@ -52,8 +52,9 @@
           <div class="nav-collapse collapse">
             <ul class="nav">
               <li class="active"><a href="#">Home</a></li>
-              <li><a href="#about">About</a></li>
-              <li><a href="#contact">Trends</a></li>
+              <li><a href="/about">About</a></li>
+              <!--<li><a href="#contact">Trends</a></li> -->
+              <li><a href="/contact">Contact</a></li>
             </ul>
             <form class="navbar-form pull-right">
               <input class="span2" type="text" placeholder="User ID">
@@ -72,7 +73,7 @@
         <h1>Hello User</h1>
         <p></p>
         <p>Welcome to the Personal Environmental Control System or as we like to call it, PECS. On this page, you will have the ability to control the heating and cooling features of the chair, fan and footwarmer. </p>
-        <p><a href="#about" class="btn btn-primary btn-large">Learn more &raquo;</a></p>
+        <p><a href="/about" class="btn btn-primary btn-large">Learn more &raquo;</a></p>
       </div>
 
       <h2>You are currently using chair: DEFAULT HOMEPAGE</h2>
