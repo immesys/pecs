@@ -71,17 +71,25 @@
         <p>We are always looking to improve our product. If you have any comments or concerns we would love to hear from you. </p>
       </div>
 
+      <img src="static/img/chair.jpg" style="float:left; height:400px; margin-right:50px">
       <form action="demo_form.asp">
-        Name: <br><input type="text" name="name" placeholder="John Doe"><br>
-        Email: <br><input type="text" name="email" placeholder="johndoe@gmail.com"><br>
-        Comment: <br><textarea name="Comment" placeholder="Great Job!"></textarea>
+        Name: <br><input type="text" name="name" placeholder="John Doe" style="width:40%"><br>
+        Email: <br><input type="text" name="email" placeholder="johndoe@gmail.com" style="width:40%"><br>
+        Comment: <br><textarea name="Comment" placeholder="Great Job!" rows="10" style="width:40%"></textarea>
         <br>
         <button type="submit" class="btn">Submit</button>
       </form>
 
+      <p style = "clear: both;">
+      
+      <br><br><br>
+      <img src="static/img/pecs_logo.jpg" style = "width: 500px; display:inline"><img src="static/img/cbe.jpg" style="display:inline; width: 500px; ">
+
       <footer>
         <p>&copy; PECS - Michael Andersen and Joseph Bynoe 2013</p>
+
       </footer>
+
 
     </div>
 

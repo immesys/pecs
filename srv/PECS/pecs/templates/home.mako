@@ -78,7 +78,15 @@
 
       <div>
         <h2>Getting Started</h2>
-        <p>In order to get started you will need to scan the QR Code or Enter in the Chair number displayed on the screen. If you are looking for the screen it is located underneath the left arm of your chair on top of the black control box. Scanning this will send you to the controls for your chair, fan and footwarmer.</p>
+        <p>In order to get started you can:
+          <ol>
+            <li>Scan the QR code on the screen</li>
+            <img src="static/img/qrcode.jpg">
+            <p style = "clear: both;">
+            <li>Enter in the number found on the screen</li>
+          </ol>
+          <p><b>Hint:</b> If you are looking for the screen it is located underneath the left arm of your chair on top of the black control box. Scanning this will send you to the controls for your chair, fan and footwarmer.</p>
+        </p>
       </div>
 
 

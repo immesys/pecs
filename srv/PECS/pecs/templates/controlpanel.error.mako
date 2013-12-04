@@ -66,7 +66,7 @@
 
     <div class="container">
       <div>
-        <img src="http://www.schoolimprovement.com/docs/ascd-kickoff.jpg" style="float:right">
+        <img src="static/img/sorry.jpg" style="float:right">
       </div>
       <div>
         <h4>It looks like we werent able to find your chair. There are a couple of reasons why this may have happened. </h4>
@@ -83,7 +83,7 @@
       <footer>
         <p>&copy; PECS - Michael Andersen and Joseph Bynoe 2013</p>
       </footer>
-      
+
     </div>
 
 
