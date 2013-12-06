@@ -136,7 +136,7 @@ implementation
   async event void contacti.fired() 
   {
     post sendrep();
-    if (call contact.get())
+    if (!call contact.get())
     {
         post send_occupied();
     }

@@ -2,6 +2,11 @@ build/*
 *.pyc
 *~
 *\#*
+coprocessor.X/disasm/
+coprocessor.X/nbproject/private/
+coprocessor.X/nbproject/Makefile-genesis.properties
+coprocessor.X/dist/
+coprocessor.X/build/
 coprocessor_dip.X/disasm/
 coprocessor_dip.X/nbproject/private/
 coprocessor_dip.X/nbproject/Makefile-genesis.properties
