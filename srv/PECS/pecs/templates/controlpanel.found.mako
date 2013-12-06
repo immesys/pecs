@@ -184,7 +184,7 @@
           value: ${chair["heat"]},
           orientation: "horizontal",
           min:"0",
-          max:"1",
+          max:"100",
 	  width:"95%",
           backgroundColor: "#0000FF",
           animate: true,

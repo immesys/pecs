@@ -68,7 +68,8 @@ def launch_udp_server():
             if ch != None:
                 if ch["fan"] != fan or ch["heat"] != heat:
                     synchair(uid, ch)
-            #setchair(uid, fan, heat)
+            else:
+                setchair(uid, fan, heat)
             db.packets.save(doc)
             
             heats = get_heat_stream(uid)
@@ -93,8 +94,10 @@ def launch_udp_server():
 def getchair(code):
     l = db.codes.find_one({"code":code})
     if l is None:
+        print "No code found in DB: ",code
         return None
     if l["expire"] < time.time():
+        print "Code expired: ",code
         return None
     ch = db.chairs.find_one({"uid":l["uid"]})
     return ch
@@ -163,7 +166,7 @@ def get_ages():
     ids = list(db.packets.distinct("uid"))
     rv = []
     for i in ids:
-        doc = db.packets.find({'uid':uid}).sort([("when", pymongo.DESCENDING)])[0]
+        doc = db.packets.find({'uid':i}).sort([("when", pymongo.DESCENDING)])[0]
         rv += [(i, time.time()-doc["when"])]
     return rv
     
