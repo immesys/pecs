@@ -45,7 +45,11 @@ void do_cmd(uint8_t cmd, uint8_t value)
     {
         case 0x11: //set heat value
         {
-            set_heat(value);
+            set_heat(value, 100, SOURCE_CLOUD);
+        }
+        case 0x14: //set fans value
+        {
+            set_fans(value, 7, SOURCE_CLOUD);
         }
         case 0x12: //config power mode
         {

@@ -254,8 +254,6 @@ inline void check_flash_full_blit()
     }
   
 
-    
-
     //Check if we need to send a cursor sequence
     if (col == col_stop)
     {

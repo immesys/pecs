@@ -106,7 +106,10 @@ implementation
     //Send 0xFF, 0x11, (heat) via uart to coproc
     sendCPCMD(0x11, shadow_heat);
   }
-  
+  task void send_fan()
+  {
+    sendCPCMD(0x14, shadow_fan);
+  }
   task void send_occupied()
   {
     //Send 0xFF, 0x13, (0x50 == 0 or 0x5a == 1)
@@ -163,6 +166,7 @@ implementation
                 fan_source = SOURCE_CLOUD;
             }
             set_fan();
+            post send_fan();
             post sendrep();
             break;
         case 0x11:
@@ -184,6 +188,7 @@ implementation
                 heat_source = SOURCE_CLOUD;
             }
             set_fan();
+            post send_fan();
             post send_heat();
             post sendrep();
             break;
@@ -198,9 +203,59 @@ implementation
     call Echo.sendto(from, data, len);
   }
 
+  void do_cmd(uint8_t cmd, uint8_t val)
+  {
+    switch(cmd)
+    {
+        case 0x10:
+            atomic
+            {
+                st_fan = val;
+                shadow_fan = val;
+                fan_source = SOURCE_SCREEN;
+            }
+            set_fan();
+            post sendrep();
+            break;
+        case 0x11:
+            atomic
+            {
+                shadow_heat = val;
+                heat_source = SOURCE_SCREEN;
+            }
+            post sendrep();
+            break;
+        default:
+            break;
+    }
+  }
+  uint8_t cp_state;
+  uint8_t cmd0;
+  uint8_t cmd1;
+  #define CP_IDLE 0
+  #define CP_CMD0 1
+  #define CP_CMD1 2
   async event void CPUarti.rxDone(uint8_t c)
   {
     call CPUart.clrRxIntr();
+    switch(cp_state)
+    {
+        case CP_IDLE:
+            if (c == 0xFF)
+                cp_state = CP_CMD0;
+            break;
+        case CP_CMD0:
+            cmd0 = c;
+            cp_state = CP_CMD1;
+            break;
+        case CP_CMD1:
+            cmd1 = c;
+            cp_state = CP_IDLE;
+            do_cmd(cmd0, cmd1);
+            break;
+        default:
+            cp_state = CP_IDLE;
+    }
   }
   event void ReportTimer.fired() 
   {

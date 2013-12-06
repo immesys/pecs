@@ -58,6 +58,7 @@ void init_hw(void);
 inline void uart1_wb(uint8_t v);
 int write(int handle, void *buffer, unsigned int len);
 inline void tc(uint16_t v);
+inline void uart1_wb(uint8_t v);
 
 //spi.c
 void delay_ms(uint16_t x);
@@ -91,7 +92,10 @@ void draw_qr_code();
 
 //Logic
 void set_occupancy(uint8_t is_occupied);
-void set_heat(uint8_t val);
+void set_heat(uint8_t val, uint8_t total, uint8_t source);
+void set_fans(uint8_t val, uint8_t total, uint8_t origin);
+void fanslider(uint8_t val, uint8_t total);
+void heatslider(uint8_t val, uint8_t total);
 
 typedef enum
 {
@@ -235,5 +239,11 @@ typedef union
 #define BOTH_TP_END_X   320
 
 #define MAX_V           218
+
+#define SOURCE_CLOUD 1
+#define SOURCE_SCREEN 2
+
+
+
 #endif	/* GLOBAL_H */
 
