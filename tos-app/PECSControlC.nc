@@ -9,13 +9,35 @@ configuration PECSControlC {
 
   components HplMsp430GeneralIOC;
   components HplMsp430InterruptC;
+  components HplMsp430Usart1C;
   
-  PECSControlP.fanA -> HplMsp430GeneralIOC.Port20;
-  PECSControlP.fanB -> HplMsp430GeneralIOC.Port21;
-  PECSControlP.fanC -> HplMsp430GeneralIOC.Port22;
-  PECSControlP.contact -> HplMsp430GeneralIOC.Port26;
-  PECSControlP.contacti -> HplMsp430InterruptC.Port26;
-  PECSControlP.heat -> HplMsp430GeneralIOC.Port16;
+  PECSControlP.BLEGPIO -> HplMsp430GeneralIOC.Port53;
+  PECSControlP.fanA -> HplMsp430GeneralIOC.Port54;
+  PECSControlP.fanB -> HplMsp430GeneralIOC.Port55;
+  PECSControlP.fanC -> HplMsp430GeneralIOC.Port56;
+  
+  PECSControlP.CoprocINT -> HplMsp430GeneralIOC.Port61;
+  PECSControlP.Actl0 -> HplMsp430GeneralIOC.Port62;
+  PECSControlP.Actl1 -> HplMsp430GeneralIOC.Port63;
+  PECSControlP.Actl2 -> HplMsp430GeneralIOC.Port64;
+  PECSControlP.Actl3 -> HplMsp430GeneralIOC.Port65;
+  PECSControlP.Actl4 -> HplMsp430GeneralIOC.Port66;
+  PECSControlP.Actl5 -> HplMsp430GeneralIOC.Port67;
+  PECSControlP.Dctl0 -> HplMsp430GeneralIOC.Port12;
+  PECSControlP.Dctl1 -> HplMsp430GeneralIOC.Port15;
+  PECSControlP.Dctl2 -> HplMsp430GeneralIOC.Port16;
+  
+  PECSControlP.CPUart -> HplMsp430Usart1C;
+  PECSControlP.CPUarti -> HplMsp430Usart1C;
+  
+  // Dctl3 is being used as the contact switch
+ // PECSControlP.Dctl3 -> HplMsp430GeneralIOC.Port17;
+  
+  PECSControlP.TP_IRQi -> HplMsp430InterruptC.Port20;
+  PECSControlP.TP_IRQ -> HplMsp430GeneralIOC.Port20;
+  
+  PECSControlP.contact -> HplMsp430GeneralIOC.Port17;
+  PECSControlP.contacti -> HplMsp430InterruptC.Port17;
   
   PECSControlP.Boot -> MainC;
   PECSControlP.Leds -> LedsC;
@@ -32,13 +54,7 @@ configuration PECSControlC {
 
   PECSControlP.ReportTimer -> TimerMilliC;
 
- // components UdpC, IPDispatchC;
- // UDPEchoP.IPStats -> IPDispatchC;
- // UDPEchoP.UDPStats -> UdpC;
-
-#ifdef RPL_ROUTING
   components RPLRoutingC;
-#endif
 
   components RandomC;
   PECSControlP.Random -> RandomC;
@@ -56,24 +72,5 @@ configuration PECSControlC {
   components DhcpCmdC;
 #endif
 
-#ifdef PRINTFUART_ENABLED
-  /* This component wires printf directly to the serial port, and does
-   * not use any framing.  You can view the output simply by tailing
-   * the serial device.  Unlike the old printfUART, this allows us to
-   * use PlatformSerialC to provide the serial driver.
-   * 
-   * For instance:
-   * $ stty -F /dev/ttyUSB0 115200
-   * $ tail -f /dev/ttyUSB0
-  */
-  components SerialPrintfC;
-
-  /* This is the alternative printf implementation which puts the
-   * output in framed tinyos serial messages.  This lets you operate
-   * alongside other users of the tinyos serial stack.
-   */
-  // components PrintfC;
-  // components SerialStartC;
-#endif
 
 }
