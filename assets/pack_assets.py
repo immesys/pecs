@@ -77,12 +77,12 @@ if len(sys.argv) != 2:
 
 images = [
         ("bars","rectangle"), 
-       # ("bluebar","rectangle"),
-       # ("redbar","rectangle"),
+        ("bluebar","rectangle"),
+        ("redbar","rectangle"),
         ("slider_knob","overlay"), 
-       # ("up2","rectangle"),
-       # ("sdb","rectangle"),
-       # ("pecs","rectangle"),
+        ("up2","rectangle"),
+        ("sdb","rectangle"),
+        ("pecs","rectangle"),
         ("point","rectangle"),
         ("calibrate", "rectangle"),
         ("bluebar2","rectangle"),
@@ -94,8 +94,11 @@ if sys.argv[1] == "make":
         pack(fn, t)
         
 elif sys.argv[1] == "makeprog":
-    global fastspi
-    fastspi = __import__("fastspi")
+    #global fastspi
+    #fastspi = __import__("fastspi")
+    memsize = 2097152
+    pagesize = 256
+    memory = [00]*memsize
     assets = []
     for fn, t in images:
         assets.append((fn, pack(fn, t)))
@@ -104,25 +107,39 @@ elif sys.argv[1] == "makeprog":
     then = time.time()
     for a in assets:
         amap += [(a[0], addr, a[1])]
-        print "Programming %s to 0x%05x (rtotalp = 0x%04x/0x%04x)" % (a[0], addr, (addr+len(a[1][0])+512)/512, 4096)
-        fastspi.fl_chip_write(addr, a[1][0])
+        print "Programming %s to 0x%05x (rtotalp = 0x%04x/0x%04x)" % (a[0], addr, (addr+len(a[1][0])+pagesize)/pagesize, memsize/pagesize)
+        laddr = addr
+        for x in a[1][0]:
+            memory[laddr] = x
+            laddr += 1
+        #fastspi.fl_chip_write(addr, a[1][0])
         
-        print "Reading back for verify"
-        memb = fastspi.fl_chip_read_chunked(addr, len(a[1][0]))
-        for k in xrange(len(a[1][0])):
-            if memb[k] != a[1][0][k]:
-                print "Byte mismatch at 0x%06x wanted 0x%02x got %02x" %(addr+k, a[1][0][k], memb[k])
+        #print "Reading back for verify"
+        #memb = fastspi.fl_chip_read_chunked(addr, len(a[1][0]))
+        #for k in xrange(len(a[1][0])):
+        #    if memb[k] != a[1][0][k]:
+        #        print "Byte mismatch at 0x%06x wanted 0x%02x got %02x" %(addr+k, a[1][0][k], memb[k])
                 
         addr += len(a[1][0])
-        if addr % 512 != 0:
-            addr += 512 - (addr%512)
+        if addr % pagesize != 0:
+            addr += pagesize - (addr%pagesize)
+    f = open("assets.hex", "w")
+    for x in xrange(memsize):
+        if x != 0 and x % 32 == 0:
+           f.write("\n")
+        f.write("{:02x} ".format(memory[x]))
+    f.close()
+    f = open("assets.h","w")
     print "Programming complete (%.2fs)" % (time.time() - then)            
     print "Final asset constants:"
     for a in amap:
-        print "#define ASSET_%s_ADDR   0x%06x" % (a[0].upper(), a[1])
-        print "#define ASSET_%s_LENGTH 0x%06x" % (a[0].upper(), len(a[2][0]))
-        print "#define ASSET_%s_WIDTH  %d" % (a[0].upper(), a[2][1])
-        print "#define ASSET_%s_HEIGHT %d" % (a[0].upper(), a[2][2])
+        s = "#define ASSET_%s_ADDR   0x%06x\n" % (a[0].upper(), a[1])
+        s += "#define ASSET_%s_LENGTH 0x%06x\n" % (a[0].upper(), len(a[2][0]))
+        s += "#define ASSET_%s_WIDTH  %d\n" % (a[0].upper(), a[2][1])
+        s += "#define ASSET_%s_HEIGHT %d\n" % (a[0].upper(), a[2][2])
+        f.write(s)
+        print s,
+    f.close()
     
     
     

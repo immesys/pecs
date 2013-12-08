@@ -324,13 +324,13 @@ void lcd_init(void)
 
     lcd_deselect();
     tp_deselect();
-//    LCD_RST = 0;
+    LCD_RST = 0;
     delay_ms(50);
- //   LCD_RST = 1;
+    LCD_RST = 1;
     delay_ms(50);
     dev_code = lcd_read_reg(0x0000);
-    tc(0x10FF);
-    tc(dev_code);
+//    tc(0x10FF);
+  //  tc(dev_code);
 
     /* Different driver IC initialization */
     if( dev_code == 0x9320 || dev_code == 0x9300 )
@@ -383,6 +383,7 @@ void lcd_init(void)
     }
     else
     {
+        return;
         while(1) tc(0xDD01);
     }
 }

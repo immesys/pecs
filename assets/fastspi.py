@@ -121,6 +121,9 @@ def prog_tst_pattern():
     rv = fl_chip_read(0,512)
     print "rv is",rv
 
+while True:
+	print fl_read_status()
+
 if fl_read_status() != 173:
     print "Flash chip not connected"
     sys.exit(1)

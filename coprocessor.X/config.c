@@ -46,14 +46,17 @@ void init_hw()
     AD1PCFG = 0xFFFF;
 
     //Config other pin directions
-    //LCD_RST_TRIS = 0;
-    //LCD_RST = 1;
+    LCD_RST_TRIS = 0;
+    LCD_RST = 1;
 
     LCD_SS_TRIS = 0;
     TP_SS_TRIS = 0;
     FL_SS_TRIS = 0;
     TP_IRQ_TRIS = 1;
 
+    LCD_EN_TRIS = 0;
+    LCD_EN = 1;
+    
     //Reset on BLE
     _TRISA4 = 0;
     _LATA4 = 0;
