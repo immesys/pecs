@@ -61,7 +61,7 @@ def launch_udp_server():
         sock.bind(("::", 7005))
         while True:
             data, addr = sock.recvfrom(1024)
-            fan, heat, occupancy, uid, fansrc, heatsrc = struct.unpack_from("<BBBL", data)
+            fan, heat, occupancy, uid, fansrc, heatsrc = struct.unpack_from("<BBBLBB", data)
             #cloud is 1, screen is 2
             uid = int(uid)
             doc = {"uid":uid, "addr":addr, "fan":fan, "heat":heat, "sw":occupancy, "when":time.time(), "fansrc":fansrc, "heatsrc":heatsrc}
@@ -202,7 +202,7 @@ def add_code(uid, code, expire):
     db.codes.save({"code":code, "created":time.time, "expire":expire, "uid":uid})
 
 
-Condition cv()
+cv = Condition()
 fandict = {}
 heatdict = {}
 def enqueue_fan(code, val):
@@ -210,7 +210,7 @@ def enqueue_fan(code, val):
         fandict[code][1] = val
     else:
         setchair_ex(code, val, None)
-        fandict[code] = (time.time() + 1, val)
+        fandict[code] = [time.time() + 1, val]
         cv.acquire()
         cv.notify()
         cv.release()
@@ -220,7 +220,7 @@ def enqueue_heat(code, val):
         heatdict[code][1] = val
     else:
         setchair_ex(code, None, val)
-        heatdict[code] = (time.time() + 1, val)
+        heatdict[code] = [time.time() + 1, val]
         cv.acquire()
         cv.notify()
         cv.release()
@@ -231,15 +231,16 @@ def start_dict_thread():
             mint = time.time() + 10
             for d in fandict: 
                 if fandict[d][0] > time.time():
-                    setchair_ex(code, fandict[d][1], None)
+                    print "sending fan: ",d,fandict[d][1]
+                    setchair_ex(d, fandict[d][1], None)
                     del fandict[d]
-                else if fandict[d][0] < mint:
+                elif fandict[d][0] < mint:
                     mint = fandict[d][0]
-                        for d in fandict: 
-            if heatdict[d][0] > time.time():
-                    setchair_ex(code, None, heatdict[d][1])
+            for d in heatdict: 
+                if heatdict[d][0] > time.time():
+                    setchair_ex(d, None, heatdict[d][1])
                     del heatdict[d]
-                else if heatdict[d][0] < mint:
+                elif heatdict[d][0] < mint:
                     mint = heatdict[d][0]
             if mint - time.time() > 5:
                 cv.acquire()
@@ -250,5 +251,5 @@ def start_dict_thread():
                 cv.wait(mint-time.time())
                 cv.release()
     tr = Thread(target=t)
-    tr.start()   
+    tr.start() 
       

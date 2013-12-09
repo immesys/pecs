@@ -8,7 +8,7 @@ import time
 from ssmap import Ssstream
 client = pymongo.MongoClient()
 db = client.pecs
-from chair import launch_udp_server
+from chair import *
   
 
 def main(global_config, **settings):
@@ -17,6 +17,7 @@ def main(global_config, **settings):
         updates
     """
     launch_udp_server()
+    start_dict_thread() 
     config = Configurator(settings=settings)
     config.add_static_view('static', 'static', cache_max_age=3600)
     config.add_route('home', '/')
