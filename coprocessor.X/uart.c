@@ -14,6 +14,7 @@ inline void uart2_wb(uint8_t v)
     U2TXREG = v;
 }
 
+
 //Write out a trace code to the uart that can be read on the logic analyser
 inline void tc(uint16_t v)
 {
@@ -76,6 +77,12 @@ void do_cmd(uint8_t cmd, uint8_t value)
             printf("Unknown command: 0x%x\n", cmd);
         }
     }
+}
+void write_epic_command(uint8_t cmd, uint8_t val)
+{
+    uart2_wb(0xFF);
+    uart2_wb(cmd);
+    uart2_wb(val);
 }
 typedef enum {cs_idle, cs_cmd0, cs_cmd1} command_state_t;
 static command_state_t state = cs_idle;

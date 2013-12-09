@@ -45,17 +45,17 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Source Files Quoted if spaced
-SOURCEFILES_QUOTED_IF_SPACED=config.c graphics.c main.c spi.c uart.c logic.c
+SOURCEFILES_QUOTED_IF_SPACED=config.c graphics.c main.c spi.c uart.c logic.c rht.c
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/config.o ${OBJECTDIR}/graphics.o ${OBJECTDIR}/main.o ${OBJECTDIR}/spi.o ${OBJECTDIR}/uart.o ${OBJECTDIR}/logic.o
-POSSIBLE_DEPFILES=${OBJECTDIR}/config.o.d ${OBJECTDIR}/graphics.o.d ${OBJECTDIR}/main.o.d ${OBJECTDIR}/spi.o.d ${OBJECTDIR}/uart.o.d ${OBJECTDIR}/logic.o.d
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/config.o ${OBJECTDIR}/graphics.o ${OBJECTDIR}/main.o ${OBJECTDIR}/spi.o ${OBJECTDIR}/uart.o ${OBJECTDIR}/logic.o ${OBJECTDIR}/rht.o
+POSSIBLE_DEPFILES=${OBJECTDIR}/config.o.d ${OBJECTDIR}/graphics.o.d ${OBJECTDIR}/main.o.d ${OBJECTDIR}/spi.o.d ${OBJECTDIR}/uart.o.d ${OBJECTDIR}/logic.o.d ${OBJECTDIR}/rht.o.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/config.o ${OBJECTDIR}/graphics.o ${OBJECTDIR}/main.o ${OBJECTDIR}/spi.o ${OBJECTDIR}/uart.o ${OBJECTDIR}/logic.o
+OBJECTFILES=${OBJECTDIR}/config.o ${OBJECTDIR}/graphics.o ${OBJECTDIR}/main.o ${OBJECTDIR}/spi.o ${OBJECTDIR}/uart.o ${OBJECTDIR}/logic.o ${OBJECTDIR}/rht.o
 
 # Source Files
-SOURCEFILES=config.c graphics.c main.c spi.c uart.c logic.c
+SOURCEFILES=config.c graphics.c main.c spi.c uart.c logic.c rht.c
 
 
 CFLAGS=
@@ -121,6 +121,13 @@ ${OBJECTDIR}/logic.o: logic.c  nbproject/Makefile-${CND_CONF}.mk
 	${MP_CC} $(MP_EXTRA_CC_PRE)  logic.c  -o ${OBJECTDIR}/logic.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/logic.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -omf=elf -O0 -msmart-io=1 -Wall -msfr-warn=off
 	@${FIXDEPS} "${OBJECTDIR}/logic.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
+${OBJECTDIR}/rht.o: rht.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR} 
+	@${RM} ${OBJECTDIR}/rht.o.d 
+	@${RM} ${OBJECTDIR}/rht.o 
+	${MP_CC} $(MP_EXTRA_CC_PRE)  rht.c  -o ${OBJECTDIR}/rht.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/rht.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -omf=elf -O0 -msmart-io=1 -Wall -msfr-warn=off
+	@${FIXDEPS} "${OBJECTDIR}/rht.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
+	
 else
 ${OBJECTDIR}/config.o: config.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR} 
@@ -163,6 +170,13 @@ ${OBJECTDIR}/logic.o: logic.c  nbproject/Makefile-${CND_CONF}.mk
 	@${RM} ${OBJECTDIR}/logic.o 
 	${MP_CC} $(MP_EXTRA_CC_PRE)  logic.c  -o ${OBJECTDIR}/logic.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/logic.o.d"      -g -omf=elf -O0 -msmart-io=1 -Wall -msfr-warn=off
 	@${FIXDEPS} "${OBJECTDIR}/logic.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
+	
+${OBJECTDIR}/rht.o: rht.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR} 
+	@${RM} ${OBJECTDIR}/rht.o.d 
+	@${RM} ${OBJECTDIR}/rht.o 
+	${MP_CC} $(MP_EXTRA_CC_PRE)  rht.c  -o ${OBJECTDIR}/rht.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/rht.o.d"      -g -omf=elf -O0 -msmart-io=1 -Wall -msfr-warn=off
+	@${FIXDEPS} "${OBJECTDIR}/rht.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
 endif
 

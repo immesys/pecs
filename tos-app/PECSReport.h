@@ -9,6 +9,10 @@ nx_struct pecs_report {
   nxle_uint32_t uid;
   nxle_uint8_t fan_origin;
   nxle_uint8_t heat_origin;
+  nxle_uint8_t relh_h;
+  nxle_uint8_t relh_l;
+  nxle_uint8_t temp_h;
+  nxle_uint8_t temp_l;
 } ;
 
 

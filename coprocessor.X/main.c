@@ -20,18 +20,39 @@ int main()
 {
 
     init_hw();
-
-  //  printf("System booting\n");
-    //Event loop
-   // DBG2_TRIS = 0;
-   // DBG2 = 0;
-   // DBG2 = 1;
-  //  DBG2 = 0;
     init_vals();
-   // while(1);
-
     lcd_init();
-    draw_pecs_bg();
+    reset_rht();
+
+  //  tp_calibrate();
+ //   draw_bar_screen_full();
+
+    while(1)
+    {
+ //       poll_screen();
+  //      poll_tp();
+        poll_temps();
+    }
+   // while(1);
+    reset_rht();
+    while(1)
+    {
+        uint16_t rh = read_rel_humidity();
+        delay_ms(100);
+        uint16_t t = read_temp();
+        delay_ms(100);
+        printf("RH: 0x%04x\n",rh);
+        printf("T: 0x%04x\n",t);
+    }
+    lcd_init();
+  //  draw_pecs_bg();
+    tp_calibrate();
+    draw_bar_screen_full();
+    while(1)
+    {
+        poll_screen();
+        poll_tp();
+    }
     //delay_ms(10);
     //g_fill_rgb();
     while(1);

@@ -73,7 +73,7 @@ implementation
   uint8_t fan_source; //Where did this setting come from?
   uint8_t heat_source;
   
-  
+  uint8_t relh_h, relh_l, temp_h, temp_l;
   
   task void sendrep()
   {
@@ -81,7 +81,7 @@ implementation
     controls.fan_setting = shadow_fan;
     controls.heat_setting = shadow_heat;
     controls.occupancy = !(call contact.get());
-    controls.uid = 0x2;
+    controls.uid = 0x100 | TOS_NODE_ID;
     controls.fan_origin = fan_source;
     controls.heat_origin = heat_source;
     call Leds.led1Toggle();
@@ -204,6 +204,13 @@ implementation
     call Echo.sendto(from, data, len);
   }
 
+  void latch_env_sensors()
+  {
+    controls.relh_h = relh_h;
+    controls.relh_l = relh_l;
+    controls.temp_h = temp_h;
+    controls.temp_l = temp_l;
+  }
   void do_cmd(uint8_t cmd, uint8_t val)
   {
     switch(cmd)
@@ -216,7 +223,7 @@ implementation
                 fan_source = SOURCE_SCREEN;
             }
             set_fan();
-            post sendrep();
+          //  post sendrep();
             break;
         case 0x11:
             atomic
@@ -224,7 +231,35 @@ implementation
                 shadow_heat = val;
                 heat_source = SOURCE_SCREEN;
             }
-            post sendrep();
+         //   post sendrep();
+            break;
+        case 0x12:
+            atomic
+            {
+                relh_h = val;
+            }
+            break;
+        case 0x13:
+            atomic
+            {
+                relh_l = val;
+                controls.relh_h = relh_h;
+                controls.relh_l = relh_l;
+            }
+            break;
+        case 0x14:
+            atomic
+            {
+                temp_h = val;
+            }
+            break;
+        case 0x15:
+            atomic
+            {
+                temp_l = val;
+                controls.temp_h = temp_h;
+                controls.temp_l = temp_l;
+            }
             break;
         default:
             break;
@@ -328,6 +363,8 @@ implementation
     
     fan_source = SOURCE_CLOUD;
     heat_source = SOURCE_CLOUD;
+    
+    temp_h = temp_l = relh_h = relh_l = 0;
   }
   
 }

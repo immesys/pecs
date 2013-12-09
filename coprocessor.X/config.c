@@ -42,6 +42,8 @@
 
 void init_hw()
 {
+    _IPL = 0;
+    
     //Initialise all ANx pins to digital
     AD1PCFG = 0xFFFF;
 
@@ -88,8 +90,6 @@ void init_hw()
    // _INT2R = TP_IRQ_RPI;
 
     //Configure SPI1 module
-    _SPI1IF = 0;
-    _SPI1IP = 5;
     SPI1STATbits.SISEL = 0b100; //Interrupt when there is space in TX
     SPI1CON1bits.DISSCK = 0; //Use clock
     SPI1CON1bits.DISSDO = 0; //Enable SDO
@@ -123,7 +123,7 @@ void init_hw()
     SPI2STATbits.SPIEN = 1;
     _SPI2IE = 0;
 
-    //Configure UART module (debug)
+    //Configure UART module (epic)
     U1MODEbits.UEN = 00;
     U1BRG = 33; //115200
     U1MODEbits.BRGH = 1;
@@ -134,6 +134,7 @@ void init_hw()
     U1STAbits.UTXEN = 1;
     _U1TXIE = 0;
     _U1RXIF = 0;
+    _U1RXIP = 3;
 
     //Configure UART module (debug)
     U2MODEbits.UEN = 00;

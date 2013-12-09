@@ -195,6 +195,7 @@ inline void check_flash_window_blit()
 {
     uint8_t b;
 
+    _IPL = 6;
     if (flash_pix_left_in_row == 0 && flash_pix_rows > 0)
     {
         flash_pix_left_in_row = flash_pix_per_row;
@@ -234,7 +235,7 @@ inline void check_flash_window_blit()
     col++;
     b = FL_REG;
     GFX_REG = b;
-
+    _IPL = 0;
 }
 inline void check_flash_full_blit()
 {
@@ -245,7 +246,8 @@ inline void check_flash_full_blit()
     {
         return;
     }
-    
+
+
     //Make sure we keep request pipeline full
     if(flash_pix_left > 0 && !FL_TX_FULL)
     {
@@ -315,7 +317,7 @@ void draw_blue_bar_full(uint8_t v)
                    ASSET_BLUEBAR2_WIDTH,
                    ASSET_BLUEBAR2_HEIGHT,
                    ASSET_BLUEBAR2_ADDR);
-    blocking_ovblit(BLUEBAR2_POSITION_X + v + V_OFFSET - (ASSET_SLIDER_KNOB_WIDTH>>1), BLUEBAR2_POSITION_Y + 1, ASSET_SLIDER_KNOB_ADDR, ASSET_SLIDER_KNOB_LENGTH);
+ //   blocking_ovblit(BLUEBAR2_POSITION_X + v + V_OFFSET - (ASSET_SLIDER_KNOB_WIDTH>>1), BLUEBAR2_POSITION_Y + 1, ASSET_SLIDER_KNOB_ADDR, ASSET_SLIDER_KNOB_LENGTH);
 }
 void draw_red_bar_full(uint8_t v)
 {
@@ -337,7 +339,7 @@ void draw_red_bar_full(uint8_t v)
                    ASSET_REDBAR2_WIDTH,
                    ASSET_REDBAR2_HEIGHT,
                    ASSET_REDBAR2_ADDR);
-    blocking_ovblit(REDBAR2_POSITION_X + v + V_OFFSET - (ASSET_SLIDER_KNOB_WIDTH>>1), REDBAR2_POSITION_Y + 1, ASSET_SLIDER_KNOB_ADDR, ASSET_SLIDER_KNOB_LENGTH);
+  //  blocking_ovblit(REDBAR2_POSITION_X + v + V_OFFSET - (ASSET_SLIDER_KNOB_WIDTH>>1), REDBAR2_POSITION_Y + 1, ASSET_SLIDER_KNOB_ADDR, ASSET_SLIDER_KNOB_LENGTH);
 }
 void draw_bg()
 {

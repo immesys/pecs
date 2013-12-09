@@ -333,8 +333,8 @@ void lcd_init(void)
   //  tc(dev_code);
 
     /* Different driver IC initialization */
-    if( dev_code == 0x9320 || dev_code == 0x9300 )
-    {
+   // if( dev_code == 0x9320 || dev_code == 0x9300 )
+   // {
         lcd_write_reg(0x00, 0x0000);
         lcd_write_reg(0x01, 0x0100); /* Driver Output Contral */
         lcd_write_reg(0x02, 0x0700); /* LCD Driver Waveform Contral */
@@ -380,12 +380,12 @@ void lcd_init(void)
         lcd_write_reg(0x97, (0<<8));
         lcd_write_reg(0x98, 0x0000);         /* Frame Cycle Contral */
         lcd_write_reg(0x07, 0x0133);
-    }
-    else
-    {
-        return;
-        while(1) tc(0xDD01);
-    }
+  //  }
+   // else
+ //   {
+ //       return;
+ //       while(1) tc(0xDD01);
+   // }
 }
 
 inline uint16_t tp_read_ad()

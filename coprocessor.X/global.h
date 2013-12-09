@@ -59,6 +59,7 @@ inline void uart1_wb(uint8_t v);
 int write(int handle, void *buffer, unsigned int len);
 inline void tc(uint16_t v);
 inline void uart1_wb(uint8_t v);
+void write_epic_command(uint8_t cmd, uint8_t val);
 
 //spi.c
 void delay_ms(uint16_t x);
@@ -90,6 +91,12 @@ void tp_calibrate(void);
 void gen_qr_code(const char* str);
 void draw_qr_code();
 inline void draw_pecs_bg();
+
+// rht.c
+uint16_t read_temp();
+uint16_t read_rel_humidity();
+void reset_rht();
+void poll_temps();
 
 //Logic
 void set_occupancy(uint8_t is_occupied);
@@ -249,8 +256,8 @@ typedef union
 #define	TP_CHX 	0x90 	/* channel Y+ selection command */
 #define	TP_CHY 	0xd0	/* channel X+ selection command*/
 
-#define TP_POLL_THRESHOLD 100000 //50ms
-
+#define TP_POLL_THRESHOLD   100000 //50ms
+#define TEMP_POLL_THRESHOLD 2000000L //1s
 #define RED_TP_START_Y 142
 #define RED_TP_END_Y   192
 
