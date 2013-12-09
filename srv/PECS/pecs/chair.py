@@ -13,58 +13,104 @@ subkey="UnSkoHexOvrlU9OPDPheQ5uVhMY5M5lfpE14"
 url="http://pecs.cal-sdb.org/backend"
 shared = {'srcFullName':"PECS Chair deployment", 'url':url, 'subkey':subkey}
 
-def get_heat_stream(uid):
-    global shared
+def get_device(uid):
     dev = db.devices.find_one({'uid':uid})
     if dev is None:
-        #make a new one
-        dev = {'heat_stream_id':str(uuid.uuid1()), 'fan_stream_id':str(uuid.uuid1()), 'contact_stream_id':str(uuid.uuid1()), 'uid':uid}
+        dev = {'heat_stream_id':str(uuid.uuid1()),
+               'temp_stream_id':str(uuid.uuid1()),
+               'rh_stream_id':str(uuid.uuid1()),
+               'fan_stream_id':str(uuid.uuid1()), 
+               'contact_stream_id':str(uuid.uuid1()), 
+               'uid':uid}
         db.devices.save(dev)
-        
+    if "temp_stream_id" not in dev:
+        dev["temp_stream_id"] = str(uuid.uuid1())
+        db.devices.save(dev)
+    if "rh_stream_id" not in dev:
+        dev["rh_stream_id"] = str(uuid.uuid1())
+        db.devices.save(dev)
+    return dev
+    
+def get_heat_stream(uid):
+    dev = get_device(uid)
     params = shared.copy()
     uid = str(uid)
-    params.update({'instName':uid, 'uuid':dev['heat_stream_id'], 'instFullName':'PECS chair #'+uid, 'sensorName':"heating", 'unitofMeasure':'points'})
+    params.update({'instName':uid, 'uuid':dev['heat_stream_id'], 'instFullName':'PECS chair #'+uid, 'sensorName':"heating", 'unitofMeasure':'%'})
     rv = Ssstream(**params)
     return rv
 
 def get_fan_stream(uid):
     global shared
-    dev = db.devices.find_one({'uid':uid})
-    if dev is None:
-        #make a new one
-        dev = {'heat_stream_id':str(uuid.uuid1()), 'fan_stream_id':str(uuid.uuid1()), 'contact_stream_id':str(uuid.uuid1()), 'uid':uid}
-        db.devices.save(dev)
-        
+    dev = get_device(uid)
     params = shared.copy()
     uid = str(uid)
-    params.update({'instName':uid, 'uuid':dev['fan_stream_id'], 'instFullName':'PECS chair #'+uid, 'sensorName':'fans', 'unitofMeasure':'points'})
+    params.update({'instName':uid, 'uuid':dev['fan_stream_id'], 'instFullName':'PECS chair #'+uid, 'sensorName':'fans', 'unitofMeasure':'%'})
     rv = Ssstream(**params)
     return rv
 
 def get_occupancy_stream(uid):
     global shared
-    dev = db.devices.find_one({'uid':uid})
-    if dev is None:
-        #make a new one
-        dev = {'heat_stream_id':str(uuid.uuid1()), 'fan_stream_id':str(uuid.uuid1()), 'contact_stream_id':str(uuid.uuid1()), 'uid':uid}
-        db.devices.save(dev)
-        
+    dev = get_device(uid)
     params = shared.copy()
     uid = str(uid)
-    params.update({'instName':uid, 'uuid':dev['contact_stream_id'], 'instFullName':'PECS chair #'+uid,'sensorName':'occupancy', 'unitofMeasure':'points'})
+    params.update({'instName':uid, 'uuid':dev['contact_stream_id'], 'instFullName':'PECS chair #'+uid,'sensorName':'occupancy', 'unitofMeasure':'%'})
     rv = Ssstream(**params)
     return rv
-            
+
+def get_temp_stream(uid):
+    global shared
+    dev = get_device(uid)
+    params = shared.copy()
+    uid = str(uid)
+    params.update({'instName':uid, 'uuid':dev['temp_stream_id'], 'instFullName':'PECS chair #'+uid,'sensorName':'temperature', 'unitofMeasure':'C'})
+    rv = Ssstream(**params)
+    return rv
+    
+def get_rh_stream(uid):
+    global shared
+    dev = get_device(uid)
+    params = shared.copy()
+    uid = str(uid)
+    params.update({'instName':uid, 'uuid':dev['rh_stream_id'], 'instFullName':'PECS chair #'+uid,'sensorName':'relative humidity', 'unitofMeasure':'%'})
+    rv = Ssstream(**params)
+    return rv 
+       
+def convert_rh(raw):
+    #These coefficients are for the 12 bit reading, from the datasheet
+    c1 = -2.0468
+    c2 = 0.0367
+    c3 = -1.5955E-6
+    rv = c1 + c2*raw + c3*(raw**2)
+    if (rv > 99) rv = 100
+    return rv
+    
+def convert_temp(raw):
+    d1_35v = -39.7
+    d1_30v = -39.6
+    d1_33v = -39.66
+    d2_14b = 0.01
+    rv = d1_33v + d2_14b*raw
+    return rv
+                
 def launch_udp_server():
     def t():
         sock = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
         sock.bind(("::", 7005))
         while True:
             data, addr = sock.recvfrom(1024)
-            fan, heat, occupancy, uid, fansrc, heatsrc = struct.unpack_from("<BBBLBB", data)
+            fan, heat, occupancy, uid, fansrc, heatsrc, rh, temp = struct.unpack_from("<BBBLBBHH", data)
             #cloud is 1, screen is 2
             uid = int(uid)
-            doc = {"uid":uid, "addr":addr, "fan":fan, "heat":heat, "sw":occupancy, "when":time.time(), "fansrc":fansrc, "heatsrc":heatsrc}
+            if rh != 0:
+                real_rh = convert_rh(rh)
+            else:
+                real_rh = None
+            if temp != 0:
+                real_temp = convert_temp(temp)
+            else:
+                real_temp = None
+            doc = {"uid":uid, "addr":addr, "fan":fan, "heat":heat, "sw":occupancy, "when":time.time(), 
+                   "fansrc":fansrc, "heatsrc":heatsrc, "rh":rh, "temp":temp, "crh":real_rh, "ctemp":real_temp}
             ch = db.chairs.find_one({"uid":uid})
             needsync = False
             if ch != None:
@@ -88,15 +134,25 @@ def launch_udp_server():
             
             heats = get_heat_stream(uid)
             heats.set_readings([(int(time.time()*1000), heat)])
-            assert heats.publish()
+            heats.publish()
             
             fans = get_fan_stream(uid)
-            fans.set_readings([(int(time.time()*1000), fan)])
-            assert fans.publish()
+            fans.set_readings([(int(time.time()*1000), fan*(100./7))])
+            fans.publish()
             
             occupancys = get_occupancy_stream(uid)
-            occupancys.set_readings([(int(time.time()*1000), occupancy)])
-            assert occupancys.publish()
+            occupancys.set_readings([(int(time.time()*1000), occupancy*100)])
+            occupancys.publish()
+            
+            if rh != 0:
+                rhs = get_rh_stream(uid)
+                rhs.set_readings([(int(time.time()*1000), real_rh)])
+                rhs.publish()
+                
+            if temp != 0:
+                temps = get_temp_stream(uid)
+                temps.set_readings([(int(time.time()*1000), temps)])
+                temps.publish()
             
             print "Got data:",(", ".join(["0x{:02x}".format(ord(d)) for d in data]))
             print "From: ",addr
@@ -206,29 +262,30 @@ cv = Condition()
 fandict = {}
 heatdict = {}
 def enqueue_fan(code, val):
+    cv.acquire()
     if code in fandict:
         fandict[code][1] = val
     else:
         setchair_ex(code, val, None)
         fandict[code] = [time.time() + 1, val]
-        cv.acquire()
         cv.notify()
-        cv.release()
+    cv.release()
     
 def enqueue_heat(code, val):
+    cv.acquire()
     if code in heatdict:
         heatdict[code][1] = val
     else:
         setchair_ex(code, None, val)
         heatdict[code] = [time.time() + 1, val]
-        cv.acquire()
         cv.notify()
-        cv.release()
+    cv.release()
         
 def start_dict_thread():
     def t():
         while True:
             mint = time.time() + 10
+            cv.acquire()
             for d in fandict: 
                 if fandict[d][0] > time.time():
                     print "sending fan: ",d,fandict[d][1]
@@ -243,11 +300,9 @@ def start_dict_thread():
                 elif heatdict[d][0] < mint:
                     mint = heatdict[d][0]
             if mint - time.time() > 5:
-                cv.acquire()
                 cv.wait(2)
                 cv.release()
             else:
-                cv.acquire()
                 cv.wait(mint-time.time())
                 cv.release()
     tr = Thread(target=t)
