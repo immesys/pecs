@@ -82,7 +82,8 @@ implementation
     controls.heat_setting = shadow_heat;
     controls.occupancy = !(call contact.get());
     controls.uid = 0x2;
-
+    controls.fan_origin = fan_source;
+    controls.heat_origin = heat_source;
     call Leds.led1Toggle();
     call Reports.sendto(&route_dest, &controls, sizeof(controls));
   }
@@ -325,6 +326,8 @@ implementation
     call CPUart.setModeUart(&uconfig);
     call CPUart.enableRxIntr();
     
+    fan_source = SOURCE_CLOUD;
+    heat_source = SOURCE_CLOUD;
   }
   
 }

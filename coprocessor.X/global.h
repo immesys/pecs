@@ -89,6 +89,7 @@ void poll_screen();
 void tp_calibrate(void);
 void gen_qr_code(const char* str);
 void draw_qr_code();
+inline void draw_pecs_bg();
 
 //Logic
 void set_occupancy(uint8_t is_occupied);
@@ -156,8 +157,8 @@ typedef union
 #define FT_RX_RPO       _RP6R
 #define FT_TX_RPI       5 //RP5 pin
 
-//#define LCD_RST_TRIS    _TRISA1
-//#define LCD_RST         _LATA1
+#define LCD_RST_TRIS    _TRISA9
+#define LCD_RST         _LATA9
 
 #define LCD_SS_TRIS     _TRISB2
 #define TP_SS_TRIS      _TRISB3
@@ -165,6 +166,7 @@ typedef union
 #define TP_SS           _LATB3
 #define LCD_EN_TRIS     _TRISB5
 #define LCD_EN          _LATB5
+
 
 //#define DBG2_TRIS       _TRISB5
 //#define DBG2            _LATB5
@@ -179,23 +181,43 @@ typedef union
 #define ASSET_BARS_LENGTH 0x025800
 #define ASSET_BARS_WIDTH  320
 #define ASSET_BARS_HEIGHT 240
-#define ASSET_SLIDER_KNOB_ADDR   0x025800
+#define ASSET_BLUEBAR_ADDR   0x025800
+#define ASSET_BLUEBAR_LENGTH 0x006590
+#define ASSET_BLUEBAR_WIDTH  260
+#define ASSET_BLUEBAR_HEIGHT 50
+#define ASSET_REDBAR_ADDR   0x02be00
+#define ASSET_REDBAR_LENGTH 0x006590
+#define ASSET_REDBAR_WIDTH  260
+#define ASSET_REDBAR_HEIGHT 50
+#define ASSET_SLIDER_KNOB_ADDR   0x032400
 #define ASSET_SLIDER_KNOB_LENGTH 0x001272
 #define ASSET_SLIDER_KNOB_WIDTH  54
 #define ASSET_SLIDER_KNOB_HEIGHT 54
-#define ASSET_POINT_ADDR   0x026c00
+#define ASSET_UP2_ADDR   0x033700
+#define ASSET_UP2_LENGTH 0x009c40
+#define ASSET_UP2_WIDTH  200
+#define ASSET_UP2_HEIGHT 100
+#define ASSET_SDB_ADDR   0x03d400
+#define ASSET_SDB_LENGTH 0x025800
+#define ASSET_SDB_WIDTH  320
+#define ASSET_SDB_HEIGHT 240
+#define ASSET_PECS_ADDR   0x062c00
+#define ASSET_PECS_LENGTH 0x025800
+#define ASSET_PECS_WIDTH  320
+#define ASSET_PECS_HEIGHT 240
+#define ASSET_POINT_ADDR   0x088400
 #define ASSET_POINT_LENGTH 0x0005b2
 #define ASSET_POINT_WIDTH  27
 #define ASSET_POINT_HEIGHT 27
-#define ASSET_CALIBRATE_ADDR   0x027200
+#define ASSET_CALIBRATE_ADDR   0x088a00
 #define ASSET_CALIBRATE_LENGTH 0x025800
 #define ASSET_CALIBRATE_WIDTH  320
 #define ASSET_CALIBRATE_HEIGHT 240
-#define ASSET_BLUEBAR2_ADDR   0x04ca00
+#define ASSET_BLUEBAR2_ADDR   0x0ae200
 #define ASSET_BLUEBAR2_LENGTH 0x007620
 #define ASSET_BLUEBAR2_WIDTH  270
 #define ASSET_BLUEBAR2_HEIGHT 56
-#define ASSET_REDBAR2_ADDR   0x054200
+#define ASSET_REDBAR2_ADDR   0x0b5900
 #define ASSET_REDBAR2_LENGTH 0x007620
 #define ASSET_REDBAR2_WIDTH  270
 #define ASSET_REDBAR2_HEIGHT 56

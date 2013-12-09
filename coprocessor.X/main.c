@@ -18,18 +18,25 @@ extern flashstate_t flashstate;
 void fragtest();
 int main()
 {
+
     init_hw();
 
-    printf("System booting\n");
+  //  printf("System booting\n");
     //Event loop
    // DBG2_TRIS = 0;
    // DBG2 = 0;
    // DBG2 = 1;
   //  DBG2 = 0;
     init_vals();
+   // while(1);
 
-    while(1);
     lcd_init();
+    draw_pecs_bg();
+    //delay_ms(10);
+    //g_fill_rgb();
+    while(1);
+ //   }
+ //   while(1);
    // blit_rect(0,0,ASSET_UPARROW_WIDTH,ASSET_UPARROW_HEIGHT,ASSET_UPARROW_ADDR);
     //blit_rect(5,5,ASSET_UP2_WIDTH+5,ASSET_UP2_HEIGHT+5,ASSET_UP2_ADDR);
     //blit_rect(0,0,ASSET_FULLBARS_WIDTH,ASSET_FULLBARS_HEIGHT,ASSET_FULLBARS_ADDR);
