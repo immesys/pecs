@@ -81,7 +81,7 @@ def convert_rh(raw):
     c2 = 0.0367
     c3 = -1.5955E-6
     rv = c1 + c2*raw + c3*(raw**2)
-    if (rv > 99) rv = 100
+    if (rv > 99): rv = 100
     return rv
     
 def convert_temp(raw):
@@ -117,8 +117,10 @@ def launch_udp_server():
                 if ch["fan"] != fan and fansrc == 1:
                     #The chair thinks it was last set from the cloud but the settings are wrong,
                     #so tell it again
+                    print "Received fan doesn't match expectation"
                     needsync = True
                 if ch["heat"] != heat and heatsrc == 1:
+                    print "Received heat doesn't match expectation"
                     needsync = True
                 if fansrc == 2:
                     ch["fan"] = fan
@@ -151,7 +153,7 @@ def launch_udp_server():
                 
             if temp != 0:
                 temps = get_temp_stream(uid)
-                temps.set_readings([(int(time.time()*1000), temps)])
+                temps.set_readings([(int(time.time()*1000), real_temp)])
                 temps.publish()
             
             print "Got data:",(", ".join(["0x{:02x}".format(ord(d)) for d in data]))
@@ -208,8 +210,19 @@ def setchair(uid, fan, heat):
     c["fan"] = fan
     c["heat"] = heat
     db.chairs.save(c)
-    
+
+def synchair_aggregated(uid, chair=None):
+    print "sc agg inv c=",chair
+    c = db.codes.find({"uid":uid}).sort("expire", pymongo.DESCENDING)
+    if c.count() == 0:
+        print "No codes for chair!"
+        return
+    code = c[0]["code"]
+    enqueue_heat(code, chair["heat"])
+    enqueue_fan(code, chair["fan"])
+
 def synchair(uid, chair=None):
+    print "synchair invoked c=",chair
     if chair == None:
         chair = db.chairs.find_one({"uid":uid})
     if chair is None:
@@ -262,22 +275,26 @@ cv = Condition()
 fandict = {}
 heatdict = {}
 def enqueue_fan(code, val):
+    print "Enqueue F:",code,val
     cv.acquire()
     if code in fandict:
         fandict[code][1] = val
+	fandict[code][0] = time.time() + 2
     else:
-        setchair_ex(code, val, None)
-        fandict[code] = [time.time() + 1, val]
+        #setchair_ex(code, val, None)
+        fandict[code] = [time.time() + 2, val]
         cv.notify()
     cv.release()
     
 def enqueue_heat(code, val):
+    print "Enqueue H:",code,val
     cv.acquire()
     if code in heatdict:
         heatdict[code][1] = val
+	heatdict[code][0] = time.time() + 2
     else:
-        setchair_ex(code, None, val)
-        heatdict[code] = [time.time() + 1, val]
+        #setchair_ex(code, None, val)
+        heatdict[code] = [time.time() + 2, val]
         cv.notify()
     cv.release()
         
@@ -286,15 +303,18 @@ def start_dict_thread():
         while True:
             mint = time.time() + 10
             cv.acquire()
-            for d in fandict: 
-                if fandict[d][0] > time.time():
+            fl = fandict.keys()
+            for d in fl: 
+                if fandict[d][0] < time.time():
                     print "sending fan: ",d,fandict[d][1]
                     setchair_ex(d, fandict[d][1], None)
                     del fandict[d]
                 elif fandict[d][0] < mint:
                     mint = fandict[d][0]
-            for d in heatdict: 
-                if heatdict[d][0] > time.time():
+            hl = heatdict.keys()
+            for d in hl: 
+                if heatdict[d][0] < time.time():
+                    print "sending heat: ",d,heatdict[d][1]
                     setchair_ex(d, None, heatdict[d][1])
                     del heatdict[d]
                 elif heatdict[d][0] < mint:

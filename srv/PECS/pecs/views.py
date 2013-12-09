@@ -39,9 +39,9 @@ def apply_fan(request):
     else:
         return {'error':'no value'}
     #todo check code first
-#    enqueue_fan(code, v)
-#    return {}
-    return setchair_ex(code, v, None)
+    enqueue_fan(code, v)
+    return {}
+#    return setchair_ex(code, v, None)
  
     #return sendmsg(int(request.matchdict['code']), 0x10, int(v)) 
     
@@ -54,13 +54,17 @@ def apply_heat(request):
         v = request.GET.getone('v')
     else:
         return {'error':'no value'}
-#    enqueue_heat(code, v)
-#    return {}
-    return setchair_ex(code, None, v)
+    enqueue_heat(code, v)
+    return {}
+#    return setchair_ex(code, None, v)
     #return sendmsg(request.matchdict['code'], 0x11, int(v)) 
     
 @view_config(route_name='ages', renderer='json')
 def ages(request):
-    return get_ages()
+    a = get_ages()
+    rv = {}
+    for id, age in a:
+       rv[id] = "%dm %2s" % (int(age/60),int(age % 60)) 
+    return rv
     
     
