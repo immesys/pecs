@@ -37,7 +37,7 @@ def get_sensors(uid):
         return {"tempf":"N/A", "tempc":"N/A", "humidity":"N/A"}
     pack = curs[0]
     f = 9.0/5.0 * pack["ctemp"] + 32
-    return {"tempf":"{:.2f}".format(f),"tempc":"{:.2f}".format(pack["ctemp"]), "humidity":"{:.2f}".format(pack["crh"])}
+    return {"tempf":"{:.1f}".format(f),"tempc":"{:.1f}".format(pack["ctemp"]), "humidity":"{:.1f}".format(pack["crh"])}
         
 def get_heat_stream(uid):
     dev = get_device(uid)

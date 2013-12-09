@@ -74,9 +74,9 @@
 
       <!-- Main hero unit for a primary marketing message or call to action -->
       <div class="hero-unit">
-        <h1>Hello!</h1>
-        <p style="font-family: 'Days One', sans-serif; font-size:300%">Your environment is at {env["tempf"]} &deg;F and {env["rh"]} % RH</p>
-        <p>Welcome to the Personal Environmental Control System or as we like to call it, PECS. On this page, you will have the ability to control the heating and cooling features of your chair</p>
+        <p style="font-family: 'Days One', sans-serif; font-size:250%">It is ${env["tempf"]} &deg;F and ${env["humidity"]} %RH</p>
+	<p></p>
+        <p>But why not take the time to personalize your environment a little? On this page, you will have the ability to control the heating and cooling features of your chair</p>
         <p><a href="/about" class="btn btn-primary btn-large">Learn more &raquo;</a></p>
       </div>
 

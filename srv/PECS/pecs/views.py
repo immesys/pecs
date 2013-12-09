@@ -68,4 +68,11 @@ def ages(request):
        rv[id] = "%dm %2s" % (int(age/60),int(age % 60)) 
     return rv
     
-    
+@view_config(route_name="sitevars", renderer='json')
+def sitevars(request):
+    uid = int(request.matchdict['uid'])
+    sn = get_sensors(uid)
+    ch = db.chairs.find_one({"uid":uid})
+    if ch is None:
+        return {"error":"not found"}
+    return {"fan":ch["fan"], "heat":ch["heat"],"tempc":sn["tempc"],"tempf":sn["tempf"],"humidity":sn["humidity"]}
