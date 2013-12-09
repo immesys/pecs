@@ -24,14 +24,16 @@ int main()
     lcd_init();
     reset_rht();
 
-  //  tp_calibrate();
- //   draw_bar_screen_full();
+    tp_calibrate();
+//    while(1);
+    draw_bar_screen_full();
 
     while(1)
     {
- //       poll_screen();
-  //      poll_tp();
+        poll_tp();
+        poll_screen();
         poll_temps();
+        poll_val_uploads();
     }
    // while(1);
     reset_rht();

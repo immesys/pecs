@@ -392,10 +392,10 @@ inline uint16_t tp_read_ad()
 {
     uint16_t rv, b;
     rv = 5;
-    rv = spi1_rw_b(0xdb);
+    rv = spi1_rw_b(0x00);
     rv <<= 8;
     delay_hus(2);
-    b = spi1_rw_b(0xdb);
+    b = spi1_rw_b(0x00);
     rv |= b;
     rv >>= 3;
     rv &= 0xFFF;

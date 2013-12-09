@@ -45,6 +45,14 @@ void set_fans(uint8_t val, uint8_t total, uint8_t origin)
 void heatslider(uint8_t val, uint8_t total)
 {
     set_heat(val, total, SOURCE_SCREEN);
+    uint32_t temp = val;
+    temp <<= 8;
+    temp /= total;
+    temp *= 100;
+    temp >>= 8;
+    if (temp > 100) temp = 100;
+    val = (uint8_t) temp;
+    send_epic_packet(0x11, val);
 }
 void send_epic_packet(uint8_t cmd, uint8_t val)
 {

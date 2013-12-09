@@ -21,7 +21,7 @@
 #pragma config POSCMOD = NONE           // Primary Oscillator Select (Primary Oscillator disabled)
 #pragma config I2C1SEL = PRI            // I2C1 Pin Select bit (Use default SCL1/SDA1 pins for I2C1 )
 #pragma config IOL1WAY = OFF            // IOLOCK One-Way Set Enable (The IOLOCK bit can be set and cleared using the unlock sequence)
-#pragma config OSCIOFNC = OFF           // OSCO Pin Configuration (OSCO pin functions as clock output (CLKO))
+#pragma config OSCIOFNC = ON            
 #pragma config FCKSM = CSDCMD           // Clock Switching and Fail-Safe Clock Monitor (Sw Disabled, Mon Disabled)
 #pragma config FNOSC = FRCPLL           // Initial Oscillator Select (Fast RC Oscillator with Postscaler and PLL module (FRCPLL))
 #pragma config PLL96MHZ = ON            // 96MHz PLL Startup Select (96 MHz PLL Startup is enabled automatically on start-up)
@@ -179,6 +179,5 @@ void init_hw()
     PR4 = 0xFF;
     OC2RS = 0xFF; //244 hz basically
     OC2R = 0x00;
-
     _U1RXIE = 1;
 }

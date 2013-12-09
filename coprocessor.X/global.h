@@ -91,6 +91,7 @@ void tp_calibrate(void);
 void gen_qr_code(const char* str);
 void draw_qr_code();
 inline void draw_pecs_bg();
+void poll_val_uploads();
 
 // rht.c
 uint16_t read_temp();
@@ -104,6 +105,7 @@ void set_heat(uint8_t val, uint8_t total, uint8_t source);
 void set_fans(uint8_t val, uint8_t total, uint8_t origin);
 void fanslider(uint8_t val, uint8_t total);
 void heatslider(uint8_t val, uint8_t total);
+void send_epic_packet(uint8_t cmd, uint8_t val);
 
 typedef enum
 {
@@ -242,7 +244,7 @@ typedef union
 #define REDBAR2_POSITION_X  31
 #define REDBAR2_POSITION_Y  139
 
-#define V_OFFSET 29
+#define V_OFFSET 20
 #define OV_SENTINEL 0xF7
 #define KNOB_START_X 38
 #define BG_OVERFLOW 4
@@ -267,7 +269,7 @@ typedef union
 #define BOTH_TP_START_X 0
 #define BOTH_TP_END_X   320
 
-#define MAX_V           218
+#define MAX_V           245
 
 #define SOURCE_CLOUD 1
 #define SOURCE_SCREEN 2
