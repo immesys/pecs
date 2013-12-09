@@ -74,7 +74,7 @@
 
       <!-- Main hero unit for a primary marketing message or call to action -->
       <div class="hero-unit">
-        <p style="font-family: 'Days One', sans-serif; font-size:250%">It is ${env["tempf"]} &deg;F and ${env["humidity"]} %RH</p>
+        <p id="envbanner" style="font-family: 'Days One', sans-serif; font-size:250%">It is ${env["tempf"]} &deg;F and ${env["humidity"]} %RH</p>
 	<p></p>
         <p>But why not take the time to personalize your environment a little? On this page, you will have the ability to control the heating and cooling features of your chair</p>
         <p><a href="/about" class="btn btn-primary btn-large">Learn more &raquo;</a></p>
@@ -178,8 +178,6 @@
         });
         $( "#chaircoolvalue" ).html("Cooling level: "+ $( "#chaircoolslider" ).slider( "value" ) );
       });
-    </script>
-    <script>
       $(function() { 
         $( "#chairheatslider" ).slider({
           value: ${chair["heat"]},
@@ -190,6 +188,7 @@
           backgroundColor: "#0000FF",
           animate: true,
           slide: function( event, ui ) {
+            console.log("slide triggered");
             $.getJSON("${code}/heat",{"v":ui.value},function(data, stat)
             {
                 console.log("dat",data, "stat",stat);
@@ -199,8 +198,6 @@
         });
         $( "#chairheatvalue" ).html("Heating level: "+ $( "#chairheatslider" ).slider( "value" ) );
       });
-    </script>
-    <script>
       $(function() { 
         $( "#fancoolslider" ).slider({
           value: 4,
@@ -215,8 +212,6 @@
         });
         $( "#fancoolvalue" ).html("Cooling level: "+ $( "#fancoolslider" ).slider( "value" ) );
       });
-    </script>
-    <script>
       $(function() { 
         $( "#fanheatslider" ).slider({
           value: 0,
@@ -231,8 +226,6 @@
         });
         $( "#fanheatvalue" ).html("Heating level: "+ $( "#fanheatslider" ).slider( "value" ) );
       });
-    </script>
-    <script>
       $(function() { 
         $( "#fwheatslider" ).slider({
           value: 0,
@@ -247,6 +240,19 @@
         });
         $( "#fwheatvalue" ).html("Heating level: "+ $( "#fwheatslider" ).slider( "value" ) );
       });
+    $(document).ready(function() {svars();});
+    
+    function svars()
+    {
+        $.getJSON("vars/${uid}",{}, function(data, stat)
+        {
+            console.log("dat",data, "stat",stat);
+            setTimeout("svars()", 2000);
+            $("#envbanner").html("It is "+data["tempf"]+" &deg;F and "+data["humidity"]+" %RH");
+            $( "#chaircoolslider" ).slider("value",data["fan"]);
+            $( "#chairheatslider" ).slider("value",data["heat"]);
+        });
+    }
     </script>
 
 
