@@ -161,6 +161,8 @@
     <script src="static/js/bootstrap.js"></script>
     <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
     <script>
+      var g_last_fan_slide = 0;
+      var g_last_heat_slide = 0;
       $(function() { 
         $( "#chaircoolslider" ).slider({
           value: ${chair["fan"]},
@@ -174,6 +176,7 @@
                 console.log("dat",data, "stat",stat);
             });
             $( "#chaircoolvalue" ).html("Cooling level: "+ ui.value );
+            g_last_fan_slide = new Date().getTime();
           }
         });
         $( "#chaircoolvalue" ).html("Cooling level: "+ $( "#chaircoolslider" ).slider( "value" ) );
@@ -194,6 +197,7 @@
                 console.log("dat",data, "stat",stat);
             });
             $( "#chairheatvalue" ).html("Heating level: "+ ui.value );
+            g_last_heat_slide = new Date().getTime();
           }
         });
         $( "#chairheatvalue" ).html("Heating level: "+ $( "#chairheatslider" ).slider( "value" ) );
@@ -249,8 +253,17 @@
             console.log("dat",data, "stat",stat);
             setTimeout("svars()", 2000);
             $("#envbanner").html("It is "+data["tempf"]+" &deg;F and "+data["humidity"]+" %RH");
-            $( "#chaircoolslider" ).slider("value",data["fan"]);
-            $( "#chairheatslider" ).slider("value",data["heat"]);
+            var t = new Date().getTime();
+            if (t > g_last_fan_slide + 3)
+            {
+                $( "#chaircoolslider" ).slider("value",data["fan"]);
+                $( "#chaircoolvalue" ).html("Cooling level: "+ ui.value );
+            }
+            if (t > g_last_heat_slide + 3)
+            {
+                $( "#chairheatslider" ).slider("value",data["heat"]);
+                $( "#chairheatvalue" ).html("Heating level: "+ ui.value );
+            }
         });
     }
     </script>
