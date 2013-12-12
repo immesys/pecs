@@ -42,10 +42,7 @@ module PECSControlP
     interface HplMsp430GeneralIO as Dctl0;
     interface HplMsp430GeneralIO as Dctl1;
     interface HplMsp430GeneralIO as Dctl2;
-    interface HplMsp430GeneralIO as TP_IRQ;
-    interface HplMsp430GeneralIO as contact;
-    interface HplMsp430Interrupt as contacti;
-    interface HplMsp430Interrupt as TP_IRQi;
+
 
     interface HplMsp430Usart as CPUart;
     interface HplMsp430UsartInterrupts as CPUarti;
@@ -72,18 +69,13 @@ implementation
   uint8_t shadow_heat;
   uint8_t fan_source; //Where did this setting come from?
   uint8_t heat_source;
-  
-  uint8_t relh_h, relh_l, temp_h, temp_l;
-  
+
   task void sendrep()
   {
-    controls.device_type = 0x01;
+    controls.device_type = 0x03;
     controls.fan_setting = shadow_fan;
     controls.heat_setting = shadow_heat;
-    controls.occupancy = !(call contact.get());
-    controls.uid = 0x100 | TOS_NODE_ID;
-    controls.fan_origin = fan_source;
-    controls.heat_origin = heat_source;
+    controls.uid = 0x300 | TOS_NODE_ID;
     call Leds.led1Toggle();
     call Reports.sendto(&route_dest, &controls, sizeof(controls));
   }
@@ -106,6 +98,11 @@ implementation
   async event void CPUarti.txDone()
   {
   }
+  
+  async event void CPUarti.rxDone(uint8_t v)
+  {
+  }
+  
   task void send_heat()
   {
     //Send 0xFF, 0x11, (heat) via uart to coproc
@@ -115,11 +112,7 @@ implementation
   {
     sendCPCMD(0x14, shadow_fan);
   }
-  task void send_occupied()
-  {
-    //Send 0xFF, 0x13, (0x50 == 0 or 0x5a == 1)
-    sendCPCMD(0x13, 0x50);
-  }
+
   task void send_both()
   {
     post send_fan();
@@ -130,11 +123,7 @@ implementation
   {
     post send_heat();
   }
-  task void send_unoccupied()
-  {
-    //Send 0xFF, 0x13, (0x50 == 0 or 0x5a == 1)
-    sendCPCMD(0x13, 0x5a);
-  }
+
   
   void set_fan()
   {
@@ -150,21 +139,7 @@ implementation
 
   }
 
-  async event void contacti.fired() 
-  {
-    post sendrep();
-    if (!call contact.get())
-    {
-        post send_occupied();
-    }
-    call contacti.clear();
-  }
-  
-  async event void TP_IRQi.fired()
-  {
-    call TP_IRQi.clear();
-  }
-  
+
   event void Reports.recvfrom(struct sockaddr_in6 *from, void *data, 
                               uint16_t len, struct ip6_metadata *meta)
   {
@@ -216,95 +191,7 @@ implementation
     call Echo.sendto(from, data, len);
   }
 
-  void latch_env_sensors()
-  {
-    controls.relh_h = relh_h;
-    controls.relh_l = relh_l;
-    controls.temp_h = temp_h;
-    controls.temp_l = temp_l;
-  }
-  void do_cmd(uint8_t cmd, uint8_t val)
-  {
-    switch(cmd)
-    {
-        case 0x10:
-            atomic
-            {
-                st_fan = val;
-                shadow_fan = val;
-                fan_source = SOURCE_SCREEN;
-            }
-            set_fan();
-          //  post sendrep();
-            break;
-        case 0x11:
-            atomic
-            {
-                shadow_heat = val;
-                heat_source = SOURCE_SCREEN;
-            }
-         //   post sendrep();
-            break;
-        case 0x12:
-            atomic
-            {
-                relh_h = val;
-            }
-            break;
-        case 0x13:
-            atomic
-            {
-                relh_l = val;
-                controls.relh_h = relh_h;
-                controls.relh_l = relh_l;
-            }
-            break;
-        case 0x14:
-            atomic
-            {
-                temp_h = val;
-            }
-            break;
-        case 0x15:
-            atomic
-            {
-                temp_l = val;
-                controls.temp_h = temp_h;
-                controls.temp_l = temp_l;
-            }
-            break;
-        default:
-            break;
-    }
-  }
-  uint8_t cp_state;
-  uint8_t cmd0;
-  uint8_t cmd1;
-  #define CP_IDLE 0
-  #define CP_CMD0 1
-  #define CP_CMD1 2                                     
-  async event void CPUarti.rxDone(uint8_t c)
-  {
-    call CPUart.clrRxIntr();
-    switch(cp_state)
-    {
-        case CP_IDLE:
-            if (c == 0xFF)
-                cp_state = CP_CMD0;
-            break;
-        case CP_CMD0:
-            cmd0 = c;
-            cp_state = CP_CMD1;
-            break;
-        case CP_CMD1:
-            cmd1 = c;
-            cp_state = CP_IDLE;
-            do_cmd(cmd0, cmd1);
-            break;
-        default:
-            cp_state = CP_IDLE;
-    }
-  }
+  
   event void ReportTimer.fired() 
   {
     if (!timerStarted) 
@@ -312,18 +199,9 @@ implementation
       call ReportTimer.startPeriodic(1024 * REPORT_PERIOD);
       timerStarted = TRUE;
     }
-    if (call contact.get())
-    { //Not occupied
-        st_fan = 0;
-        set_fan();
-        post send_unoccupied();
-    }
-    else
-    {
-        st_fan = shadow_fan;
-        set_fan();
-        post send_occupied();
-    }
+
+    st_fan = shadow_fan;
+    set_fan();
     post sendrep();
   }
   
@@ -354,20 +232,13 @@ implementation
     call fanB.clr();
     call fanC.makeOutput();
     call fanC.clr();
-    call contact.makeInput();
-    call TP_IRQ.makeInput();
-    call CoprocINT.makeOutput();
-    call CoprocINT.clr();
-    call TP_IRQi.edge(TRUE);
-    call TP_IRQi.enable();
+  
     atomic
     {
         st_fan = 0;
         shadow_fan = 0;
         shadow_heat = 0;
     }
-    call contacti.edge(FALSE);
-    call contacti.enable();
     post send_heat();
     
     call CPUart.setModeUart(&uconfig);
@@ -376,7 +247,6 @@ implementation
     fan_source = SOURCE_CLOUD;
     heat_source = SOURCE_CLOUD;
     
-    temp_h = temp_l = relh_h = relh_l = 0;
   }
   
 }

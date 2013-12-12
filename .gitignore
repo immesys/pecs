@@ -7,6 +7,13 @@ coprocessor.X/nbproject/private/
 coprocessor.X/nbproject/Makefile-genesis.properties
 coprocessor.X/dist/
 coprocessor.X/build/
+
+coprocessor_fan.X/disasm/
+coprocessor_fan.X/nbproject/private/
+coprocessor_fan.X/nbproject/Makefile-genesis.properties
+coprocessor_fan.X/dist/
+coprocessor_fan.X/build/
+
 coprocessor_dip.X/disasm/
 coprocessor_dip.X/nbproject/private/
 coprocessor_dip.X/nbproject/Makefile-genesis.properties
@@ -14,5 +21,7 @@ coprocessor_dip.X/dist/
 coprocessor_dip.X/build/
 assets/*.map.hex
 tos-app/build
+fan/build
+footwarmer/build
 venv
 env

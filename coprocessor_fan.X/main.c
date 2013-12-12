@@ -20,26 +20,20 @@ int main()
 {
 
     init_hw();
-    init_vals();
-    lcd_init();
+  //  init_vals();
+ //   lcd_init();
 
-    reset_rht();
+//    reset_rht();
 
-    printf ("system booting");
-    unpack();
-    tp_calibrate();
+  //  printf ("system booting");
+//    unpack();
+//    tp_calibrate();
 
 //    while(1);
  //   draw_bar_screen_full();
 
     while(1)
     {
-        poll_tp();
-        poll_screen();
-        rxipoll();
-        poll_temps();
-
-        poll_val_uploads();
         rxipoll();
     }
 

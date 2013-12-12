@@ -33,11 +33,6 @@ configuration PECSControlC {
   // Dctl3 is being used as the contact switch
  // PECSControlP.Dctl3 -> HplMsp430GeneralIOC.Port17;
   
-  PECSControlP.TP_IRQi -> HplMsp430InterruptC.Port20;
-  PECSControlP.TP_IRQ -> HplMsp430GeneralIOC.Port20;
-  
-  PECSControlP.contact -> HplMsp430GeneralIOC.Port17;
-  PECSControlP.contacti -> HplMsp430InterruptC.Port17;
   
   PECSControlP.Boot -> MainC;
   PECSControlP.Leds -> LedsC;
