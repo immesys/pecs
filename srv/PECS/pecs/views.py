@@ -57,8 +57,43 @@ def apply_heat(request):
         return {'error':'no value'}
     enqueue_heat(code, v)
     return {}
-#    return setchair_ex(code, None, v)
-    #return sendmsg(request.matchdict['code'], 0x11, int(v)) 
+    
+@view_config(route_name='apply_ffan', renderer='json')
+def apply_ffan(request):
+    code = int(request.matchdict['code'],16)
+    if "v" in request.POST:
+        v = request.POST.getone('v')
+    elif "v" in request.GET:
+        v = request.GET.getone('v')
+    else:
+        return {'error':'no value'}
+    #todo check code first
+    return setfan_ex(code, v, None)
+ 
+    #return sendmsg(int(request.matchdict['code']), 0x10, int(v)) 
+    
+@view_config(route_name='apply_fheat', renderer='json')
+def apply_fheat(request):
+    code = int(request.matchdict['code'],16)
+    if "v" in request.POST:
+        v = request.POST.getone('v')
+    elif "v" in request.GET:
+        v = request.GET.getone('v')
+    else:
+        return {'error':'no value'}
+    return setfan_ex(code, None, v)
+    
+@view_config(route_name='apply_wheat', renderer='json')
+def apply_wheat(request):
+    code = int(request.matchdict['code'],16)
+    if "v" in request.POST:
+        v = request.POST.getone('v')
+    elif "v" in request.GET:
+        v = request.GET.getone('v')
+    else:
+        return {'error':'no value'}
+    return setfw_ex(code, v)
+    
     
 @view_config(route_name='ages', renderer='json')
 def ages(request):

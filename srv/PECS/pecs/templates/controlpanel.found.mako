@@ -211,6 +211,10 @@
           backgroundColor: "#0000FF",
           animate: true,
           slide: function( event, ui ) {
+            $.getJSON("${code}/lfan",{"v":ui.value},function(data, stat)
+            {
+                console.log("dat",data, "stat",stat);
+            });
             $( "#fancoolvalue" ).html("Cooling level: "+ ui.value );
           }
         });
@@ -221,10 +225,14 @@
           value: 0,
           orientation: "horizontal",
           min:"0",
-          max:"1",
+          max:"100",
           backgroundColor: "#0000FF",
           animate: true,
           slide: function( event, ui ) {
+            $.getJSON("${code}/lheat",{"v":ui.value},function(data, stat)
+            {
+                console.log("dat",data, "stat",stat);
+            });
             $( "#fanheatvalue" ).html("Heating level: "+ ui.value );
           }
         });
@@ -235,10 +243,14 @@
           value: 0,
           orientation: "horizontal",
           min:"0",
-          max:"1",
+          max:"64",
           backgroundColor: "#0000FF",
           animate: true,
           slide: function( event, ui ) {
+           $.getJSON("${code}/wheat",{"v":ui.value},function(data, stat)
+            {
+                console.log("dat",data, "stat",stat);
+            });
             $( "#fwheatvalue" ).html("Heating level: "+ ui.value );
           }
         });

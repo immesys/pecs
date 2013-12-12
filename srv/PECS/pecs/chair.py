@@ -21,13 +21,11 @@ def get_device(uid):
                'rh_stream_id':str(uuid.uuid1()),
                'fan_stream_id':str(uuid.uuid1()), 
                'contact_stream_id':str(uuid.uuid1()), 
+               'f_lamp_stream_id':str(uuid.uuid1()),
+               'f_fan_stream_id':str(uuid.uuid1()),
+               'w_lamp_stream_id':str(uuid.uuid1()),
+               'w_occupancy_stream_id':str(uuid.uuid1()),
                'uid':uid}
-        db.devices.save(dev)
-    if "temp_stream_id" not in dev:
-        dev["temp_stream_id"] = str(uuid.uuid1())
-        db.devices.save(dev)
-    if "rh_stream_id" not in dev:
-        dev["rh_stream_id"] = str(uuid.uuid1())
         db.devices.save(dev)
     return dev
 
@@ -87,7 +85,43 @@ def get_rh_stream(uid):
     params.update({'instName':uid, 'uuid':dev['rh_stream_id'], 'instFullName':'PECS chair #'+uid,'sensorName':'relative humidity', 'unitofMeasure':'%'})
     rv = Ssstream(**params)
     return rv 
-       
+
+def get_f_lamp_stream(uid):
+    global shared
+    dev = get_device(uid)
+    params = shared.copy()
+    uid = str(uid)
+    params.update({'instName':uid, 'uuid':dev['f_lamp_stream_id'], 'instFullName':'PECS lamp #'+uid,'sensorName':'light', 'unitofMeasure':'%'})
+    rv = Ssstream(**params)
+    return rv 
+
+def get_f_fan_stream(uid):
+    global shared
+    dev = get_device(uid)
+    params = shared.copy()
+    uid = str(uid)
+    params.update({'instName':uid, 'uuid':dev['f_fan_stream_id'], 'instFullName':'PECS lamp #'+uid,'sensorName':'fan', 'unitofMeasure':'%'})
+    rv = Ssstream(**params)
+    return rv 
+
+def get_w_lamp_stream(uid):
+    global shared
+    dev = get_device(uid)
+    params = shared.copy()
+    uid = str(uid)
+    params.update({'instName':uid, 'uuid':dev['w_lamp_stream_id'], 'instFullName':'PECS footwarmer #'+uid,'sensorName':'light', 'unitofMeasure':'%'})
+    rv = Ssstream(**params)
+    return rv 
+
+def get_w_occupancy_stream(uid):
+    global shared
+    dev = get_device(uid)
+    params = shared.copy()
+    uid = str(uid)
+    params.update({'instName':uid, 'uuid':dev['w_occupancy_stream_id'], 'instFullName':'PECS footwarmer #'+uid,'sensorName':'occupancy', 'unitofMeasure':'%'})
+    rv = Ssstream(**params)
+    return rv 
+                       
 def convert_rh(raw):
     #These coefficients are for the 12 bit reading, from the datasheet
     c1 = -2.0468
@@ -111,65 +145,113 @@ def launch_udp_server():
         sock.bind(("::", 7005))
         while True:
             data, addr = sock.recvfrom(1024)
-            devt, fan, heat, occupancy, uid, fansrc, heatsrc, rh, temp = struct.unpack_from("<BBBBLBBHH", data)
-            if (devt != 0x01):
-               continue
-            #cloud is 1, screen is 2
-            uid = int(uid)
-            if rh != 0:
-                real_rh = convert_rh(rh)
-            else:
-                real_rh = None
-            if temp != 0:
-                real_temp = convert_temp(temp)
-            else:
-                real_temp = None
-            doc = {"uid":uid, "addr":addr, "fan":fan, "heat":heat, "sw":occupancy, "when":time.time(), 
-                   "fansrc":fansrc, "heatsrc":heatsrc, "rh":rh, "temp":temp, "crh":real_rh, "ctemp":real_temp}
-            ch = db.chairs.find_one({"uid":uid})
-            needsync = False
-            if ch != None:
-                if ch["fan"] != fan and fansrc == 1:
-                    #The chair thinks it was last set from the cloud but the settings are wrong,
-                    #so tell it again
-                    print "Received fan doesn't match expectation"
-                    needsync = True
-                if ch["heat"] != heat and heatsrc == 1:
-                    print "Received heat doesn't match expectation"
-                    needsync = True
-                if fansrc == 2:
-                    ch["fan"] = fan
-                if heatsrc == 2:
-                    ch["heat"] = heat
-                if heatsrc == 2 or fansrc == 2:
-                    setchair(uid, fan, heat)
-                if needsync:
-                    synchair(uid, ch)
-            else:
-                setchair(uid, fan, heat)
-            db.packets.save(doc)
+            devt = data[0]
             
-            heats = get_heat_stream(uid)
-            heats.set_readings([(int(time.time()*1000), heat)])
-            heats.publish()
-            
-            fans = get_fan_stream(uid)
-            fans.set_readings([(int(time.time()*1000), fan*(100./7))])
-            fans.publish()
-            
-            occupancys = get_occupancy_stream(uid)
-            occupancys.set_readings([(int(time.time()*1000), occupancy*100)])
-            occupancys.publish()
-            
-            if rh != 0:
-                rhs = get_rh_stream(uid)
-                rhs.set_readings([(int(time.time()*1000), real_rh)])
-                rhs.publish()
+            if devt == 0x03: #Fan
                 
-            if temp != 0:
-                temps = get_temp_stream(uid)
-                temps.set_readings([(int(time.time()*1000), real_temp)])
-                temps.publish()
+                devt, fan, heat, occupancy, uid = struct.unpack_from("<BBBBL", data)
+                doc = {"uid":uid, "addr":addr, "heat":heat, "fan":fan, "sw":occupancy, "when":time.time()}
+                fan = db.fans.find_one({"uid":uid})
+                if fan != None:
+                    if fan["heat"] != heat:
+                        needsync = True
+                    if fan["fan"] != fan:
+                        needsync = True
+                    if needsync:
+                        syncfan(uid, fan)
+                else:
+                    setfan(uid, fan, heat)
+                db.packets.save(doc)
+                
+                ffans = get_f_fan_stream(uid)
+                ffans.set_readings([(int(time.time()*1000), fan*(100.0/7)) ] )
+                ffans.publish()
+                
+                flamps = get_f_lamp_stream(uid)
+                flamps.set_readings([(int(time.time()*1000), heat)])
+                flamps.publish()
+                
+            if devt == 0x02: #footwarmer
+                devt, heat, occupancy, uid = struct.unpack_from("<BBBL", data)
+                doc = {"uid":uid, "addr":addr, "heat":heat, "sw":occupancy, "when":time.time()}
+                fw = db.footwarmers.find_one({"uid":uid})
+                if fw != None:
+                    if fw["heat"] != heat:
+                        needsync = True
+                    if needsync:
+                        syncfootwarmer(uid, fw)
+                else:
+                    setfootwarmer(uid, heat)
+                db.packets.save(doc)
+                
+                wlamps = get_w_lamp_stream(uid)
+                wlamps.set_readings([(int(time.time()*1000), heat)])
+                wlamps.publish()
+                
+                wocc = get_w_occupancy_stream(uid)
+                wocc.set_readings([(int(time.time()*1000), occupancy*100)])
+                wocc.publish()
+                
+                
+            
+            if devt == 0x01: #chair
+                devt, fan, heat, occupancy, uid, fansrc, heatsrc, rh, temp = struct.unpack_from("<BBBBLBBHH", data)
+                #cloud is 1, screen is 2
+                uid = int(uid)
+                if rh != 0:
+                    real_rh = convert_rh(rh)
+                else:
+                    real_rh = None
+                if temp != 0:
+                    real_temp = convert_temp(temp)
+                else:
+                    real_temp = None
+                doc = {"uid":uid, "addr":addr, "fan":fan, "heat":heat, "sw":occupancy, "when":time.time(), 
+                       "fansrc":fansrc, "heatsrc":heatsrc, "rh":rh, "temp":temp, "crh":real_rh, "ctemp":real_temp}
+                ch = db.chairs.find_one({"uid":uid})
+                needsync = False
+                if ch != None:
+                    if ch["fan"] != fan and fansrc == 1:
+                        #The chair thinks it was last set from the cloud but the settings are wrong,
+                        #so tell it again
+                        print "Received fan doesn't match expectation"
+                        needsync = True
+                    if ch["heat"] != heat and heatsrc == 1:
+                        print "Received heat doesn't match expectation"
+                        needsync = True
+                    if fansrc == 2:
+                        ch["fan"] = fan
+                    if heatsrc == 2:
+                        ch["heat"] = heat
+                    if heatsrc == 2 or fansrc == 2:
+                        setchair(uid, fan, heat)
+                    if needsync:
+                        synchair(uid, ch)
+                else:
+                    setchair(uid, fan, heat)
+                db.packets.save(doc)
+                
+                heats = get_heat_stream(uid)
+                heats.set_readings([(int(time.time()*1000), heat)])
+                heats.publish()
+                
+                fans = get_fan_stream(uid)
+                fans.set_readings([(int(time.time()*1000), fan*(100./7))])
+                fans.publish()
+                
+                occupancys = get_occupancy_stream(uid)
+                occupancys.set_readings([(int(time.time()*1000), occupancy*100)])
+                occupancys.publish()
+                
+                if rh != 0:
+                    rhs = get_rh_stream(uid)
+                    rhs.set_readings([(int(time.time()*1000), real_rh)])
+                    rhs.publish()
+                    
+                if temp != 0:
+                    temps = get_temp_stream(uid)
+                    temps.set_readings([(int(time.time()*1000), real_temp)])
+                    temps.publish()
             
             print "Got data:",(", ".join(["0x{:02x}".format(ord(d)) for d in data]))
             print "From: ",addr
@@ -207,7 +289,41 @@ def setchair_ex(code, fan, heat):
     setchair(ch["uid"], fan, heat)
     synchair(ch["uid"], ch)
     return {"error":"none"}
-        
+
+def setfw_ex(code, heat):
+    l = db.codes.find_one({"code":code})
+    fw = db.footwarmers.find_one({"uid":l["fw_uid"])
+    
+    if fw is None:
+        return {"error":"not found"}
+    if heat is None:
+        heat = fw["heat"]
+    heat = int(heat)
+    fw["heat"] = heat
+    #print "setting chair %d to %d, %d" %(ch["uid"],fan,heat)
+    setfootwarmer(fw["uid"], heat)
+    syncfootwarmer(fw["uid"], fw)
+    return {"error":"none"}
+
+def setfan_ex(code, cool, heat):
+    l = db.codes.find_one({"code":code})
+    fan = db.fans.find_one({"uid":l["fan_uid"])
+    
+    if fan is None:
+        return {"error":"not found"}
+    if cool is None:
+        cool = fan["fan"]
+    if heat is None:
+        heat = fan["heat"]
+    heat = int(heat)
+    cool = int(cool)
+    fan["heat"] = heat
+    fan["fan"] = cool
+    #print "setting chair %d to %d, %d" %(ch["uid"],fan,heat)
+    setfan(fan["uid"], fan, heat)
+    syncfan(fan["uid"], fan)
+    return {"error":"none"}
+                
 def setchair(uid, fan, heat):
     uid = int(uid)
     fan = int(fan)
@@ -225,7 +341,39 @@ def setchair(uid, fan, heat):
     c["fan"] = fan
     c["heat"] = heat
     db.chairs.save(c)
-
+    
+def setfootwarmer(uid, heat):    
+    uid = int(uid)
+    heat = int(heat)
+    if heat < 0: heat = 0
+    if heat > 255: heat = 255
+    
+    c = db.footwarmer.find_one({"uid":uid})
+    if c == None:
+        print "FW not found for uid: ",uid
+        #No biggie
+        c = {"uid":uid}
+    c["heat"] = heat
+    db.footwarmers.save(c)
+    
+def setfan(uid, fan, heat):
+    uid = int(uid)
+    fan = int(fan)
+    heat = int(heat)
+    if fan < 0: fan = 0
+    if fan > 255: fan = 255
+    if heat < 0: heat = 0
+    if heat > 255: heat = 255
+    
+    c = db.fans.find_one({"uid":uid})
+    if c == None:
+        print "fan not found for uid: ",uid
+        #No biggie
+        c = {"uid":uid}
+    c["fan"] = fan
+    c["heat"] = heat
+    db.fans.save(c)
+    
 def synchair_aggregated(uid, chair=None):
     print "sc agg inv c=",chair
     c = db.codes.find({"uid":uid}).sort("expire", pymongo.DESCENDING)
@@ -256,7 +404,49 @@ def synchair(uid, chair=None):
     rv = sock.sendto(msg, (destaddr, 7001))
     print "rv is:",rv
     return True
-          
+
+def syncfan(uid, fan=None):
+    print "syncfan invoked c=",fan
+    if fan == None:
+        fan = db.fans.find_one({"uid":uid})
+    if fan is None:
+        print "sfan: fan not found"
+        return False
+    msg = chr(0x15) + chr(fan["fan"]) + chr(fan["heat"])
+    
+    curs = db.packets.find({'uid':uid}).sort([("when", pymongo.DESCENDING)])
+    if curs.count() == 0:
+        print "sfan, packet not found"
+        return False
+    destaddr = curs[0]["addr"][0]
+    sock = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
+    print "destaddr is",repr(destaddr)
+    print "msg is",[hex(ord(c)) for c in msg]
+    rv = sock.sendto(msg, (destaddr, 7001))
+    print "rv is:",rv
+    return True
+
+def syncfootwarmer(uid, fw=None):
+    print "sfw invoked c=",fw
+    if fw == None:
+        fw = db.footwarmers.find_one({"uid":uid})
+    if fw is None:
+        print "fws: fw not found"
+        return False
+    msg = chr(0x10) + chr(fw["heat"])
+    
+    curs = db.packets.find({'uid':uid}).sort([("when", pymongo.DESCENDING)])
+    if curs.count() == 0:
+        print "fwf, packet not found"
+        return False
+    destaddr = curs[0]["addr"][0]
+    sock = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
+    print "destaddr is",repr(destaddr)
+    print "msg is",[hex(ord(c)) for c in msg]
+    rv = sock.sendto(msg, (destaddr, 7001))
+    print "rv is:",rv
+    return True
+                 
 def log_control_heartbeat(code, command, value, worked):
     pass
 
