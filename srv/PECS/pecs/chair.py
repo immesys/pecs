@@ -35,7 +35,12 @@ def get_sensors(uid):
     curs = db.packets.find({'uid':uid}).sort([("when", pymongo.DESCENDING)])
     if curs.count() == 0:
         return {"tempf":"N/A", "tempc":"N/A", "humidity":"N/A"}
-    pack = curs[0]
+    pack = None
+    for i in curs:
+       if i["ctemp"] == None or i["crh"] == None:
+          continue
+       pack = i
+       break
     f = 9.0/5.0 * pack["ctemp"] + 32
     return {"tempf":"{:.1f}".format(f),"tempc":"{:.1f}".format(pack["ctemp"]), "humidity":"{:.1f}".format(pack["crh"])}
         
@@ -106,7 +111,9 @@ def launch_udp_server():
         sock.bind(("::", 7005))
         while True:
             data, addr = sock.recvfrom(1024)
-            fan, heat, occupancy, uid, fansrc, heatsrc, rh, temp = struct.unpack_from("<BBBLBBHH", data)
+            devt, fan, heat, occupancy, uid, fansrc, heatsrc, rh, temp = struct.unpack_from("<BBBBLBBHH", data)
+            if (devt != 0x01):
+               continue
             #cloud is 1, screen is 2
             uid = int(uid)
             if rh != 0:

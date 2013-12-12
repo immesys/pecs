@@ -257,12 +257,12 @@
             if (t > g_last_fan_slide + 3)
             {
                 $( "#chaircoolslider" ).slider("value",data["fan"]);
-                $( "#chaircoolvalue" ).html("Cooling level: "+ ui.value );
+                $( "#chaircoolvalue" ).html("Cooling level: "+ data["fan"] );
             }
             if (t > g_last_heat_slide + 3)
             {
                 $( "#chairheatslider" ).slider("value",data["heat"]);
-                $( "#chairheatvalue" ).html("Heating level: "+ ui.value );
+                $( "#chairheatvalue" ).html("Heating level: "+ data["heat"] );
             }
         });
     }
