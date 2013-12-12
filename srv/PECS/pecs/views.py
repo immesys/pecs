@@ -28,7 +28,7 @@ def controlpanel(request):
         return {"error":"Chair code invalid"}
     else:
         env = get_sensors(chairobj["uid"])
-        return {"error":"none", "chair":chairobj, "env":env, "code":"{:08X}".format(code)}
+        return {"error":"none", "chair":chairobj, "uid":chairobj["uid"],"env":env, "code":"{:08X}".format(code)}
     
 @view_config(route_name='apply_fan', renderer='json')
 def apply_fan(request):
