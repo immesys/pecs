@@ -20,7 +20,7 @@ int main()
 {
 
     init_hw();
-  //  init_vals();
+   // init_vals();
  //   lcd_init();
 
 //    reset_rht();
@@ -32,9 +32,28 @@ int main()
 //    while(1);
  //   draw_bar_screen_full();
 
-    while(1)
-    {
-        rxipoll();
+    uint32_t i = 0;
+        while(1)
+        {
+            i++;
+            if (i == 30000)
+            {
+           // uart2_wb('+');
+            i = 0;
+            }
+                if(U1STAbits.OERR)
+            {
+            //    uart2_wb('%');
+                U1MODEbits.UARTEN = 0;
+                U1MODEbits.UARTEN = 1;
+                U1STAbits.UTXEN = 1;
+
+            }
+            if(U2STAbits.OERR)
+            {
+                U2STAbits.OERR = 0;
+            }
+            rxipoll();
     }
 
 }

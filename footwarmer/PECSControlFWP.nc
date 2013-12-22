@@ -99,7 +99,7 @@ implementation
   task void sendrep()
   {
     controls.device_type = 0x02;
-    controls.heat_setting = duty_cycle;
+    controls.heat_setting = duty_cycle_shadow;
     controls.occupancy = !(call contact.get());
     controls.uid = 0x200 | TOS_NODE_ID;
     call Leds.led1Toggle();

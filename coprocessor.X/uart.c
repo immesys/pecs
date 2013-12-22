@@ -41,7 +41,6 @@ write(int handle, void *buffer, unsigned int len) {
 
 void do_cmd(uint8_t cmd, uint8_t value)
 {
-    printf("c %u / %u\n",cmd,value);
     switch(cmd)
     {
         case 0x11: //set heat value
@@ -100,7 +99,6 @@ void rxipoll()
 {
     while(U1STAbits.URXDA)
     {
-        uart2_wb('/');
         _U1RXIF = 0;
         uint8_t c = U1RXREG;
         switch(state)
