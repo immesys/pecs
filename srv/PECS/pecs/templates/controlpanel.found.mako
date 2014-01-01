@@ -74,7 +74,7 @@
 
       <!-- Main hero unit for a primary marketing message or call to action -->
       <div class="hero-unit">
-        <p id="envbanner" style="font-family: 'Days One', sans-serif; font-size:250%">It is ${env["tempf"]} &deg;F and ${env["humidity"]} %RH</p>
+        <p id="envbanner" style="font-family: 'Days One', sans-serif; font-size:250%; line-height:120%">It is ${env["tempf"]} &deg;F and ${env["humidity"]} %RH</p>
 	<p></p>
         <p>But why not take the time to personalize your environment a little? On this page, you will have the ability to control the heating and cooling features of your chair</p>
         <p><a href="/about" class="btn btn-primary btn-large">Learn more &raquo;</a></p>
@@ -204,7 +204,7 @@
       });
       $(function() { 
         $( "#fancoolslider" ).slider({
-          value: 4,
+          value: 0,
           orientation: "horizontal",
           min:"0",
           max:"7",
@@ -266,12 +266,12 @@
             setTimeout("svars()", 2000);
             $("#envbanner").html("It is "+data["tempf"]+" &deg;F and "+data["humidity"]+" %RH");
             var t = new Date().getTime();
-            if (t > g_last_fan_slide + 3)
+            if (t > g_last_fan_slide + 8)
             {
                 $( "#chaircoolslider" ).slider("value",data["fan"]);
                 $( "#chaircoolvalue" ).html("Cooling level: "+ data["fan"] );
             }
-            if (t > g_last_heat_slide + 3)
+            if (t > g_last_heat_slide + 8)
             {
                 $( "#chairheatslider" ).slider("value",data["heat"]);
                 $( "#chairheatvalue" ).html("Heating level: "+ data["heat"] );

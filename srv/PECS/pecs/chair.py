@@ -145,20 +145,21 @@ def launch_udp_server():
         sock.bind(("::", 7005))
         while True:
             data, addr = sock.recvfrom(1024)
-            devt = data[0]
-            
+            devt = ord(data[0])
+            print "Device type: ",devt
             if devt == 0x03: #Fan
                 
-                devt, fan, heat, occupancy, uid = struct.unpack_from("<BBBBL", data)
-                doc = {"uid":uid, "addr":addr, "heat":heat, "fan":fan, "sw":occupancy, "when":time.time()}
-                fan = db.fans.find_one({"uid":uid})
-                if fan != None:
-                    if fan["heat"] != heat:
+                devt, fan, heat, uid = struct.unpack_from("<BBBL", data)
+                doc = {"uid":uid, "addr":addr, "heat":heat, "fan":fan, "when":time.time()}
+                fano = db.fans.find_one({"uid":uid})
+                needsync = False
+                if fano != None:
+                    if fano["heat"] != heat:
                         needsync = True
-                    if fan["fan"] != fan:
+                    if fano["fan"] != fan:
                         needsync = True
                     if needsync:
-                        syncfan(uid, fan)
+                        syncfan(uid, fano)
                 else:
                     setfan(uid, fan, heat)
                 db.packets.save(doc)
@@ -174,7 +175,9 @@ def launch_udp_server():
             if devt == 0x02: #footwarmer
                 devt, heat, occupancy, uid = struct.unpack_from("<BBBL", data)
                 doc = {"uid":uid, "addr":addr, "heat":heat, "sw":occupancy, "when":time.time()}
+                print "FW: ",doc
                 fw = db.footwarmers.find_one({"uid":uid})
+                needsync = False
                 if fw != None:
                     if fw["heat"] != heat:
                         needsync = True
@@ -292,7 +295,7 @@ def setchair_ex(code, fan, heat):
 
 def setfw_ex(code, heat):
     l = db.codes.find_one({"code":code})
-    fw = db.footwarmers.find_one({"uid":l["fw_uid"])
+    fw = db.footwarmers.find_one({"uid":l["fw_uid"]})
     
     if fw is None:
         return {"error":"not found"}
@@ -307,7 +310,7 @@ def setfw_ex(code, heat):
 
 def setfan_ex(code, cool, heat):
     l = db.codes.find_one({"code":code})
-    fan = db.fans.find_one({"uid":l["fan_uid"])
+    fan = db.fans.find_one({"uid":l["fan_uid"]})
     
     if fan is None:
         return {"error":"not found"}
@@ -320,7 +323,7 @@ def setfan_ex(code, cool, heat):
     fan["heat"] = heat
     fan["fan"] = cool
     #print "setting chair %d to %d, %d" %(ch["uid"],fan,heat)
-    setfan(fan["uid"], fan, heat)
+    setfan(fan["uid"], cool, heat)
     syncfan(fan["uid"], fan)
     return {"error":"none"}
                 
@@ -348,7 +351,7 @@ def setfootwarmer(uid, heat):
     if heat < 0: heat = 0
     if heat > 255: heat = 255
     
-    c = db.footwarmer.find_one({"uid":uid})
+    c = db.footwarmers.find_one({"uid":uid})
     if c == None:
         print "FW not found for uid: ",uid
         #No biggie
