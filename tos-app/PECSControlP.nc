@@ -14,7 +14,7 @@
 
 #include "PECSReport.h"
 #include "blip_printf.h"
-
+#include <Msp430Adc12.h>
 #include <msp430usart.h>
 
 #define REPORT_PERIOD 10L
@@ -54,11 +54,21 @@ module PECSControlP
     interface Timer<TMilli> as ReportTimer;
     interface Timer<TMilli> as CommandTimer;
     interface Random;
+
+    interface Read<uint16_t> as BatteryADC;
+
   }
+  provides
+  {
+  
+    interface AdcConfigure<const msp430adc12_channel_config_t*> as ADCConfig;
+  }
+  
 }
 
 #define SOURCE_CLOUD 1
 #define SOURCE_SCREEN 2
+#define TOTAL_BAT_SAMPLES 1
 
 implementation
 {
@@ -72,9 +82,27 @@ implementation
   uint8_t shadow_heat;
   uint8_t fan_source; //Where did this setting come from?
   uint8_t heat_source;
+  uint32_t bat_accum;
+  uint8_t bat_samples;
+  uint32_t bat_reading;
   
   uint8_t relh_h, relh_l, temp_h, temp_l;
   
+  
+  // ADC for battery voltage
+  //#define CONFIG_AVCC TEMPERATURE_DIODE_CHANNEL, REFERENCE_AVcc_AVss, REFVOLT_LEVEL_NONE, SHT_SOURCE_SMCLK, SHT_CLOCK_DIV_1, SAMPLE_HOLD_4_CYCLES, SAMPCON_SOURCE_SMCLK, SAMPCON_CLOCK_DIV_1
+  const msp430adc12_channel_config_t config = {INPUT_CHANNEL_A0, REFERENCE_VREFplus_AVss, REFVOLT_LEVEL_2_5, SHT_SOURCE_ACLK, SHT_CLOCK_DIV_1, SAMPLE_HOLD_4_CYCLES, SAMPCON_SOURCE_SMCLK, SAMPCON_CLOCK_DIV_1};
+  
+  
+  /* {INPUT_CHANNEL_A0, 
+                                               REFERENCE_VREFplus_AVss,
+                                               REFVOLT_LEVEL_2_5,
+                                               SHT_SOURCE_ADC12OSC,
+                                               SHT_CLOCK_DIV_6,
+                                               SAMPLE_HOLD_32_CYCLES,
+                                               SAMPCON_SOURCE_SMCLK,
+                                               SAMPCON_CLOCK_DIV_2};*/
+                                               
   task void sendrep()
   {
     controls.device_type = 0x01;
@@ -84,6 +112,7 @@ implementation
     controls.uid = 0x100 | TOS_NODE_ID;
     controls.fan_origin = fan_source;
     controls.heat_origin = heat_source;
+    controls.battery = bat_reading;
     call Leds.led1Toggle();
     call Reports.sendto(&route_dest, &controls, sizeof(controls));
   }
@@ -312,6 +341,10 @@ implementation
       call ReportTimer.startPeriodic(1024 * REPORT_PERIOD);
       timerStarted = TRUE;
     }
+    
+      
+    call BatteryADC.read();
+              
     if (call contact.get())
     { //Not occupied
         st_fan = 0;
@@ -337,6 +370,9 @@ implementation
     uconfig.uartConfig.ubr = UBR_1MHZ_115200;
     uconfig.uartConfig.umctl = UMCTL_1MHZ_115200;
     
+    bat_accum = 0;
+    bat_samples = 0;
+    bat_reading = 0;
     call RadioControl.start();
     timerStarted = FALSE;
 
@@ -378,5 +414,25 @@ implementation
     
     temp_h = temp_l = relh_h = relh_l = 0;
   }
+                        
+     
+  async command const msp430adc12_channel_config_t* ADCConfig.getConfiguration()
+  {
+    return &config;
+  }
+
+  event void BatteryADC.readDone( error_t result, uint16_t data )
+  {
+    bat_accum += data;
+    bat_samples++;
+    if (bat_samples == TOTAL_BAT_SAMPLES)
+    {
+        bat_reading = bat_accum;
+        bat_accum = 0;
+        bat_samples = 0;
+    }
+  }
   
+                                            
+                                               
 }

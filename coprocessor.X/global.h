@@ -10,7 +10,7 @@
 
 #include <xc.h>
 #include <stdint.h>
-
+#include "assets.h"
 
 
 #define LCD_X  240
@@ -95,6 +95,7 @@ void poll_val_uploads();
 void unpack();
 inline void uart2_wb(uint8_t v);
 void rxipoll();
+void draw_qr_hexcode();
 
 // rht.c
 uint16_t read_temp();
@@ -193,53 +194,6 @@ typedef enum {ss_unoccupied, ss_active_to_idle, ss_qr_to_idle, ss_idle, ss_qr_en
 #define LCD_BL          OC1R
 #define HEAT            OC2R
 
-#define ASSET_BARS_ADDR   0x000000
-#define ASSET_BARS_LENGTH 0x025800
-#define ASSET_BARS_WIDTH  320
-#define ASSET_BARS_HEIGHT 240
-#define ASSET_BLUEBAR_ADDR   0x025800
-#define ASSET_BLUEBAR_LENGTH 0x006590
-#define ASSET_BLUEBAR_WIDTH  260
-#define ASSET_BLUEBAR_HEIGHT 50
-#define ASSET_REDBAR_ADDR   0x02be00
-#define ASSET_REDBAR_LENGTH 0x006590
-#define ASSET_REDBAR_WIDTH  260
-#define ASSET_REDBAR_HEIGHT 50
-#define ASSET_SLIDER_KNOB_ADDR   0x032400
-#define ASSET_SLIDER_KNOB_LENGTH 0x001272
-#define ASSET_SLIDER_KNOB_WIDTH  54
-#define ASSET_SLIDER_KNOB_HEIGHT 54
-#define ASSET_UP2_ADDR   0x033700
-#define ASSET_UP2_LENGTH 0x009c40
-#define ASSET_UP2_WIDTH  200
-#define ASSET_UP2_HEIGHT 100
-#define ASSET_SDB_ADDR   0x03d400
-#define ASSET_SDB_LENGTH 0x025800
-#define ASSET_SDB_WIDTH  320
-#define ASSET_SDB_HEIGHT 240
-#define ASSET_PECS_ADDR   0x062c00
-#define ASSET_PECS_LENGTH 0x025800
-#define ASSET_PECS_WIDTH  320
-#define ASSET_PECS_HEIGHT 240
-#define ASSET_POINT_ADDR   0x088400
-#define ASSET_POINT_LENGTH 0x0005b2
-#define ASSET_POINT_WIDTH  27
-#define ASSET_POINT_HEIGHT 27
-#define ASSET_CALIBRATE_ADDR   0x088a00
-#define ASSET_CALIBRATE_LENGTH 0x025800
-#define ASSET_CALIBRATE_WIDTH  320
-#define ASSET_CALIBRATE_HEIGHT 240
-#define ASSET_BLUEBAR2_ADDR   0x0ae200
-#define ASSET_BLUEBAR2_LENGTH 0x007620
-#define ASSET_BLUEBAR2_WIDTH  270
-#define ASSET_BLUEBAR2_HEIGHT 56
-#define ASSET_REDBAR2_ADDR   0x0b5900
-#define ASSET_REDBAR2_LENGTH 0x007620
-#define ASSET_REDBAR2_WIDTH  270
-#define ASSET_REDBAR2_HEIGHT 56
-
-
-
 
 #define BLUEBAR_POSITION_X 40
 #define BLUEBAR_POSITION_Y 48
@@ -251,7 +205,7 @@ typedef enum {ss_unoccupied, ss_active_to_idle, ss_qr_to_idle, ss_idle, ss_qr_en
 #define REDBAR2_POSITION_X  31
 #define REDBAR2_POSITION_Y  139
 
-#define V_OFFSET 20
+#define V_OFFSET 22
 #define OV_SENTINEL 0xF7
 #define KNOB_START_X 38
 #define BG_OVERFLOW 4
@@ -276,7 +230,7 @@ typedef enum {ss_unoccupied, ss_active_to_idle, ss_qr_to_idle, ss_idle, ss_qr_en
 #define BOTH_TP_START_X 0
 #define BOTH_TP_END_X   320
 
-#define MAX_V           245
+#define MAX_V           247
 
 #define SOURCE_CLOUD 1
 #define SOURCE_SCREEN 2

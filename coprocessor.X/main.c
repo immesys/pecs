@@ -18,19 +18,25 @@ extern flashstate_t flashstate;
 void fragtest();
 int main()
 {
-
+    //Assign pins and whatnot
     init_hw();
+
+    //Set up the screen values, but not sure this makes sense
+    //because the epic ought to send it the latest values
     init_vals();
+
+    //LCD initialisation incantations
     lcd_init();
 
+    //Performed here, but also redone every time the sensor chip returns a zero
+    //on the i2c
     reset_rht();
 
-    printf ("system booting");
+    //Unpack the QR code into a bit array
     unpack();
-    tp_calibrate();
 
-//    while(1);
- //   draw_bar_screen_full();
+    //do the screen 'touch points to calibrate' prompt
+    tp_calibrate();
 
     while(1)
     {
@@ -38,7 +44,6 @@ int main()
         poll_screen();
         rxipoll();
         poll_temps();
-
         poll_val_uploads();
         rxipoll();
     }

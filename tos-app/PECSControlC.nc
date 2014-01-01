@@ -6,11 +6,17 @@ configuration PECSControlC {
 } implementation {
   components MainC, LedsC;
   components PECSControlP;
+  components new AdcReadClientC();
 
   components HplMsp430GeneralIOC;
   components HplMsp430InterruptC;
   components HplMsp430Usart1C;
+  components new Msp430Adc12ClientC();
   
+  
+  PECSControlP.BatteryADC -> AdcReadClientC;
+  AdcReadClientC.AdcConfigure -> PECSControlP.ADCConfig;
+
   PECSControlP.BLEGPIO -> HplMsp430GeneralIOC.Port53;
   PECSControlP.fanA -> HplMsp430GeneralIOC.Port54;
   PECSControlP.fanB -> HplMsp430GeneralIOC.Port55;
@@ -66,6 +72,8 @@ configuration PECSControlC {
   // prints the routing table
   components RouteCmdC;
 
+
+  
 #ifdef IN6_PREFIX
   components StaticIPAddressC;
 #else

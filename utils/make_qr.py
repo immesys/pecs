@@ -8,7 +8,11 @@ qr = qrcode.QRCode(
     border=0,
 )
 
-qr.add_data("http://pecs.cal-sdb.org/AABBCCDD")
+qr.add_data("http://storm.cs.berkeley.edu/SB.00")
+
+from qrcode.image.pure import PymagingImage
+img = qrcode.make('http://storm.cs.berkeley.edu/SB.00', image_factory=PymagingImage)
+
 m = qr.get_matrix()
 
 print "Matrix size: ", len(m),len(m[0])

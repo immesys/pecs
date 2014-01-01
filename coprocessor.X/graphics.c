@@ -99,6 +99,27 @@ uint8_t new_red_val;
 
 #define THRESHOLD 2
 
+uint8_t packed [] = {0xfe,0x2a,0x65,0xbf,0xc1,0x57,0x05,0x10,0x6e,0x8b,0x3d,0xab,0xb7,0x4d,0xd9,0x45,0xdb,0xa4,0x15,0x82,0xec,0x16,0x84,0x0d,0x07,0xfa,0xaa,0xaa,0xfe,0x01,0xe5,0xbd,0x00,0x0f,0x66,0x2b,0xb1,0x46,0xd1,0xac,0xcb,0x90,0xc9,0xcb,0xff,0x5e,0x8d,0xf5,0x95,0x28,0xb6,0xd9,0x0b,0x0d,0x6d,0x11,0x7a,0x0b,0x58,0x87,0x87,0xa4,0xba,0x03,0x5a,0xcf,0x9f,0xf2,0x16,0xa8,0xd0,0x81,0xc3,0xc8,0x12,0x99,0x53,0x55,0x1b,0x99,0x42,0x80,0x2d,0x25,0x2e,0xfc,0xd7,0xea,0x60,0x35,0x18,0x1f,0x31,0xe4,0x0c,0x68,0x79,0x70,0x33,0xd2,0x39,0xa1,0xfd,0x80,0x4b,0x6b,0x45,0xbf,0xbf,0x00,0x2b,0xd0,0x5f,0xcd,0x51,0x8b,0xad,0xfe,0x2f,0x9d,0xd2,0x9a,0x03,0xf6,0xe9,0x11,0xfd,0xa9,0x04,0xb2,0x57,0x34,0xfe,0x76,0xcb,0x90};
+
+uint16_t qr_code [33 * 33];
+uint8_t hexcode [8];
+const uint32_t hex_addresses [] =  {ASSET_1_ADDR,
+                                    ASSET_1_ADDR, //Duplicate 1 is not bug
+                                    ASSET_2_ADDR,
+                                    ASSET_3_ADDR,
+                                    ASSET_4_ADDR,
+                                    ASSET_5_ADDR,
+                                    ASSET_6_ADDR,
+                                    ASSET_7_ADDR,
+                                    ASSET_8_ADDR,
+                                    ASSET_9_ADDR,
+                                    ASSET_A_ADDR,
+                                    ASSET_B_ADDR,
+                                    ASSET_C_ADDR,
+                                    ASSET_D_ADDR,
+                                    ASSET_E_ADDR,
+                                    ASSET_F_ADDR};
+
 void blit_rect(uint16_t sx, uint16_t sy, uint16_t width, uint16_t height, uint32_t start_address)
 {
     //The X dim is X2 because each column is two byts
@@ -203,6 +224,7 @@ void check_flash_overlay_blit()
     GFX_REG = b;
     while (!GFX_RX_EMPTY) b = GFX_REG;
 }
+
 /**
  * We are taking a different attitude here. We are going to assume
  * that we are moving slowly enough that the TX buffers will
@@ -327,6 +349,7 @@ void draw_blue_bar_full(uint8_t v)
                    ASSET_BARS_WIDTH,
                    ASSET_BARS_HEIGHT,
                    ASSET_BARS_ADDR);
+    //Then the blue bar
     blocking_wblit(BLUEBAR2_POSITION_X,
                    BLUEBAR2_POSITION_Y,
                    v + V_OFFSET,
@@ -336,6 +359,62 @@ void draw_blue_bar_full(uint8_t v)
                    ASSET_BLUEBAR2_HEIGHT,
                    ASSET_BLUEBAR2_ADDR);
  //   blocking_ovblit(BLUEBAR2_POSITION_X + v + V_OFFSET - (ASSET_SLIDER_KNOB_WIDTH>>1), BLUEBAR2_POSITION_Y + 1, ASSET_SLIDER_KNOB_ADDR, ASSET_SLIDER_KNOB_LENGTH);
+}
+void draw_blue_bar_incremental()
+{
+    if(new_blue_val > blue_val)
+    {
+        //We only need to draw blue
+        blocking_wblit(BLUEBAR2_POSITION_X + blue_val + V_OFFSET,
+                       BLUEBAR2_POSITION_Y,
+                       (new_blue_val - blue_val),
+                       ASSET_BLUEBAR2_HEIGHT,
+                       blue_val + V_OFFSET, 0,
+                       ASSET_BLUEBAR2_WIDTH,
+                       ASSET_BLUEBAR2_HEIGHT,
+                       ASSET_BLUEBAR2_ADDR);
+    }
+    else
+    {
+        //We only need to draw background
+        blocking_wblit(BLUEBAR2_POSITION_X + new_blue_val + V_OFFSET,
+                       BLUEBAR2_POSITION_Y,
+                       ASSET_BLUEBAR2_WIDTH - new_blue_val - V_OFFSET + BG_OVERFLOW,
+                       ASSET_BLUEBAR2_HEIGHT,
+                       BLUEBAR2_POSITION_X + new_blue_val + V_OFFSET,
+                       BLUEBAR2_POSITION_Y,
+                       ASSET_BARS_WIDTH,
+                       ASSET_BARS_HEIGHT,
+                       ASSET_BARS_ADDR);
+    }
+}
+void draw_red_bar_incremental()
+{
+    if(new_red_val > red_val)
+    {
+        //We only need to draw red
+        blocking_wblit(REDBAR2_POSITION_X + red_val + V_OFFSET,
+                       REDBAR2_POSITION_Y,
+                       (new_red_val - red_val),
+                       ASSET_REDBAR2_HEIGHT,
+                       red_val + V_OFFSET, 0,
+                       ASSET_REDBAR2_WIDTH,
+                       ASSET_REDBAR2_HEIGHT,
+                       ASSET_REDBAR2_ADDR);
+    }
+    else
+    {
+        //We only need to draw background
+        blocking_wblit(REDBAR2_POSITION_X + new_red_val + V_OFFSET,
+                       REDBAR2_POSITION_Y,
+                       ASSET_REDBAR2_WIDTH - new_red_val - V_OFFSET + BG_OVERFLOW,
+                       ASSET_REDBAR2_HEIGHT,
+                       REDBAR2_POSITION_X + new_red_val + V_OFFSET,
+                       REDBAR2_POSITION_Y,
+                       ASSET_BARS_WIDTH,
+                       ASSET_BARS_HEIGHT,
+                       ASSET_BARS_ADDR);
+    }
 }
 void draw_red_bar_full(uint8_t v)
 {
@@ -396,8 +475,8 @@ inline void draw_calibrate_point(uint16_t x, uint16_t y)
 void draw_bar_screen_full(void)
 {
     draw_bg();
-    draw_blue_bar_full(red_val);
-    draw_red_bar_full(blue_val);
+    draw_blue_bar_full(blue_val);
+    draw_red_bar_full(red_val);
 }
 
 
@@ -587,25 +666,25 @@ void tp_calibrate(void)
     }*/
 }
 
-extern
+
 inline void do_screen_touch(uint16_t x, uint16_t y)
 {
     int16_t nv;
-
+#define SNAP 20
     if (x >= BOTH_TP_START_X && x < BOTH_TP_END_X)
     {
         if (y >= RED_TP_START_Y && y <= RED_TP_END_Y)
         {
             nv = x - REDBAR2_POSITION_X - V_OFFSET;
-            if (nv < 0) nv = 0;
-            if (nv > MAX_V) nv = MAX_V;
+            if (nv < SNAP) nv = 0;
+            if (nv > MAX_V-SNAP) nv = MAX_V;
             new_red_val = nv;
         }
         if (y >= BLUE_TP_START_Y && y <= BLUE_TP_END_Y)
         {
             nv = x - BLUEBAR2_POSITION_X - V_OFFSET;
-            if (nv < 0) nv = 0;
-            if (nv > MAX_V) nv = MAX_V;
+            if (nv < SNAP) nv = 0;
+            if (nv > MAX_V-SNAP) nv = MAX_V;
             new_blue_val = nv;
         }
     }
@@ -616,6 +695,14 @@ void init_vals()
     red_val = 0;
     new_red_val = 0;
     new_blue_val = 0;
+    hexcode[0] = 0x1;
+    hexcode[1] = 0xB;
+    hexcode[2] = 0xA;
+    hexcode[3] = 0xD;
+    hexcode[4] = 0xB;
+    hexcode[5] = 0xA;
+    hexcode[6] = 0xB;
+    hexcode[7] = 0xE;
 }
 
 uint8_t screen_tap;
@@ -676,8 +763,9 @@ void poll_screen()
             }
             if (new_blue_val != blue_val)
             {
+                draw_blue_bar_incremental();
                 blue_val = new_blue_val;
-                draw_blue_bar_full(new_blue_val);
+                //draw_blue_bar_full(new_blue_val);
             }
             if ((time.u32 - last_activity_time) > HUS_TIMEOUT)
             {
@@ -689,6 +777,7 @@ void poll_screen()
         case ss_qr_entry:
         {
             draw_qr_code();
+            draw_qr_hexcode();
             LCD_BL = 255;
             screen_state = ss_qr;
             break;
@@ -789,7 +878,6 @@ void poll_val_uploads()
 
     if(U1STAbits.OERR)
     {
-        uart2_wb('%');
         U1MODEbits.UARTEN = 0;
         U1MODEbits.UARTEN = 1;
         U1STAbits.UTXEN = 1;
@@ -813,8 +901,9 @@ void poll_val_uploads()
         }
     }
 }
-const uint8_t packed [] = {0xfe,0x2a,0x65,0xbf,0xc1,0x57,0x05,0x10,0x6e,0x8b,0x3d,0xab,0xb7,0x4d,0xd9,0x45,0xdb,0xa4,0x15,0x82,0xec,0x16,0x84,0x0d,0x07,0xfa,0xaa,0xaa,0xfe,0x01,0xe5,0xbd,0x00,0x0f,0x66,0x2b,0xb1,0x46,0xd1,0xac,0xcb,0x90,0xc9,0xcb,0xff,0x5e,0x8d,0xf5,0x95,0x28,0xb6,0xd9,0x0b,0x0d,0x6d,0x11,0x7a,0x0b,0x58,0x87,0x87,0xa4,0xba,0x03,0x5a,0xcf,0x9f,0xf2,0x16,0xa8,0xd0,0x81,0xc3,0xc8,0x12,0x99,0x53,0x55,0x1b,0x99,0x42,0x80,0x2d,0x25,0x2e,0xfc,0xd7,0xea,0x60,0x35,0x18,0x1f,0x31,0xe4,0x0c,0x68,0x79,0x70,0x33,0xd2,0x39,0xa1,0xfd,0x80,0x4b,0x6b,0x45,0xbf,0xbf,0x00,0x2b,0xd0,0x5f,0xcd,0x51,0x8b,0xad,0xfe,0x2f,0x9d,0xd2,0x9a,0x03,0xf6,0xe9,0x11,0xfd,0xa9,0x04,0xb2,0x57,0x34,0xfe,0x76,0xcb,0x90};
-uint16_t code [33 * 33];
+
+
+
 void unpack()
 {
    uint8_t i;
@@ -825,7 +914,7 @@ void unpack()
        uint8_t b = packed[i];
        for (k = 0; k < 8 && idx < 33*33; k++)
        {
-           code[idx] = (b & 0x80) ? 0x000 : 0xFFFF;
+           qr_code[idx] = (b & 0x80) ? 0x000 : 0xFFFF;
            b <<= 1;
            idx ++;
        }
@@ -848,12 +937,12 @@ void gen_qr_code(const char* str)
           if (((n+1)*8)-b>w*w){break;}
           if((tempdata[n] & (1 << b)) != 0)
           {
-              code[idx] = 0x00;
+              qr_code[idx] = 0x00;
               idx++;
           }
           else
           {
-              code[idx] = 0xFF;
+              qr_code[idx] = 0xFF;
               idx++;
           }
           bit_count++;
@@ -866,8 +955,8 @@ void gen_fake_code()
     uint16_t i;
     for (i = 0; i < (33*33); i++)
     {
-        if (i%2 == 0) code[i] = 0xFFFF;
-        else code [i] = 0x0000;
+        if (i%2 == 0) qr_code[i] = 0xFFFF;
+        else qr_code [i] = 0x0000;
     }
 }
 void draw_qr_code()
@@ -893,7 +982,7 @@ void draw_qr_code()
             {
                 for (coli = 0; coli < mult; coli++)
                 {
-                    lcd_write_data_body(code[row*33 + col]);
+                    lcd_write_data_body(qr_code[row*33 + col]);
                 }
             }
             y++;
@@ -901,4 +990,14 @@ void draw_qr_code()
 
     }
     lcd_end_gfx();
+}
+
+void draw_qr_hexcode()
+{
+    uint8_t i;
+    for (i=0;i<8;i++)
+    {
+        blocking_wblit(0, 30*i, ASSET_1_HEIGHT, ASSET_1_WIDTH, 0, 0,
+                         ASSET_1_HEIGHT, ASSET_1_WIDTH, hex_addresses[hexcode[i]]);
+    }
 }

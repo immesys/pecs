@@ -95,8 +95,11 @@ void __attribute__((interrupt)) _U1RXInterrupt(void)
     
 }*/
 
+extern uint8_t hexcode [8];
+extern uint8_t packed [];
 void rxipoll()
 {
+
     while(U1STAbits.URXDA)
     {
         _U1RXIF = 0;
@@ -113,7 +116,20 @@ void rxipoll()
                 break;
             case cs_cmd1:
                 cmd1 = c;
-                do_cmd(cmd0, cmd1);
+                if (cmd0 < 0x60)
+                {
+                    do_cmd(cmd0, cmd1);
+                }
+                else if ((cmd0 & 0xF0) == 0x60)
+                {
+                    //So for a text of 69ABCDEF you must send 0x69 0xAB 0xCD 0xEF
+                    hexcode[cmd0 & 0x0F] = cmd1>>4;
+                    hexcode[(cmd0 & 0x0F) + 1] = cmd1 & 0xF;
+                }
+                else if (cmd0 >= 0x70)
+                {
+                    packed[cmd0 - 0x70] = cmd1;
+                }
                 state = cs_idle;
                 break;
             default:

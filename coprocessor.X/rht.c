@@ -142,13 +142,17 @@ void poll_temps()
     time.u16_high = TMR3HLD;
     if(time.u32 - last_time.u32 > TEMP_POLL_THRESHOLD)
     {
-        printf("+");
         uint16_t v;
         last_time = time;
         if (wastemp)
         {
             wastemp = 0;
             v = read_rel_humidity();
+            if (v == 0)
+            {
+                reset_rht();
+                return;
+            }
             send_epic_packet(0x12, v >> 8);
             delay_hus(100);
             send_epic_packet(0x13, v & 0xFF);
@@ -157,6 +161,11 @@ void poll_temps()
         {
             wastemp = 1;
             v = read_temp();
+            if (v == 0)
+            {
+                reset_rht();
+                return;
+            }
             send_epic_packet(0x14, v >> 8);
             delay_hus(100);
             send_epic_packet(0x15, v & 0xFF);

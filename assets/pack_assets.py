@@ -87,6 +87,21 @@ images = [
         ("calibrate", "rectangle"),
         ("bluebar2","rectangle"),
         ("redbar2","rectangle"),
+        ("1","rectangle"),
+        ("2","rectangle"),
+        ("3","rectangle"),
+        ("4","rectangle"),
+        ("5","rectangle"),
+        ("6","rectangle"),
+        ("7","rectangle"),
+        ("8","rectangle"),
+        ("9","rectangle"),
+        ("A","rectangle"),
+        ("B","rectangle"),
+        ("C","rectangle"),
+        ("D","rectangle"),
+        ("E","rectangle"),
+        ("F","rectangle")
         ]
 
 if sys.argv[1] == "make":                        

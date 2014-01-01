@@ -1,3 +1,13 @@
+/* 
+ * File:   assets.h
+ * Author: immesys
+ *
+ * Created on December 30, 2013, 6:15 PM
+ */
+
+#ifndef ASSETS_H
+#define	ASSETS_H
+
 #define ASSET_BARS_ADDR   0x000000
 #define ASSET_BARS_LENGTH 0x025800
 #define ASSET_BARS_WIDTH  320
@@ -102,3 +112,6 @@
 #define ASSET_F_LENGTH 0x000708
 #define ASSET_F_WIDTH  30
 #define ASSET_F_HEIGHT 30
+
+#endif	/* ASSETS_H */
+
