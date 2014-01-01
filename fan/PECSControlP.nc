@@ -235,6 +235,7 @@ implementation
   
     atomic
     {
+    
         st_fan = 0;
         shadow_fan = 0;
         shadow_heat = 0;

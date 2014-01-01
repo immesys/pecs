@@ -11,11 +11,14 @@ uint8_t occupied;
 uint8_t fans_shadow;
 uint8_t fans_origin;
 
+uint16_t last_heat = 0;
+
 extern uint8_t new_red_val;
 extern uint8_t new_blue_val;
 
 void set_heat(uint8_t val, uint8_t total, uint8_t origin)
 {
+    printf("Setting heat\n");
     uint32_t temp = val;
     temp <<= 8;
     temp /= total;
@@ -24,21 +27,23 @@ void set_heat(uint8_t val, uint8_t total, uint8_t origin)
     heat_shadow = val;
     heat_origin = origin;
 
-    if(occupied) 
+    if (val > last_heat)
     {
-        printf("Setting heat to %d\n",val);
+        uint16_t vv;
+        for (vv = last_heat; vv < val; vv++)
+        {
+            HEAT = vv;
+            delay_ms(50);
+        }
+        last_heat = val;
         HEAT = val;
     }
     else
     {
-        printf("Not occupied, skipping heat\n");
+        last_heat = val;
+        HEAT = val;
     }
-
-    temp = val;
-    temp *= MAX_V;
-    temp >>= 8;
-    new_red_val = temp;
-
+    printf("Done\n");
 }
 void set_fans(uint8_t val, uint8_t total, uint8_t origin)
 {
@@ -91,12 +96,4 @@ void fanslider(uint8_t val, uint8_t total)
 void set_occupancy(uint8_t is_occupied)
 {
     occupied = is_occupied;
-    if (occupied)
-    {
-        HEAT = heat_shadow;
-    }
-    else
-    {
-        HEAT = 0;
-    }
 }
