@@ -19,7 +19,8 @@ def get_device(uid):
         dev = {'heat_stream_id':str(uuid.uuid1()),
                'temp_stream_id':str(uuid.uuid1()),
                'rh_stream_id':str(uuid.uuid1()),
-               'fan_stream_id':str(uuid.uuid1()), 
+               'fan_stream_id':str(uuid.uuid1()),
+               'battery_stream_id':str(uuid.uuid1()), 
                'contact_stream_id':str(uuid.uuid1()), 
                'f_lamp_stream_id':str(uuid.uuid1()),
                'f_fan_stream_id':str(uuid.uuid1()),
@@ -59,6 +60,15 @@ def get_fan_stream(uid):
     rv = Ssstream(**params)
     return rv
 
+def get_battery_stream(uid):
+    global shared
+    dev = get_device(uid)
+    params = shared.copy()
+    uid = str(uid)
+    params.update({'instName':uid, 'uuid':dev['battery_stream_id'], 'instFullName':'PECS chair #'+uid, 'sensorName':'battery', 'unitofMeasure':'V'})
+    rv = Ssstream(**params)
+    return rv
+    
 def get_occupancy_stream(uid):
     global shared
     dev = get_device(uid)
@@ -138,7 +148,22 @@ def convert_temp(raw):
     d2_14b = 0.01
     rv = d1_33v + d2_14b*raw
     return rv
-                
+
+def convert_battery(raw):
+    #The raw value is the sum of 4 adc samples
+    raw /= 4.0                
+    
+    #It is a 12 bit adc
+    raw /= 4096.
+    
+    #Against a 2.5V reference
+    raw *= 2.5
+    
+    # of a 2k / 10k divider
+    v = raw/2*12
+    
+    return v
+    
 def launch_udp_server():
     def t():
         sock = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
@@ -198,7 +223,7 @@ def launch_udp_server():
                 
             
             if devt == 0x01: #chair
-                devt, fan, heat, occupancy, uid, fansrc, heatsrc, rh, temp = struct.unpack_from("<BBBBLBBHH", data)
+                devt, fan, heat, occupancy, uid, fansrc, heatsrc, rh, temp, battery = struct.unpack_from("<BBBBLBBHHL", data)
                 #cloud is 1, screen is 2
                 uid = int(uid)
                 if rh != 0:
@@ -209,8 +234,14 @@ def launch_udp_server():
                     real_temp = convert_temp(temp)
                 else:
                     real_temp = None
+                if battery != 0:
+                    real_battery = convert_battery(battery)
+                else:
+                    real_battery = None
+                    
                 doc = {"uid":uid, "addr":addr, "fan":fan, "heat":heat, "sw":occupancy, "when":time.time(), 
-                       "fansrc":fansrc, "heatsrc":heatsrc, "rh":rh, "temp":temp, "crh":real_rh, "ctemp":real_temp}
+                       "fansrc":fansrc, "heatsrc":heatsrc, "rh":rh, "temp":temp, "crh":real_rh, "ctemp":real_temp,
+                       "battery":battery, "cbattery":real_battery}
                 ch = db.chairs.find_one({"uid":uid})
                 needsync = False
                 if ch != None:
@@ -245,6 +276,11 @@ def launch_udp_server():
                 occupancys = get_occupancy_stream(uid)
                 occupancys.set_readings([(int(time.time()*1000), occupancy*100)])
                 occupancys.publish()
+                
+                if battery != 0:
+                    batterys = get_battery_stream(uid)
+                    batterys.set_readings([(int(time.time()*1000), real_battery)])
+                    batterys.publish()
                 
                 if rh != 0:
                     rhs = get_rh_stream(uid)

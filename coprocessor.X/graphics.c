@@ -695,14 +695,14 @@ void init_vals()
     red_val = 0;
     new_red_val = 0;
     new_blue_val = 0;
-    hexcode[0] = 0x1;
-    hexcode[1] = 0xB;
-    hexcode[2] = 0xA;
-    hexcode[3] = 0xD;
-    hexcode[4] = 0xB;
-    hexcode[5] = 0xA;
-    hexcode[6] = 0xB;
-    hexcode[7] = 0xE;
+    hexcode[0] = 0xA;
+    hexcode[1] = 0xA;
+    hexcode[2] = 0xB;
+    hexcode[3] = 0xB;
+    hexcode[4] = 0xC;
+    hexcode[5] = 0xC;
+    hexcode[6] = 0xD;
+    hexcode[7] = 0xD;
 }
 
 uint8_t screen_tap;
@@ -757,8 +757,9 @@ void poll_screen()
             }
             if (new_red_val != red_val)
             {
+                draw_red_bar_incremental();
                 red_val = new_red_val;
-                draw_red_bar_full(new_red_val);
+               // draw_red_bar_full(new_red_val);
 
             }
             if (new_blue_val != blue_val)
@@ -998,6 +999,6 @@ void draw_qr_hexcode()
     for (i=0;i<8;i++)
     {
         blocking_wblit(0, 30*i, ASSET_1_HEIGHT, ASSET_1_WIDTH, 0, 0,
-                         ASSET_1_HEIGHT, ASSET_1_WIDTH, hex_addresses[hexcode[i]]);
+                         ASSET_1_HEIGHT, ASSET_1_WIDTH, hex_addresses[hexcode[7-i]]);
     }
 }

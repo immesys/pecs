@@ -68,7 +68,7 @@ module PECSControlP
 
 #define SOURCE_CLOUD 1
 #define SOURCE_SCREEN 2
-#define TOTAL_BAT_SAMPLES 1
+#define TOTAL_BAT_SAMPLES 4
 
 implementation
 {
@@ -254,6 +254,12 @@ implementation
   }
   void do_cmd(uint8_t cmd, uint8_t val)
   {
+   /* if (cmd >= 0x20)
+    {
+        fwd0 = cmd;
+        fwd1 = val;
+        post send_fwd();
+    }*/
     switch(cmd)
     {
         case 0x10:
@@ -357,6 +363,7 @@ implementation
         set_fan();
         post send_occupied();
     }
+//    post send_both();
     post sendrep();
   }
   
