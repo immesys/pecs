@@ -82,36 +82,6 @@
 
       <h2>You are currently using chair: ${chair["uid"]}</h2>
 
-      <!-- Example row of columns 
-      <div class="row">
-        <div class="span4">
-          <h2>Chair</h2>
-          <p>Your chair is equipped with 3 fans and 2 two heating strips. You can adjust the sliders below to change the level of heating and cooling within the chair </p>  
-          <div style="text-align:center">
-          <div style="margin:10px 10px 10px 10px">
-          <h4 id="chaircoolvalue"></h4>
-          <div id="chaircoolslider" style="width:95%"></div>
-          <h4 id="chairheatvalue" style="width:95%"></h4>
-          <div id="chairheatslider" style="width:95%"></div> 
-          </div></div>
-        </div>
-        <div class="span4">
-          <h2>Fan</h2>
-          <p>The fan that is residing on your desk is capable of three speeds and has a heating lamp built in for warmth. If you wish, you can have both at the same time. Just toggle the controls below. </p>
-          <h4 id="fancoolvalue"></h4>
-          <div id="fancoolslider"></div>
-          <h4 id="fanheatvalue"></h4>
-          <div id="fanheatslider"></div>
-       </div>
-        <div class="span4">
-          <h2>Footwarmer</h2>
-          <p>The footwarmer is only capable of providing heat. It is located underneath your desk.</p>
-          <h4 id="fwheatvalue"></h4>
-          <div id="fwheatslider"></div>
-        </div>
-      </div>
-
--->
       <div id="content">
         <ul id="tabs" class="nav nav-tabs" data-tabs="tabs">
           <li class="active"><a href="#chair" data-toggle="tab"><FONT Size=5>Chair</FONT></a></li>
@@ -266,12 +236,14 @@
             setTimeout("svars()", 2000);
             $("#envbanner").html("It is "+data["tempf"]+" &deg;F and "+data["humidity"]+" %RH");
             var t = new Date().getTime();
-            if (t > g_last_fan_slide + 8)
+            console.log("Last fan slide time was: "+g_last_fan_slide);
+            console.log("T is: "+t);
+            if (t > g_last_fan_slide + 8000)
             {
                 $( "#chaircoolslider" ).slider("value",data["fan"]);
                 $( "#chaircoolvalue" ).html("Cooling level: "+ data["fan"] );
             }
-            if (t > g_last_heat_slide + 8)
+            if (t > g_last_heat_slide + 8000)
             {
                 $( "#chairheatslider" ).slider("value",data["heat"]);
                 $( "#chairheatvalue" ).html("Heating level: "+ data["heat"] );
